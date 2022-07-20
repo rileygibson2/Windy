@@ -9,7 +9,7 @@ import org.eclipse.jetty.servlet.ServletHandler;
 
 public class Core {
 	public static void main(String[] args) throws Exception {
-		Server server = new Server(8080);
+		Server server = new Server(80);
 		String webappPath = System.getProperty("user.dir")+"/src/main/webapp";
 		System.out.println(webappPath);
 
