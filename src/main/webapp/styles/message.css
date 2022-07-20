@@ -1,0 +1,66 @@
+#messageBlocker {
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	background-color: black;
+	z-index: 100;
+	opacity: 0;
+	transition: all 0.2s;
+	z-index: 100;
+}
+#message {
+	position: absolute;
+	height: 7vh;
+	width: 40vw;
+	top: -8vh;
+	left: 30vw;
+	background-color: rgb(100, 100, 100);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	transition: all 0.5s;
+	z-index: 101;
+}
+#messageT {
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(230, 230, 230);
+	font-family: open;
+	font-size: 1.3vw;
+}
+#messageIcon {
+	position: absolute;
+	width: 10%;
+	height: 60%;
+	top: 20%;
+	left: 1%;
+	background-repeat: no-repeat;
+	background-size: 55%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/warning.svg");
+	opacity: 0.4;
+}
+#messageCloseIcon { /*Sidebar node*/
+	position: absolute;
+	width: 10%;
+	height: 90%;
+	left: 88%;
+	top: 5%;
+	background-repeat: no-repeat;
+	background-size: 40%;
+	background-position: 50% 60%;
+	background-image: url("../assets/icons/cross.svg");
+	cursor: pointer;
+	opacity: 0.4;
+	transition: all 0.2s;
+}
+#messageCloseIcon:hover {
+	opacity: 1;
+}
+
+
+
+
+

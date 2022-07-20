@@ -1,0 +1,436 @@
+* {
+	margin: 0;
+	padding: 0;
+	user-select: none;
+	-webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  cursor: default;
+}
+
+@font-face {
+  font-family: open;
+  src: url('../assets/fonts/OpenSans/OpenSans-Regular.ttf');
+}
+@font-face {
+  font-family: openMedium;
+  src: url('../assets/fonts/OpenSans/OpenSans-Medium.ttf');
+}
+@font-face {
+  font-family: openSemiBold;
+  src: url('../assets/fonts/OpenSans/OpenSans-SemiBold.ttf');
+}
+@font-face {
+  font-family: openBold;
+  src: url('../assets/fonts/OpenSans/OpenSans-Bold.ttf');
+}
+
+#effCont { /*Efferent container holding current sections items*/
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgb(40, 40, 40);
+	/*overflow: hidden;*/
+}
+
+#sbCont { /*Sidebar container*/
+	margin-top: 5vh;
+	margin-left: 1vw;
+	position: absolute;
+	height: 90vh;
+	width: 7vw;
+	background-color: rgb(39, 156, 245);
+	border-radius: 25px 25px 25px 25px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
+	z-index: 10;
+	overflow: hidden;
+}
+.sbN { /*Sidebar node*/
+	position: relative;
+	width: 100%;
+	height: 15%;
+	background-repeat: no-repeat;
+	background-size: 55%;
+	background-position: 50% 45%;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+.sbN:nth-child(2) {
+	margin-top: 0%;
+	background-image: url("../assets/icons/graph.svg");
+}
+.sbN:nth-child(3) {
+	background-image: url("../assets/icons/wind.svg");
+}
+.sbN:nth-child(4) {
+	background-size: 65%;
+	background-image: url("../assets/icons/history.svg");
+}
+.sbN:nth-child(5) {
+	background-image: url("../assets/icons/report.svg");
+}
+#sbS { /*Slidey selector*/
+	position: absolute;
+	width: 5%;
+	height: 15%;
+	top: 0;
+	background-color: rgb(255, 255, 255);
+	border-radius: 1px;
+	transition: all 1s;
+}
+#sbLogo { /*Logo on side bar*/
+	position: absolute;
+	top: 85%;
+	background-image: url("../assets/images/logow.png");
+	background-size: 80%;
+	background-position: 50% 45%;
+	opacity: 0.8;
+}
+
+#rtCont { /*Real-time module container*/
+	position: absolute;
+	width: 80vw;
+	height: 30vh;
+	margin-left: 13vw;
+	margin-top: 10vh;
+}
+.rtN { /*Real time node*/
+	display: inline-block;
+	position: relative;
+	width: 15vw;
+	height: 15vw;
+	background-color: rgb(100, 100, 100);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	opacity: 0;
+}
+
+/*background-image: linear-gradient(to bottom right, rgb(100, 199, 100) 0%, rgb(3, 173, 15) 50%);*/
+
+#rtSpeedIcon { /*Wind icon*/
+	position: absolute;
+	width: 20%;
+	height: 20%;
+	top: 5%;
+	left: 5%;
+	background-repeat: no-repeat;
+	background-size: 80%;
+	background-position: 50% 45%;
+	background-image: url("../assets/icons/windw.png");
+}
+#rtSpeed1 { /*Actual speed*/
+	position: absolute;
+	width: 88%;
+	top: 10%;
+	text-align: right;
+	font-family: openBold;
+	font-size: 4vw;
+	color: rgb(255, 255, 255);
+}
+#rtSpeed2 { /*Units*/
+	position: absolute;
+	width: 88%;
+	top: 42%;
+	text-align: right;
+	font-family: open;
+	font-size: 1.2vw;
+	color: rgb(255, 255, 255);
+}
+#rtSpeed3 { /*Last updated*/
+	position: absolute;
+	width: 90%;
+	top: 70%;
+	left: 10%;
+	text-align: left;
+	font-family: openSemiBold;
+	font-size: 0.9vw;
+	color: rgb(255, 255, 255);
+}
+#rtSpeed4 { /*Time ago*/
+	position: absolute;
+	width: 85%;
+	top: 79%;
+	left: 10%;
+	text-align: left;
+	font-family: openBold;
+	font-size: 1.2vw;
+	color: rgb(255, 255, 255);
+}
+
+#rtDir {
+	margin-left: 3vw;
+	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, rgb(100, 100, 100) 50%);
+}
+#rtDirIcon { /*Wind icon*/
+	position: absolute;
+	width: 20%;
+	height: 20%;
+	top: 5%;
+	left: 5%;
+	background-repeat: no-repeat;
+	background-size: 200%;
+	background-position: 50% 65%;
+	background-image: url("../assets/icons/compass.svg");
+}
+#rtDir1 { /*Direction name*/
+	position: absolute;
+	width: 80%;
+	top: 10%;
+	left: 10%;
+	text-align: right;
+	font-family: openBold;
+	font-size: 4vw;
+	color: rgb(255, 255, 255);
+}
+#rtDir2 { /*Degrees*/
+	position: absolute;
+	width: 80%;
+	top: 42%;
+	left: 10%;
+	text-align: right;
+	font-family: open;
+	font-size: 1.2vw;
+	color: rgb(255, 255, 255);
+}
+#rtDirIndicator { /*Direction indicator*/
+	position: absolute;
+	width: 40%;
+	height: 32%;
+	top: 60%;
+	left: 8%;
+	background-repeat: no-repeat;
+	background-size: 100%;
+	background-position: 0% 0%;
+	background-image: url("../assets/icons/direction.svg");
+	transform: rotate(0deg);
+	transition: all 1s;
+}
+
+#gCont { /*Graph module container*/
+	position: absolute;
+	width: 67vw;
+	height: 50vh;
+	margin-left: 13vw;
+	margin-top: 43vh;
+}
+
+#graph {
+	width: 100%;
+	height: 88%;
+	background-color: rgb(105, 105, 105);
+	border-radius: 20px;
+	box-shadow: 10px 3px 15px rgba(0, 0, 0, .3);
+	opacity: 0;
+}
+#gSVG {
+	width: 96%;
+	height: 95%;
+	margin-left: 2%;
+	margin-top: 1.1%;
+	background-color: rgb(50, 50, 50);
+	border-radius: 20px;
+}
+.gAxisLine { /*Graph axis lines paths*/
+	stroke: rgb(255, 255, 255);
+	stroke-width: 2px;
+	stroke-linecap: round;
+}
+.gMarkingLine { /*Graph marking lines paths*/
+	stroke: rgb(255, 255, 255);
+	stroke-width: 1px;
+}
+.gMarkingText { /*Graph marking text*/
+	fill: rgb(180, 180, 180);
+	font-family: open;
+}
+.gThinLine { /*Graph thin lines paths*/
+	stroke: rgb(180, 180, 180);
+	stroke-width: 0.5px;
+	stroke-linecap: round;
+	stroke-dasharray: 3;
+}
+.gDataLine { /*Data line path*/
+	stroke: rgb(50, 255, 50);
+	stroke-width: 1px;
+	stroke-linecap: round;
+	fill: none;
+}
+/*Linear gradient under data line path*/
+#gDataGrad { fill: url(#gradient); }
+        .stop1 { stop-color: rgb(50, 255, 50, 0.5); }
+        .stop2 { stop-color: rgb(50, 255, 50, 0);}
+
+#slider {
+	width: 100%;
+	height: 10%;
+	margin-top: 2vh;
+	background-color: rgb(105, 105, 105);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
+	opacity: 0;
+	cursor: pointer;
+}
+.sliderN { /*A slider node*/
+	position: relative;
+	display: inline-block;
+	top: 50%;
+	width: 25%;
+  transform: translateY(-50%);
+  text-align: center;
+  color: rgb(150, 150, 150);
+  font-family: openSemiBold;
+  font-size: 2.1vh;
+  transition: all 0.5s;
+	cursor: pointer;
+}
+#sliderS { /*The sliding element*/
+	position: absolute;
+	left: 0;
+	width: 25%;
+	height: 100%;
+	background-color: rgb(39, 156, 245);
+  border-radius: 20px;
+  box-shadow: 3px 3px 15px rgba(0, 0, 0, .4);
+  transition: all 1s;
+}
+
+#cCont { /*Alert level circles container*/
+	position: absolute;
+	width: 15vw;
+	height: 62vh;
+	margin-left: 83vw;
+	margin-top: 32vh;
+	opacity: 0;
+}
+#cM { /*Alert level circles module*/
+	width: 100%;
+	height: 100%;
+	background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(100, 100, 100) 50%);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+}
+.cSVG { /*The alert circle svg*/
+	position: relative;
+	width: 9vw;
+	height: 16vh;
+	margin-top: 12%;
+	margin-left: 20%;
+	overflow: visible;
+}
+.cSVGC { /*An alert circle*/
+	r: 50%;
+	cy: 50%;
+	cx: 50%;
+	stroke: rgb(150, 150, 150);
+	fill: none;
+	stroke-width: 10px;
+	stroke-linecap: round;
+	stroke-dasharray: 1, 10000;
+	transform-origin: center;
+	/*transform: rotate(-90deg);*/
+	filter: url(#shadow);
+	z-index: 11;
+	opacity: 1;
+	transition: stroke-dasharray 1.5s;
+}
+#cSVGC1 {stroke: rgb(0, 200, 0);}
+#cSVGC2 {stroke: rgb(252, 179, 8);}
+#cSVGC3 {stroke: rgb(200, 0, 0);}
+.cSVGF { /*Full alert circle*/
+	opacity: 0.3;
+	stroke-dasharray: 0, 0;
+	z-index: 10;
+}
+#cTOverlay { /*Circle text overlay container*/
+	position: absolute;
+	top:  0%;
+	width: 100%;
+	height: 100%;
+}
+.cT { /*Box containg text for each circle*/
+	height: 16vh;
+	width: 100%;
+	margin-top: 13.2%;
+	opacity: 0;
+	transition: opacity 3s;
+}
+.cTB { /*Center circle big text*/
+	position: absolute;
+	width: 100%;
+	margin-top: 4vh;
+	color: rgb(255, 255, 255);
+	text-align: center;
+	font-family: openBold;
+	font-size: 2vw;
+}
+.cTS { /*Center circle small text*/
+	position: absolute;
+	width: 100%;
+	margin-top: 8.5vh;
+	color: rgb(190, 190, 190);
+	text-align: center;
+	font-family: open;
+	font-size: 0.9vw;
+}
+#cDS { /*Alert circle drop shadow*/
+	flood-color: rgb(50, 50, 50);
+	flood-opacity: 0.8;
+}
+
+#ac { /*Account circle*/
+	position: absolute;
+	height: 6vw;
+	width: 6vw;
+	margin-left: 90vw;
+	margin-top: 6vh;
+	overflow: visible;
+	transition: all 1s;
+}
+#ac:hover {
+	transform: rotate(360deg);
+}
+#acSVG { /*Account circle svg*/
+	width: 100%;
+	height: 100%;
+	filter: drop-shadow(0px 5px 10px rgba(0, 0, 0, .5));
+}
+#acSVGC { /*Account circle svg circle element*/
+	fill: rgb(39, 156, 245);
+	r: 50%;
+	cx: 50%;
+	cy: 50%;
+}
+#acContent { /*The content inside the account circle*/
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	background-image: url("../assets/icons/settings.svg");
+	background-size: 70%;
+	background-position: 52% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.8;
+	cursor: pointer;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateX(-100px);
+	}
+	to {opacity: 1;}
+}
+
+@keyframes fadeOut {
+	0% {opacity: 1;}
+	100% {
+		opacity: 0;
+		transform: translateX(200px);
+	}
+}
+
+
+
+
+
+
+

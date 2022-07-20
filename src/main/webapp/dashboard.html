@@ -1,0 +1,68 @@
+<div id="rtCont">
+	<div class='rtN' id="rtSpeed">
+		<div id='rtSpeedIcon'></div>
+		<p id='rtSpeed1'>-</p>
+		<p id='rtSpeed2'>km/h</p>
+		<p id='rtSpeed3'>Last updated:</p>
+		<p id='rtSpeed4'>--</p>
+	</div>
+	<div class='rtN' id="rtDir">
+		<div id='rtDirIcon'></div>
+		<p id='rtDir1'>--</p>
+		<p id='rtDir2'>-</p>
+		<div id='rtDirIndicator'></div>
+	</div>
+</div>
+<div id="gCont">
+	<div id="graph">
+		<svg id="gSVG">
+			<defs>
+		      <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
+		        <stop class="stop1" offset="0%"/>
+		        <stop class="stop2" offset="100%"/>
+		      </linearGradient>
+		  </defs>
+		</svg>
+	</div>
+
+	<div id="slider">
+		<div id="sliderS"></div>
+		<div class="sliderN" onclick='moveSlider(this, false)'>Hour</div><div class="sliderN" onclick='moveSlider(this, false)'>Day</div><div class="sliderN" onclick='moveSlider(this, false)'>Week</div><div class="sliderN" onclick='moveSlider(this, false)'>Month</div>
+	</div>
+</div>
+<div id="cCont">
+	<div id="cM">
+        <svg class='cSVG' id="cSVG1">
+      	    <defs>
+      			<filter id="shadow" ><feDropShadow id="cDS" dx="5" dy="5" stdDeviation="4"/></filter>
+      		</defs>
+      		<circle class='cSVGC cSVGF'></circle>
+      		<circle class='cSVGC' id="cSVGC1"></circle>
+        </svg>
+       	
+	    <svg class='cSVG' id="cSVG2">
+        	<circle class='cSVGC cSVGF'></circle>
+      		<circle class='cSVGC' id="cSVGC2"></circle>
+        </svg>
+
+	    <svg class='cSVG' id="cSVG3">
+      		<circle class='cSVGC cSVGF'></circle>
+      		<circle class='cSVGC' id="cSVGC3"></circle>
+        </svg>
+
+        <div id='cTOverlay'>
+	        <div class='cT' id='cT1'>
+	        	<div class='cTB' id='cTB1'>-</div>
+	        	<div class='cTS'>mins at green</div>
+	        </div>
+	        <div class='cT' id='cT2'>
+	        	<div class='cTB' id='cTB2'>-</div>
+	      		<div class='cTS'>mins at amber</div>
+	        </div>
+	        <div class='cT' id='cT3'>
+	        	<div class='cTB' id='cTB3'>-</div>
+	        	<div class='cTS'>mins at red</div>
+	        </div>
+    	</div>
+	</div>
+</div>

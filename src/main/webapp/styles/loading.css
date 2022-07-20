@@ -1,0 +1,29 @@
+#loadingBlocker {
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	background-color: black;
+	opacity: 0.9;
+	z-index: 100;
+}
+#loadingSVG {
+	position: absolute;
+	overflow: visible;
+	z-index: 101;
+}
+.circle {
+	stroke: rgb(255, 255, 255);
+	fill: none;
+	stroke-linecap: round;
+	transform-origin: 50% 50%;
+}
+
+@keyframes rotate1 {
+  0% {transform: rotate(-180deg);}
+  100% {transform: rotate(180deg);}
+}
+
+@keyframes rotate2 {
+  0% {transform: rotate(180deg);}
+  100% {transform: rotate(-180deg);}
+}
