@@ -26,9 +26,11 @@ function switchSections(i) {
 	//Make request for content
 	var req = new XMLHttpRequest();
 	req.open('GET', 'dashboard.html', true);
-	/*req.onreadystatechange = function() {
+	req.onreadystatechange = function() {
 		if (req.readyState!=4&&req.status!=4) return;
-	}*/
+		alert('done');
+		buildGraph();
+	}
 	req.send();
 
 	setTimeout(function() {
@@ -75,8 +77,11 @@ function animateEntrance(i, start) {
 	}
 }
 
+var done = false;
+
 function animateExit(start) {
 	//Animate elements out - nested for loop used because first element is a container for visible modules
+	done = false;
 	redAlarmAniKill = true;
 	var c1 = $('#effCont').children();
 	for (i=0; i<c1.length; i++) {
@@ -86,6 +91,8 @@ function animateExit(start) {
 			start += 40;
 		}
 	}
+
+	setTimeout(function() {done==true;}, start);
 	return start;
 }
 

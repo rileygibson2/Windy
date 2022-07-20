@@ -33,11 +33,12 @@
 }
 
 #sbCont { /*Sidebar container*/
+	display: none;
 	margin-top: 5vh;
-	margin-left: 1vw;
+	margin-left: 5vw;
 	position: absolute;
-	height: 90vh;
-	width: 7vw;
+	height: 7vh;
+	width: 90vw;
 	background-color: rgb(39, 156, 245);
 	border-radius: 25px 25px 25px 25px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
@@ -46,8 +47,9 @@
 }
 .sbN { /*Sidebar node*/
 	position: relative;
-	width: 100%;
-	height: 15%;
+	display: inline-block;
+	width: 15%;
+	height: 100%;
 	background-repeat: no-repeat;
 	background-size: 55%;
 	background-position: 50% 45%;
@@ -55,7 +57,7 @@
 	transition: all 0.3s;
 }
 .sbN:nth-child(2) {
-	margin-top: 0%;
+	margin-left: 0%;
 	background-image: url("../assets/icons/graph.svg");
 }
 .sbN:nth-child(3) {
@@ -70,16 +72,17 @@
 }
 #sbS { /*Slidey selector*/
 	position: absolute;
-	width: 5%;
-	height: 15%;
-	top: 0;
+	width: 15%;
+	height: 5%;
+	left: 0;
+	top: 95%;
 	background-color: rgb(255, 255, 255);
 	border-radius: 1px;
 	transition: all 1s;
 }
 #sbLogo { /*Logo on side bar*/
 	position: absolute;
-	top: 85%;
+	left: 85%;
 	background-image: url("../assets/images/logow.png");
 	background-size: 80%;
 	background-position: 50% 45%;
@@ -88,32 +91,34 @@
 
 #rtCont { /*Real-time module container*/
 	position: absolute;
-	width: 80vw;
-	height: 30vh;
-	margin-left: 13vw;
-	margin-top: 10vh;
+	width: 90vw;
+	height: 20vh;
+	margin-left: 5vw;
+	margin-top: 5vh;
 }
 .rtN { /*Real time node*/
 	display: inline-block;
 	position: relative;
-	width: 15vw;
-	height: 15vw;
+	width: 35vw;
+	height: 35vw;
 	background-color: rgb(100, 100, 100);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	opacity: 0;
 }
+.rtN:nth-child(1) {margin-left: 5%;}
+.rtN:nth-child(2) {margin-left: 10%;}
 
 /*background-image: linear-gradient(to bottom right, rgb(100, 199, 100) 0%, rgb(3, 173, 15) 50%);*/
 
-#rtSpeedIcon { /*Direction icon*/
+#rtSpeedIcon { /*Wind icon*/
 	position: absolute;
 	width: 20%;
 	height: 20%;
 	top: 5%;
 	left: 5%;
 	background-repeat: no-repeat;
-	background-size: 80%;
+	background-size: 90%;
 	background-position: 50% 45%;
 	background-image: url("../assets/icons/windw.png");
 }
@@ -123,7 +128,7 @@
 	top: 10%;
 	text-align: right;
 	font-family: openBold;
-	font-size: 4vw;
+	font-size: 10vw;
 	color: rgb(255, 255, 255);
 }
 #rtSpeed2 { /*Units*/
@@ -132,7 +137,7 @@
 	top: 42%;
 	text-align: right;
 	font-family: open;
-	font-size: 1.2vw;
+	font-size: 3vw;
 	color: rgb(255, 255, 255);
 }
 #rtSpeed3 { /*Last updated*/
@@ -142,7 +147,7 @@
 	left: 10%;
 	text-align: left;
 	font-family: openSemiBold;
-	font-size: 0.9vw;
+	font-size: 2.2vw;
 	color: rgb(255, 255, 255);
 }
 #rtSpeed4 { /*Time ago*/
@@ -152,22 +157,19 @@
 	left: 10%;
 	text-align: left;
 	font-family: openBold;
-	font-size: 1.2vw;
+	font-size: 3.2vw;
 	color: rgb(255, 255, 255);
 }
 
-#rtDir {
-	margin-left: 3vw;
-	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, rgb(100, 100, 100) 50%);
-}
-#rtDirIcon { /*Wind icon*/
+#rtDir {background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, rgb(100, 100, 100) 50%);}
+#rtDirIcon { /*Direction icon*/
 	position: absolute;
 	width: 20%;
 	height: 20%;
 	top: 5%;
 	left: 5%;
 	background-repeat: no-repeat;
-	background-size: 200%;
+	background-size: 250%;
 	background-position: 50% 65%;
 	background-image: url("../assets/icons/compass.svg");
 }
@@ -178,7 +180,7 @@
 	left: 10%;
 	text-align: right;
 	font-family: openBold;
-	font-size: 4vw;
+	font-size: 10vw;
 	color: rgb(255, 255, 255);
 }
 #rtDir2 { /*Degrees*/
@@ -188,7 +190,7 @@
 	left: 10%;
 	text-align: right;
 	font-family: open;
-	font-size: 1.2vw;
+	font-size: 3vw;
 	color: rgb(255, 255, 255);
 }
 #rtDirIndicator { /*Direction indicator*/
@@ -207,15 +209,14 @@
 
 #gCont { /*Graph module container*/
 	position: absolute;
-	width: 67vw;
-	height: 50vh;
-	margin-left: 13vw;
-	margin-top: 43vh;
+	width: 95vw;
+	height: 40vh;
+	margin-left: 2.5vw;
+	margin-top: 41vh;
 }
-
 #graph {
 	width: 100%;
-	height: 88%;
+	height: 85%;
 	background-color: rgb(105, 105, 105);
 	border-radius: 20px;
 	box-shadow: 10px 3px 15px rgba(0, 0, 0, .3);
@@ -226,7 +227,7 @@
 	height: 95%;
 	margin-left: 2%;
 	margin-top: 1.1%;
-	background-color: rgb(50, 50, 50);
+	background-color: rgb(80, 80, 80);
 	border-radius: 20px;
 }
 .gAxisLine { /*Graph axis lines paths*/
@@ -260,9 +261,10 @@
         .stop2 { stop-color: rgb(50, 255, 50, 0);}
 
 #slider {
-	width: 100%;
-	height: 10%;
-	margin-top: 2vh;
+	width: 95%;
+	height: 8%;
+	margin-top: 2%;
+	margin-left: 2.5%;
 	background-color: rgb(105, 105, 105);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
@@ -274,11 +276,11 @@
 	display: inline-block;
 	top: 50%;
 	width: 25%;
-  transform: translateY(-50%);
+  transform: translateY(-70%);
   text-align: center;
   color: rgb(150, 150, 150);
   font-family: openSemiBold;
-  font-size: 2.1vh;
+  font-size: 2.8vw;
   transition: all 0.5s;
 	cursor: pointer;
 }
@@ -295,38 +297,38 @@
 
 #cCont { /*Alert level circles container*/
 	position: absolute;
-	width: 15vw;
-	height: 62vh;
-	margin-left: 83vw;
-	margin-top: 32vh;
+	width: 90vw;
+	height: 10vh;
+	margin-left: 5vw;
+	margin-top: 27vh;
 	opacity: 0;
 }
 #cM { /*Alert level circles module*/
 	width: 100%;
 	height: 100%;
-	background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(100, 100, 100) 50%);
+	/*background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(100, 100, 100) 50%);
 	border-radius: 20px;
-	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);*/
 }
 .cSVG { /*The alert circle svg*/
 	position: relative;
-	width: 9vw;
-	height: 16vh;
-	margin-top: 12%;
-	margin-left: 20%;
+	display: inline-block;
+	width: 20%;
+	height: 100%;
+	margin-left: 10%;
 	overflow: visible;
 }
 .cSVGC { /*An alert circle*/
 	r: 50%;
 	cy: 50%;
 	cx: 50%;
-	stroke: rgb(150, 150, 150);
+	stroke: rgb(180, 180, 180);
 	fill: none;
 	stroke-width: 10px;
 	stroke-linecap: round;
 	stroke-dasharray: 1, 10000;
 	transform-origin: center;
-	/*transform: rotate(-90deg);*/
+	transform: rotate(-90deg);
 	filter: url(#shadow);
 	z-index: 11;
 	opacity: 1;
@@ -347,29 +349,32 @@
 	height: 100%;
 }
 .cT { /*Box containg text for each circle*/
-	height: 16vh;
-	width: 100%;
-	margin-top: 13.2%;
+	position: relative;
+	display: inline-block;
+	height: 100%;
+	width: 20%;
+	margin-left: 10%;
 	opacity: 0;
 	transition: opacity 3s;
 }
 .cTB { /*Center circle big text*/
 	position: absolute;
 	width: 100%;
-	margin-top: 4vh;
+	margin-top: 3vh;
 	color: rgb(255, 255, 255);
 	text-align: center;
 	font-family: openBold;
-	font-size: 2vw;
+	font-size: 5vw;
 }
 .cTS { /*Center circle small text*/
 	position: absolute;
-	width: 100%;
-	margin-top: 8.5vh;
+	width: 80%;
+	left: 10%;
+	margin-top: 11vh;
 	color: rgb(190, 190, 190);
 	text-align: center;
 	font-family: open;
-	font-size: 0.9vw;
+	font-size: 2vw;
 }
 #cDS { /*Alert circle drop shadow*/
 	flood-color: rgb(50, 50, 50);
@@ -378,10 +383,10 @@
 
 #ac { /*Account circle*/
 	position: absolute;
-	height: 6vw;
-	width: 6vw;
-	margin-left: 90vw;
-	margin-top: 6vh;
+	height: 12vw;
+	width: 12vw;
+	margin-left: 80vw;
+	margin-top: 81vh;
 	overflow: visible;
 	transition: all 1s;
 }
@@ -391,7 +396,7 @@
 #acSVG { /*Account circle svg*/
 	width: 100%;
 	height: 100%;
-	filter: drop-shadow(0px 5px 10px rgba(0, 0, 0, .5));
+	filter: drop-shadow(5px 5px 8px rgba(0, 0, 0, .9));
 }
 #acSVGC { /*Account circle svg circle element*/
 	fill: rgb(39, 156, 245);
@@ -404,8 +409,8 @@
 	width: 100%;
 	height: 100%;
 	top: 0;
-	background-image: url("../assets/icons/settings.svg");
-	background-size: 70%;
+	background-image: url("../assets/images/logow.png");
+	background-size: 80%;
 	background-position: 52% 50%;
 	background-repeat: no-repeat;
 	opacity: 0.8;

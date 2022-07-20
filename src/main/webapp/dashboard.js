@@ -160,8 +160,6 @@ function implementDataDashboard() {
 	}
 }
 
-
-
 //Sidebar actions
 
 function hoverSB(i) {
