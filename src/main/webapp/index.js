@@ -21,13 +21,13 @@ function switchSections(i) {
 
 	animateExit(0).then(function() {
 		$('#effCont').empty(); //Empty container
+		insertLoading(screen.width/2, screen.height/2, true);
 			
 		//Make request for content
 		var req = new XMLHttpRequest();
 		req.open('GET', 'dashboard.html', true);
 		req.onreadystatechange = function() {
 			if (req.readyState!=4&&req.status!=4) return;
-			alert('content arrived');
 			$('#effCont').html(req.responseText); //Load new elements into container
 			updatePageData().then(result => animateEntrance(activeSection, 0));
 		}
@@ -84,7 +84,7 @@ function animateExit(start) {
 	}
 
 	let promise = new Promise(function (resolve, reject) {
-		setTimeout(resolve, start);
+		setTimeout(resolve, start+500);
 		animatingOut = false;
 	});
 	return promise;

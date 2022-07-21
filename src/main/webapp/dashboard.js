@@ -23,9 +23,8 @@ function updatePageDataDashboard() {
 	req.open('GET', 'data/?m=1&gm='+gViewMode+'&t='+Math.random(), true);
 	req.onreadystatechange = function() {
 		if (req.readyState==4&&req.status==200) {
-			alert('data arrived');
 			recieveData(req);
-			resolve();
+			setTimeout(resolve, 1000);
 		}
 	}
 	req.send();

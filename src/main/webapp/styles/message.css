@@ -54,7 +54,7 @@
 	background-image: url("../assets/icons/cross.svg");
 	cursor: pointer;
 	opacity: 0.4;
-	transition: all 0.2s;
+	transition: all 0.4s;
 }
 #messageCloseIcon:hover {
 	opacity: 1;
