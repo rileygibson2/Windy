@@ -6,6 +6,9 @@
   -webkit-user-select: none; /* Safari */
   cursor: default;
 }
+body {
+  overflow: hidden;
+}
 
 @font-face {
   font-family: open;
@@ -22,6 +25,12 @@
 @font-face {
   font-family: openBold;
   src: url('../assets/fonts/OpenSans/OpenSans-Bold.ttf');
+}
+
+:root {
+  --focus: rgb(39, 156, 245);
+  --bg: rgb(40, 40, 40);
+  --fg: rgb(100, 100, 100);
 }
 
 #effCont { /*Efferent container holding current sections items*/
@@ -209,24 +218,29 @@
 
 #gCont { /*Graph module container*/
 	position: absolute;
-	width: 95vw;
-	height: 40vh;
-	margin-left: 2.5vw;
+	width: 120vw;
+	height: 50vh;
+	margin-left: -2vw;
 	margin-top: 41vh;
-	background-color: green;
 }
 #graph {
+	position: absolute;
 	width: 100%;
-	height: 85%;
+	height: 100%;
 	border-radius: 20px;
-	box-shadow: 10px 3px 15px rgba(0, 0, 0, .3);
 	opacity: 0;
 }
+#graphCover { /*Graph cover which provides a gradient out*/
+	position: absolute;
+	top: 0%;
+	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 60%, rgb(40, 40, 40) 85%);
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+}
 #gSVG {
-	width: 96%;
-	height: 95%;
-	margin-left: 2%;
-	margin-top: 1.1%;
+	width: 100%;
+	height: 100%;
 	border-radius: 20px;
 }
 .gAxisLine { /*Graph axis lines paths*/
@@ -260,40 +274,49 @@
         .stop2 { stop-color: rgb(50, 255, 50, 0);}
 
 #slider {
-	width: 95%;
-	height: 8%;
-	margin-top: 2%;
+	position: absolute;
+	width: 45%;
+	height: 6%;
+	left: 40%;
+	top: 3%;
 	margin-left: 2.5%;
-	background-color: rgb(105, 105, 105);
-	border-radius: 20px;
-	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	opacity: 0;
 	cursor: pointer;
+	z-index: 11;
 }
 .sliderN { /*A slider node*/
 	position: relative;
 	display: inline-block;
 	top: 50%;
-	width: 25%;
+	width: 18%;
+	margin-left: 3%;
   transform: translateY(-70%);
   text-align: center;
-  color: rgb(150, 150, 150);
+  color: rgb(255, 255, 255);
   font-family: openSemiBold;
   font-size: 2.8vw;
+  opacity: 0.2;
   transition: all 0.5s;
 	cursor: pointer;
 }
+.sliderN:nth-child(2) {
+	margin-left: 0;
+}
 #sliderS { /*The sliding element*/
 	position: absolute;
+	top: 93%;
 	left: 0;
-	width: 25%;
-	height: 100%;
-	background-color: rgb(39, 156, 245);
-  border-radius: 20px;
-  box-shadow: 3px 3px 15px rgba(0, 0, 0, .4);
+	width: 18%;
+	height: 7%;
+	background-color: var(--focus);
+  border-radius: 10px;
+  box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
   transition: all 1s;
 }
-
+.sliderNF { /*Used so js doesn't destruct the hover*/
+	opacity: 1;
+	text-shadow: 3px 3px 5px rgba(0, 0, 0, 1);
+}
 #cCont { /*Alert level circles container*/
 	position: absolute;
 	width: 90vw;
@@ -308,6 +331,7 @@
 	/*background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(100, 100, 100) 50%);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);*/
+	overflow: visible;
 }
 .cSVG { /*The alert circle svg*/
 	position: relative;
@@ -315,6 +339,7 @@
 	width: 20%;
 	height: 100%;
 	margin-left: 10%;
+	overflow: visible;
 	overflow: visible;
 }
 .cSVGC { /*An alert circle*/
@@ -327,11 +352,12 @@
 	stroke-linecap: round;
 	stroke-dasharray: 1, 10000;
 	transform-origin: center;
-	transform: rotate(-90deg);
+	/*transform: rotate(-90deg);*/
 	filter: url(#shadow);
 	z-index: 11;
 	opacity: 1;
 	transition: stroke-dasharray 1.5s;
+	overflow: visible;
 }
 #cSVGC1 {stroke: rgb(0, 200, 0);}
 #cSVGC2 {stroke: rgb(252, 179, 8);}
@@ -376,7 +402,7 @@
 	font-size: 2vw;
 }
 #cDS { /*Alert circle drop shadow*/
-	flood-color: rgb(50, 50, 50);
+	flood-color: rgb(0, 0, 0);
 	flood-opacity: 0.8;
 }
 

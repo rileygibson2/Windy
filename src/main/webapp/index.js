@@ -2,48 +2,42 @@
 var nS = "http://www.w3.org/2000/svg";
 var activeSection; //Which side bar section we are on
 var alertMessageShown = false; //Whether a high wind speed alert message has been shown
-var transitioning = false; //Whether we are currently transitioning between sections
+
+var animatingOut;
+var animatingIn;
 
 function load() {
 	//insertLoading(screen.width/2, screen.height/2, true);
-	/*updatePageData();
-	animateEntrance(1, 1000);*/
-
 	setTimeout(switchSections, 0, 0);
 }
 
 function switchSections(i) {
-	if (transitioning||activeSection==i) {
-		if (transitioning) alert('transitioning');
+	if (animatingOut||activeSection==i) {
+		if (animatingOut) alert('transitioning');
 		if (activeSection==i) alert('same section');
 		return;
 	}
-
-	transitioning = true;
 	activeSection = i;
-	var time = animateExit(0);
-	
-	//Make request for content
-	var req = new XMLHttpRequest();
-	req.open('GET', 'dashboard.html', true);
-	req.onreadystatechange = function() {
-		if (req.readyState!=4&&req.status!=4) return;
-		//alert('done');
-		buildGraph();
-	}
-	req.send();
 
-	setTimeout(function() {
+	animateExit(0).then(function() {
 		$('#effCont').empty(); //Empty container
-		$('#effCont').html(req.responseText); //Load new elements into container
-		updatePageData(); //Do things to make it displayable
-		animateEntrance(1, 0);
-		transitioning = false;
-	}, time+1000);
+			
+		//Make request for content
+		var req = new XMLHttpRequest();
+		req.open('GET', 'dashboard.html', true);
+		req.onreadystatechange = function() {
+			if (req.readyState!=4&&req.status!=4) return;
+			alert('content arrived');
+			$('#effCont').html(req.responseText); //Load new elements into container
+			updatePageData().then(result => animateEntrance(activeSection, 0));
+		}
+
+		req.send();
+	});
 }
 
 function updatePageData() {
-	updatePageDataDashboard();
+	return updatePageDataDashboard();
 }
 
 function implementData() {
@@ -59,7 +53,7 @@ function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-out forwards");}
 function refreshParent(p) {$(p).html($(p).html());}
 
 function animateEntrance(i, start) {
-	if (i==1) { //Dashboard animations
+	if (true) { //Dashboard animations
 		moveSlider(document.getElementsByClassName('sliderN')[0], true);
 		setTimeout(removeLoading, start);
 		setTimeout(fadeIn, start, $("#rtSpeed"));
@@ -67,7 +61,6 @@ function animateEntrance(i, start) {
 		setTimeout(fadeIn, start+400, $("#cCont"));
 		setTimeout(fadeIn, start+600, $("#graph"));
 		setTimeout(fadeIn, start+800, $("#slider"));
-		setTimeout(animateGraph, start+100);
 		setTimeout(animateDirection, start+2000);
 		setTimeout(animateCircleGraphs, start+600);
 		setTimeout(function() {
@@ -77,11 +70,9 @@ function animateEntrance(i, start) {
 	}
 }
 
-var done = false;
-
 function animateExit(start) {
 	//Animate elements out - nested for loop used because first element is a container for visible modules
-	done = false;
+	animatingOut = true;
 	redAlarmAniKill = true;
 	var c1 = $('#effCont').children();
 	for (i=0; i<c1.length; i++) {
@@ -92,8 +83,11 @@ function animateExit(start) {
 		}
 	}
 
-	setTimeout(function() {done==true;}, start);
-	return start;
+	let promise = new Promise(function (resolve, reject) {
+		setTimeout(resolve, start);
+		animatingOut = false;
+	});
+	return promise;
 }
 
 

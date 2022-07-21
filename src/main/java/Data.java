@@ -71,10 +71,18 @@ public class Data {
 		//Get data
 		int gYTopVal = 100;
 		int gYBotVal = 10;
-		int gData[] = new int[(int) ((gPointsOnX*0.8)+1)];
+		int gData[] = new int[gPointsOnX+1];
 		for (int i=0; i<gData.length-1; i++) {
+			/*if (i<3) gData[i] = 0;
+			else if (i>=10&&i<=12) {
+				if (i==11) gData[i] = 50;
+				else gData[i] = 0;
+			}
+			else gData[i] = (int) (Math.random()*((gYTopVal/2)-gYBotVal)+gYBotVal);
+			*/
 			gData[i] = (int) (Math.random()*((gYTopVal/2)-gYBotVal)+gYBotVal);
 		}
+		gData[gData.length-1] = 0;
 		
 		//Format in JSON
 		JSONObject jObj = new JSONObject();

@@ -234,7 +234,7 @@
 #graphCover { /*Graph cover which provides a gradient out*/
 	position: absolute;
 	top: -12%;
-	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 60%, rgb(40, 40, 40, 0.9) 90%),
+	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 60%, rgb(40, 40, 40, 0.9) 85%),
 			linear-gradient(170deg, rgb(40, 40, 40, 0.5) 5%, rgb(0, 0, 0, 0) 30%);
 	width: 100%;
 	height: 100%;
@@ -273,9 +273,15 @@
 	stroke-width: 1px;
 	stroke-linecap: round;
 	fill: none;
+	z-index: 100;
+}
+.gDataCircle { /*Data point circle*/
+	fill: rgb(50, 255, 50);
+	r: 2px;
+	z-index: 101;
 }
 /*Linear gradient under data line path*/
-#gDataGrad { fill: url(#gradient); }
+.gDataGrad { fill: url(#gradient); z-index: 100;}
         .stop1 { stop-color: rgb(50, 255, 50, 0.5); }
         .stop2 { stop-color: rgb(50, 255, 50, 0);}
 
@@ -406,8 +412,8 @@
 	font-size: 0.9vw;
 }
 #cDS { /*Alert circle drop shadow*/
-	flood-color: rgb(50, 50, 50);
-	flood-opacity: 0.8;
+	flood-color: rgb(0, 0, 0);
+	flood-opacity: 0.5;
 }
 
 #ac { /*Account circle*/

@@ -15,37 +15,45 @@ var gVisualData = []; //Used for initial graph animation
 var gViewMode = 1;
 var alarmLevelTimes = [];
 
-
 //Required actions
 
 function updatePageDataDashboard() {
+  let promise = new Promise(function (resolve, reject) {
+	var req = new XMLHttpRequest(); //Fetch data
+	req.open('GET', 'data/?m=1&gm='+gViewMode+'&t='+Math.random(), true);
+	req.onreadystatechange = function() {
+		if (req.readyState==4&&req.status==200) {
+			alert('data arrived');
+			recieveData(req);
+			resolve();
+		}
+	}
+	req.send();
+  });
+  return promise;
+}
+
+function recieveData(req) {
 	//Reset graph axis
 	gYTopVal = 100;
 	gYBotVal = 0;
 	gXMarkings = [];
 	gYMarkings = [20, 40, 60, 80, 100];
 
-	//Fetch data
-	var req = new XMLHttpRequest();
-	req.open('GET', 'data/a?m=1&gm='+gViewMode+'&t='+Math.random(), true);
-	req.onreadystatechange = function() {
-		if (req.readyState!=4&&req.status!=4) return;
-		jArr = JSON.parse(req.responseText);
+	jArr = JSON.parse(req.responseText);
 
-		//Load real time data
-		rtWindSpeed = jArr[0].rtWindSpeed;
-		rtDegrees = jArr[0].rtDegrees;
-		rtLastUpdateTime = jArr[0].rtLastUpdateTime;
-		rtAlarmLevel = jArr[0].rtAlarmLevel;
-		alarmLevelTimes = jArr[0].alarmLevelTimes.slice(1, -1).split(",");
+	//Load real time data
+	rtWindSpeed = jArr[0].rtWindSpeed;
+	rtDegrees = jArr[0].rtDegrees;
+	rtLastUpdateTime = jArr[0].rtLastUpdateTime;
+	rtAlarmLevel = jArr[0].rtAlarmLevel;
+	alarmLevelTimes = jArr[0].alarmLevelTimes.slice(1, -1).split(",");
 
-		//Load graph data
-		gData = jArr[1].gData.slice(1, -1).split(",");
-		gVisualData = [];
-		for (i=0; i<gData.length; i++) gVisualData[i] = 0; //Copy incase no animation is run
-		implementData();
-	}
-	req.send();	
+	//Load graph data
+	gData = jArr[1].gData.slice(1, -1).split(",");
+	gVisualData = [];
+	for (i=0; i<gData.length; i++) gVisualData[i] = 0; //Copy incase no animation is run
+	implementDataDashboard();
 }
 
 
@@ -102,7 +110,7 @@ function implementDataDashboard() {
 		var d = Math.floor(d/ms)*ms; //Round down to nearest 5 mins
 		
 		for (i=0; i<13; i++) {
-			date = new Date(d-((12-i)*300000));
+			date = new Date(d-((i)*300000));
 
 			if (date.getHours()==0&&date.getMinutes()==0) { //New day so add day format
 				gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
@@ -121,7 +129,7 @@ function implementDataDashboard() {
 		gPointsOnX = 12*24; //12 readings an hour - every 10 mins
 
 		for (i=0; i<25; i++) {
-			date = new Date(d-((24-i)*3600000));
+			date = new Date(d-((i)*3600000));
 			var h = date.getHours();
 			if (h==0) { //New day so add day format
 				gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
@@ -143,7 +151,7 @@ function implementDataDashboard() {
 		gPointsOnX = 24*7; //24 readings a day - every 1 hour
 		
 		for (i=0; i<8; i++) {
-			date = new Date(d-((7-i)*86400000));
+			date = new Date(d-((i)*86400000));
 			gXMarkings[i] = date.toLocaleDateString('default', {weekday: 'short'})+" "+date.getDate()+dateSuffix(date.getDate());
 		}
 		break;
@@ -152,12 +160,15 @@ function implementDataDashboard() {
 		gPointsOnX = 60; //2 readings a day - every 6 hours
 
 		for (i=0; i<31; i++) {
-			date = new Date(d-((30-i)*86400000));
+			date = new Date(d-((i)*86400000));
 			if (date.getDate()==1) gXMarkings[i] = date.toLocaleString('default', {month: 'long'})
 			else gXMarkings[i] = date.getDate()+dateSuffix(date.getDate());
 		}
 		break;
 	}
+
+	//alert('fully loaded');
+	animateGraph();
 }
 
 //Sidebar actions
@@ -194,7 +205,7 @@ function animateDirection() {
 
 var lastObj;
 
-function moveSlider(obj, preset) {
+function moveSlider(obj, updated) {
 	var a = document.getElementById("slider").getBoundingClientRect().left;
 	$('#sliderS').css("left", obj.getBoundingClientRect().left-a);
 	
@@ -208,18 +219,15 @@ function moveSlider(obj, preset) {
 	if (obj.innerHTML=="Month") gViewMode = 4;
 
 	//Get new data and reload graph
-	if (!preset) {
-		updatePageData();
-		animateGraph();
-	}
+	if (!updated) updatePageData();
 }
 
 //Graph module actions
 
 function buildGraph() {
-	$('path').remove();
-	$('text').remove();
-	
+	$('#gSVG').empty();
+	$('#gSVG').html('<defs><linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient></defs>');
+
 	//SVG dimensions
 	var svg = $("#gSVG");
 	var w = parseFloat(svg.css("width"));
@@ -305,28 +313,102 @@ function buildGraph() {
 	//Data line
 	var ySplit = (gBot-gTop)/(gYTopVal-gYBotVal);
 	var xSplit = (gRight-gLeft)/gPointsOnX;
-	path = document.createElementNS(nS, "path");
+
+	for (i=0; i<gVisualData.length; i++) {
+		//Search forward to find end of block
+		var end = i;
+		while (end<gVisualData.length) {
+			if (gVisualData[end]<=0) break;
+			else end++;
+		}
+		if (end==i||end-i==1) continue;
+
+		//Build path for block
+		path = document.createElementNS(nS, "path");
+		path.setAttribute("class", 'gDataLine');
+		var d = '';
+		
+		for (z=i; z<end; z++) {
+			y1 = (gYTopVal-gVisualData[z])*ySplit+gTop;
+			x1 = z*xSplit+gLeft;
+			
+			if (z==i) d += " M "+x1+" "+y1;
+			else d +=" L "+x1+" "+y1;
+
+			var circle = document.createElementNS(nS, "circle");
+			circle.setAttribute("class", 'gDataCircle');
+			circle.setAttribute("cx", x1);
+			circle.setAttribute("cy", y1);
+			svg.append(circle);
+		}
+
+		path.setAttribute("d", d);
+		svg.append(path);
+	}
+
+
+
+	/*path = document.createElementNS(nS, "path");
 	path.setAttribute("class", 'gDataLine');
 	d = "";
 	for (i=0; i<gVisualData.length; i++) {
 		var y1 = (gYTopVal-gVisualData[i])*ySplit+gTop;
 		var x1 = i*xSplit+gLeft;
-		if (i==0) d += "M "+x1+" "+y1
-		else d += " L "+x1+" "+y1
+		if (i==0) d += "M "+x1+" "+y1;
+		else d += " L "+x1+" "+y1;
 	}
 	path.setAttribute("d", d);
-	svg.append(path);
+	svg.append(path);*/
 
 	//Data shape with gradient
-	path = document.createElementNS(nS, "path");
-	path.setAttribute("id", 'gDataGrad');
+	//Need to build for every set of data points as there could be breaks
+	for (i=0; i<gVisualData.length; i++) {
+		//Search forward to find end of block
+		var end = i;
+		while (end<gVisualData.length) {
+			if (gVisualData[end]<=0) break;
+			else end++;
+		}
+		if (end==i||end-i==1) continue;
+
+		//Build path for block
+		path = document.createElementNS(nS, "path");
+		path.setAttribute("class", 'gDataGrad');
+		var y1 = (gYTopVal-gVisualData[i])*ySplit+gTop;
+		var x1 = i*xSplit+gLeft;
+		var x2;
+		var d = " M "+x1+" "+y1;
+		
+		for (z=i+1; z<end; z++) {
+			var y2 = (gYTopVal-gVisualData[z])*ySplit+gTop;
+			x2 = z*xSplit+gLeft;
+			d +=" L "+x2+" "+y2;
+		}
+
+		//Close path back to start of block
+		d +=" L "+x2+" "+gBot+" L "+x1+" "+gBot+" Z";
+		path.setAttribute("d", d);
+		svg.append(path);
+		i = end;
+	}
+
+	/*path = document.createElementNS(nS, "path");
+	path.setAttribute("class", 'gDataGrad');
 	//Complete path by dropping from last datapoint and returning to 0
 	d += " L "+((gData.length-1)*xSplit+gLeft)+" "+gBot+" L "+gLeft+" "+gBot+" Z";
 	path.setAttribute("d", d);
-	svg.append(path);
+	svg.append(path);*/
+
+	//alert('fin build');
 }
 
 function animateGraph() {
+	for (i=0; i<gVisualData.length; i++) {
+		gVisualData[i] = gData[i];
+	}
+	buildGraph();
+	return;
+
 	//Reset visual data
 	for (i=0; i<gVisualData.length; i++) {
 		//gVisualData[i] = gData[i]/4;
@@ -340,7 +422,7 @@ function animateGraph() {
 		}
 		else {
 			for (i=0; i<gVisualData.length; i++) {
-				if ( gVisualData[i]<gData[i]) gVisualData[i]++;
+				if (gVisualData[i]<gData[i]) gVisualData[i]++;
 			}
 			buildGraph();
 		}
