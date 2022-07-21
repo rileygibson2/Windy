@@ -198,12 +198,8 @@ function moveSlider(obj, preset) {
 	var a = document.getElementById("slider").getBoundingClientRect().left;
 	$('#sliderS').css("left", obj.getBoundingClientRect().left-a);
 	
-	if (lastObj!=null) {
-		lastObj.style.transitionDelay = "0.2s";
-		lastObj.style.color = "rgb(150, 150, 150)";
-	}
-	obj.style.transitionDelay = "0.5s";
-	obj.style.color = "rgb(250, 250, 250)";
+	if (lastObj!=null) lastObj.classList.remove("sliderNF");
+	obj.classList.add("sliderNF");
 	lastObj = obj;
 
 	if (obj.innerHTML=="Hour") gViewMode = 1;
@@ -397,6 +393,9 @@ var redAlarmAniDir = -1;
 function initiateRedAlarm() {
 	//Flash color on windspeed to indicate red alarm level
 	redAlarmAniKill = false;
+	redAlarmAniOp = 100;
+ 	redAlarmAniDir = -1;
+
 	if (!alertMessageShown) {
 			insertMessage("Warning - Extremely high wind speeds");
 			alertMessageShown = true;

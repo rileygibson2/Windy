@@ -24,11 +24,18 @@
   src: url('../assets/fonts/OpenSans/OpenSans-Bold.ttf');
 }
 
+:root {
+  --focus: rgb(39, 156, 245);
+  --bg: rgb(40, 40, 40);
+  --fg: rgb(100, 100, 100);
+}
+/*background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, var(--bg) 50%);*/
+
 #effCont { /*Efferent container holding current sections items*/
 	position: absolute;
 	width: 100vw;
 	height: 100vh;
-	background-color: rgb(40, 40, 40);
+	background-color: var(--bg);
 	overflow: hidden;
 }
 
@@ -38,7 +45,7 @@
 	position: absolute;
 	height: 90vh;
 	width: 7vw;
-	background-color: rgb(39, 156, 245);
+	background-color: var(--focus);
 	border-radius: 25px 25px 25px 25px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	z-index: 10;
@@ -88,17 +95,19 @@
 
 #rtCont { /*Real-time module container*/
 	position: absolute;
-	width: 80vw;
+	width: 40vw;
 	height: 30vh;
 	margin-left: 13vw;
-	margin-top: 10vh;
+	margin-top: 8vh;
+	z-index: 20;
+	overflow: visible;
 }
 .rtN { /*Real time node*/
 	display: inline-block;
 	position: relative;
 	width: 15vw;
 	height: 15vw;
-	background-color: rgb(100, 100, 100);
+	background-color: var(--fg);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	opacity: 0;
@@ -123,7 +132,7 @@
 	top: 10%;
 	text-align: right;
 	font-family: openBold;
-	font-size: 4vw;
+	font-size: 3.8vw;
 	color: rgb(255, 255, 255);
 }
 #rtSpeed2 { /*Units*/
@@ -178,7 +187,7 @@
 	left: 10%;
 	text-align: right;
 	font-family: openBold;
-	font-size: 4vw;
+	font-size: 3.8vw;
 	color: rgb(255, 255, 255);
 }
 #rtDir2 { /*Degrees*/
@@ -207,26 +216,37 @@
 
 #gCont { /*Graph module container*/
 	position: absolute;
-	width: 67vw;
-	height: 50vh;
-	margin-left: 13vw;
-	margin-top: 43vh;
+	width: 95vw;
+	height: 85vh;
+	margin-left: 6vw;
+	margin-top: 23vh;
 }
-
 #graph {
 	width: 100%;
 	height: 88%;
-	background-color: rgb(105, 105, 105);
+	margin-top: 5%;
+	/*background-color: rgb(105, 105, 105);
 	border-radius: 20px;
-	box-shadow: 10px 3px 15px rgba(0, 0, 0, .3);
+	box-shadow: 10px 3px 15px rgba(0, 0, 0, .3);*/
 	opacity: 0;
+	z-index: -100;
+}
+#graphCover { /*Graph cover which provides a gradient out*/
+	position: absolute;
+	top: -12%;
+	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 60%, rgb(40, 40, 40, 0.9) 90%),
+			linear-gradient(170deg, rgb(40, 40, 40, 0.5) 5%, rgb(0, 0, 0, 0) 30%);
+	width: 100%;
+	height: 100%;
+	margin-top: 5%;
+	z-index: 10;
 }
 #gSVG {
-	width: 96%;
+	width: 100%;
 	height: 95%;
 	margin-left: 2%;
 	margin-top: 1.1%;
-	background-color: rgb(50, 50, 50);
+	/*background-color: rgb(40, 40, 40);*/
 	border-radius: 20px;
 }
 .gAxisLine { /*Graph axis lines paths*/
@@ -260,60 +280,73 @@
         .stop2 { stop-color: rgb(50, 255, 50, 0);}
 
 #slider {
-	width: 100%;
-	height: 10%;
-	margin-top: 2vh;
-	background-color: rgb(105, 105, 105);
+	position: absolute;
+	width: 23%;
+	height: 6%;
+	top: 2vh;
+	margin-left: 58%;
+	/*background-color: rgb(105, 105, 105);
 	border-radius: 20px;
-	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);*/
 	opacity: 0;
+	z-index: 100;
 	cursor: pointer;
 }
 .sliderN { /*A slider node*/
 	position: relative;
 	display: inline-block;
 	top: 50%;
-	width: 25%;
+	width: 18%;
+	margin-left: 7%;
   transform: translateY(-50%);
   text-align: center;
-  color: rgb(150, 150, 150);
+  color: rgb(255, 255, 255);
   font-family: openSemiBold;
-  font-size: 2.1vh;
+  font-size: 2vh;
+  opacity: 0.2;
   transition: all 0.5s;
 	cursor: pointer;
+}
+.sliderN:hover {
+	opacity: 1;
+}
+.sliderNF { /*Used so js doesn't destruct the hover*/
+	opacity: 1;
+	text-shadow: 3px 3px 5px rgba(0, 0, 0, 1);
 }
 #sliderS { /*The sliding element*/
 	position: absolute;
 	left: 0;
-	width: 25%;
-	height: 100%;
-	background-color: rgb(39, 156, 245);
-  border-radius: 20px;
-  box-shadow: 3px 3px 15px rgba(0, 0, 0, .4);
+	top: 90%;
+	width: 18%;
+	height: 8%;
+	background-color: var(--focus);
+  border-radius: 10px;
+  box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
   transition: all 1s;
 }
 
 #cCont { /*Alert level circles container*/
 	position: absolute;
-	width: 15vw;
-	height: 62vh;
-	margin-left: 83vw;
+	width: 11vw;
+	height: 68vh;
+	margin-left: 87vw;
 	margin-top: 32vh;
 	opacity: 0;
 }
 #cM { /*Alert level circles module*/
 	width: 100%;
 	height: 100%;
-	background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(100, 100, 100) 50%);
+	/*background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(100, 100, 100) 50%);
 	border-radius: 20px;
-	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);*/
 }
 .cSVG { /*The alert circle svg*/
 	position: relative;
-	width: 9vw;
-	height: 16vh;
-	margin-top: 12%;
-	margin-left: 20%;
+	width: 80%;
+	height: 28%;
+	margin-top: 9%;
+	margin-left: 10%;
 	overflow: visible;
 }
 .cSVGC { /*An alert circle*/
@@ -322,7 +355,7 @@
 	cx: 50%;
 	stroke: rgb(150, 150, 150);
 	fill: none;
-	stroke-width: 10px;
+	stroke-width: 12px;
 	stroke-linecap: round;
 	stroke-dasharray: 1, 10000;
 	transform-origin: center;
@@ -347,26 +380,27 @@
 	height: 100%;
 }
 .cT { /*Box containg text for each circle*/
-	height: 16vh;
+	height: 28%;
 	width: 100%;
-	margin-top: 13.2%;
+	margin-top: 10.5%;
 	opacity: 0;
 	transition: opacity 3s;
+	/*background-color: rgb(0, 0, 255, 0.2);*/
 }
 .cTB { /*Center circle big text*/
 	position: absolute;
 	width: 100%;
-	margin-top: 4vh;
+	margin-top: 5.5vh;
 	color: rgb(255, 255, 255);
 	text-align: center;
 	font-family: openBold;
-	font-size: 2vw;
+	font-size: 2.2vw;
 }
 .cTS { /*Center circle small text*/
 	position: absolute;
 	width: 100%;
-	margin-top: 8.5vh;
-	color: rgb(190, 190, 190);
+	margin-top: 10vh;
+	color: rgb(180, 180, 180);
 	text-align: center;
 	font-family: open;
 	font-size: 0.9vw;
@@ -394,7 +428,7 @@
 	filter: drop-shadow(0px 5px 10px rgba(0, 0, 0, .5));
 }
 #acSVGC { /*Account circle svg circle element*/
-	fill: rgb(39, 156, 245);
+	fill: var(--focus);
 	r: 50%;
 	cx: 50%;
 	cy: 50%;

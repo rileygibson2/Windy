@@ -5,11 +5,11 @@ var alertMessageShown = false; //Whether a high wind speed alert message has bee
 var transitioning = false; //Whether we are currently transitioning between sections
 
 function load() {
-	insertLoading(screen.width/2, screen.height/2, true);
+	//insertLoading(screen.width/2, screen.height/2, true);
 	/*updatePageData();
 	animateEntrance(1, 1000);*/
 
-	setTimeout(switchSections, 1000, 0);
+	setTimeout(switchSections, 0, 0);
 }
 
 function switchSections(i) {
@@ -28,7 +28,7 @@ function switchSections(i) {
 	req.open('GET', 'dashboard.html', true);
 	req.onreadystatechange = function() {
 		if (req.readyState!=4&&req.status!=4) return;
-		alert('done');
+		//alert('done');
 		buildGraph();
 	}
 	req.send();

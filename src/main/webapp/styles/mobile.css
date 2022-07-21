@@ -213,11 +213,11 @@
 	height: 40vh;
 	margin-left: 2.5vw;
 	margin-top: 41vh;
+	background-color: green;
 }
 #graph {
 	width: 100%;
 	height: 85%;
-	background-color: rgb(105, 105, 105);
 	border-radius: 20px;
 	box-shadow: 10px 3px 15px rgba(0, 0, 0, .3);
 	opacity: 0;
@@ -227,7 +227,6 @@
 	height: 95%;
 	margin-left: 2%;
 	margin-top: 1.1%;
-	background-color: rgb(80, 80, 80);
 	border-radius: 20px;
 }
 .gAxisLine { /*Graph axis lines paths*/
