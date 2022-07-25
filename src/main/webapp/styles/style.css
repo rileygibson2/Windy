@@ -26,8 +26,12 @@
 
 :root {
   --focus: rgb(39, 156, 245);
-  --bg: rgb(40, 40, 40);
-  --fg: rgb(100, 100, 100);
+  --focus: #BB86FC;
+  --focus:  rgb(15, 132, 242);
+  /*--focus:  royalblue;*/
+  --bg: rgb(25, 25, 25);
+  --bgGrad:  rgb(25, 25, 25, 0.95);
+  --fg: rgb(90, 90, 90);
 }
 /*background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, var(--bg) 50%);*/
 
@@ -40,13 +44,13 @@
 }
 
 #sbCont { /*Sidebar container*/
-	margin-top: 5vh;
-	margin-left: 1vw;
+	margin-top: 0vh;
+	margin-left: 0vw;
 	position: absolute;
-	height: 90vh;
-	width: 7vw;
+	height: 100vh;
+	width: 6vw;
 	background-color: var(--focus);
-	border-radius: 25px 25px 25px 25px;
+	border-radius: 0 10px 10px 0;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	z-index: 10;
 	overflow: hidden;
@@ -54,7 +58,7 @@
 .sbN { /*Sidebar node*/
 	position: relative;
 	width: 100%;
-	height: 15%;
+	height: 13%;
 	background-repeat: no-repeat;
 	background-size: 55%;
 	background-position: 50% 45%;
@@ -62,7 +66,7 @@
 	transition: all 0.3s;
 }
 .sbN:nth-child(2) {
-	margin-top: 0%;
+	margin-top: 10%;
 	background-image: url("../assets/icons/graph.svg");
 }
 .sbN:nth-child(3) {
@@ -77,18 +81,19 @@
 }
 #sbS { /*Slidey selector*/
 	position: absolute;
-	width: 5%;
-	height: 15%;
-	top: 0;
+	width: 4%;
+	height: 10%;
+	margin-top: 12%;
+	left: 0%;
 	background-color: rgb(255, 255, 255);
-	border-radius: 1px;
+	border-radius: 5px;
 	transition: all 1s;
 }
 #sbLogo { /*Logo on side bar*/
 	position: absolute;
-	top: 85%;
+	top: 88%;
 	background-image: url("../assets/images/logow.png");
-	background-size: 80%;
+	background-size: 98%;
 	background-position: 50% 45%;
 	opacity: 0.8;
 }
@@ -98,7 +103,7 @@
 	width: 40vw;
 	height: 30vh;
 	margin-left: 13vw;
-	margin-top: 8vh;
+	margin-top: 7vh;
 	z-index: 20;
 	overflow: visible;
 }
@@ -167,7 +172,7 @@
 
 #rtDir {
 	margin-left: 3vw;
-	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, rgb(100, 100, 100) 50%);
+	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
 }
 #rtDirIcon { /*Wind icon*/
 	position: absolute;
@@ -216,9 +221,9 @@
 
 #gCont { /*Graph module container*/
 	position: absolute;
-	width: 95vw;
+	width: 85vw;
 	height: 85vh;
-	margin-left: 6vw;
+	margin-left: 4vw;
 	margin-top: 23vh;
 }
 #graph {
@@ -234,8 +239,7 @@
 #graphCover { /*Graph cover which provides a gradient out*/
 	position: absolute;
 	top: -12%;
-	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 60%, rgb(40, 40, 40, 0.9) 85%),
-			linear-gradient(170deg, rgb(40, 40, 40, 0.5) 5%, rgb(0, 0, 0, 0) 30%);
+	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 70%, var(--bgGrad) 100%);
 	width: 100%;
 	height: 100%;
 	margin-top: 5%;
@@ -290,7 +294,7 @@
 	width: 23%;
 	height: 6%;
 	top: 2vh;
-	margin-left: 58%;
+	margin-left: 65%;
 	/*background-color: rgb(105, 105, 105);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);*/
@@ -418,10 +422,10 @@
 
 #ac { /*Account circle*/
 	position: absolute;
-	height: 6vw;
-	width: 6vw;
-	margin-left: 90vw;
-	margin-top: 6vh;
+	height: 5.5vw;
+	width: 5.5vw;
+	margin-left: 91vw;
+	margin-top: 5vh;
 	overflow: visible;
 	transition: all 1s;
 }
@@ -444,11 +448,11 @@
 	width: 100%;
 	height: 100%;
 	top: 0;
-	background-image: url("../assets/icons/settings.svg");
-	background-size: 70%;
-	background-position: 52% 50%;
+	background-image: url("../assets/icons/settings1.svg");
+	background-size: 45%;
+	background-position: 50% 50%;
 	background-repeat: no-repeat;
-	opacity: 0.8;
+	opacity: 1;
 	cursor: pointer;
 }
 

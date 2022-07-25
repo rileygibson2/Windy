@@ -7,7 +7,6 @@ var animatingOut;
 var animatingIn;
 
 function load() {
-	//insertLoading(screen.width/2, screen.height/2, true);
 	setTimeout(switchSections, 0, 0);
 }
 

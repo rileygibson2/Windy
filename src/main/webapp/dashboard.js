@@ -24,7 +24,8 @@ function updatePageDataDashboard() {
 	req.onreadystatechange = function() {
 		if (req.readyState==4&&req.status==200) {
 			recieveData(req);
-			setTimeout(resolve, 1000);
+			//setTimeout(resolve, 2000);
+			resolve();
 		}
 	}
 	req.send();
@@ -174,15 +175,21 @@ function implementDataDashboard() {
 
 function hoverSB(i) {
 	$('.sbN').eq(i).css('opacity', '1');
-	if (i!=activeSection) $('#sbS').css('opacity', '0.2');
+	//if (i!=activeSection) $('#sbS').css('opacity', '0.2');
 	for (z=0; z<4; z++) {
-		if (i!=z) $('.sbN').eq(z).css('opacity', '0.4');
+		if (i!=z) {
+			$('.sbN').eq(z).css('opacity', '0.4');
+			//$('.sbN').eq(z).css('filter', 'blur(15px)');
+		}
 	}
 }
 
 function unhoverSB() {
-	$('#sbS').css('opacity', '1');
-	for (z=0; z<4; z++) $('.sbN').eq(z).css('opacity', '1');
+	//$('#sbS').css('opacity', '1');
+	for (z=0; z<4; z++) {
+		$('.sbN').eq(z).css('opacity', '1');
+		//$('.sbN').eq(z).css('filter', 'blur(0px)');
+	}
 }
 
 function selectSB(obj, i) {
