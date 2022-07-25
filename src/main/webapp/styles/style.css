@@ -93,7 +93,7 @@
 	position: absolute;
 	top: 88%;
 	background-image: url("../assets/images/logow.png");
-	background-size: 98%;
+	background-size: 90%;
 	background-position: 50% 45%;
 	opacity: 0.8;
 }
@@ -102,8 +102,8 @@
 	position: absolute;
 	width: 40vw;
 	height: 30vh;
-	margin-left: 13vw;
-	margin-top: 7vh;
+	margin-left: 12vw;
+	margin-top: 6vh;
 	z-index: 20;
 	overflow: visible;
 }
@@ -223,7 +223,7 @@
 	position: absolute;
 	width: 85vw;
 	height: 85vh;
-	margin-left: 4vw;
+	margin-left: 5vw;
 	margin-top: 23vh;
 }
 #graph {
