@@ -6,7 +6,10 @@ var alertMessageShown = false; //Whether a high wind speed alert message has bee
 var animatingOut;
 var animatingIn;
 
+var page;
+
 function load() {
+	insertLoading(screen.width/2, screen.height/2, true);
 	setTimeout(switchSections, 0, 0);
 }
 
@@ -18,29 +21,55 @@ function switchSections(i) {
 	}
 	activeSection = i;
 
+	switch (activeSection) {
+		case 0: page = new Dashboard("dashboard");
+		case 1: page = new Dashboard("dashboard");
+		case 2: page = new Dashboard("dashboard");
+		case 3: page = new Dashboard("dashboard");
+	}	
+
 	animateExit(0).then(function() {
 		$('#effCont').empty(); //Empty container
-		insertLoading(screen.width/2, screen.height/2, true);
+		//insertLoading(screen.width/2, screen.height/2, true);
 			
 		//Make request for content
 		var req = new XMLHttpRequest();
-		req.open('GET', 'dashboard.html', true);
+		req.open('GET', page.contentName+'.html', true);
 		req.onreadystatechange = function() {
 			if (req.readyState!=4&&req.status!=4) return;
 			$('#effCont').html(req.responseText); //Load new elements into container
-			updatePageData().then(result => animateEntrance(activeSection, 0));
+			page.updatePageData().then(result => page.animateEntrance(0));
 		}
 
 		req.send();
 	});
 }
 
-function updatePageData() {
-	return updatePageDataDashboard();
+//Sidebar actions
+
+function hoverSB(i) {
+	$('.sbN').eq(i).css('opacity', '1');
+	//if (i!=activeSection) $('#sbS').css('opacity', '0.2');
+	for (z=0; z<4; z++) {
+		if (i!=z) {
+			$('.sbN').eq(z).css('opacity', '0.4');
+		}
+	}
 }
 
-function implementData() {
-	implementDataDashboard();
+function unhoverSB() {
+	//$('#sbS').css('opacity', '1');
+	for (z=0; z<4; z++) {
+		$('.sbN').eq(z).css('opacity', '1');
+	}
+}
+
+function selectSB(obj, i) {
+	unhoverSB();
+	//Move the tab indicator
+	var a = document.getElementById("sbCont").getBoundingClientRect().top;
+	$('#sbS').css("top", obj.getBoundingClientRect().top-a);
+	switchSections(i);
 }
 
 //Generic functions
@@ -50,24 +79,6 @@ function fadeIn(obj) {obj.css("animation", "fadeIn 1s ease-out forwards");}
 function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-out forwards");}
 
 function refreshParent(p) {$(p).html($(p).html());}
-
-function animateEntrance(i, start) {
-	if (true) { //Dashboard animations
-		moveSlider(document.getElementsByClassName('sliderN')[0], true);
-		setTimeout(removeLoading, start);
-		setTimeout(fadeIn, start, $("#rtSpeed"));
-		setTimeout(fadeIn, start+200, $("#rtDir"));
-		setTimeout(fadeIn, start+400, $("#cCont"));
-		setTimeout(fadeIn, start+600, $("#graph"));
-		setTimeout(fadeIn, start+800, $("#slider"));
-		setTimeout(animateDirection, start+2000);
-		setTimeout(animateCircleGraphs, start+600);
-		setTimeout(function() {
-			if (rtAlarmLevel==3) initiateRedAlarm(); 
-			if (rtAlarmLevel==2) initiateAmberAlarm(); 
-		}, 4000);
-	}
-}
 
 function animateExit(start) {
 	//Animate elements out - nested for loop used because first element is a container for visible modules
