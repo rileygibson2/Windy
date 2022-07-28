@@ -2,6 +2,14 @@ class UnitsPage extends Page {
 
 	constructor(contentName) {
 		super(contentName);
+
+		//Add styles
+		var link = document.createElement('link');
+		link.setAttribute('rel', 'stylesheet');
+		link.setAttribute('href', '../styles/units.css');
+		document.head.appendChild(link);
+
+		//Class vars
 		this.numUnits;
 	}
 

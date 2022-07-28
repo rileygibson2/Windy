@@ -1,0 +1,50 @@
+/*Units page*/
+
+#uCont { /*Units container*/
+	position: absolute;
+	width: 80vw;
+	height: 32vh;
+	margin-left: 10vw;
+	margin-top: 34vh;
+	z-index: 20;
+	overflow: visible;
+	display: flex;
+  justify-content: center;
+}
+.uN { /*Unit node*/
+	width: 32vh;
+	height: 32vh;
+	margin-left: 3%;
+	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	opacity: 0;
+	transition: all 0.5s;
+	cursor: pointer;
+}
+.uN:hover {
+	width: 34vh;
+	height: 34vh;
+	margin-top: -1vh;
+}
+#uAdd { /*Add new unit button*/
+	background-image: none;
+	background-color: var(--fg);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.1);
+	background-color: rgb(150, 150, 150, 0.2);
+}
+#uAddIcon {
+	height: 100%;
+	width: 100%;
+	background-image: url("../assets/icons/plus.svg");
+	background-size: 40%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.3;
+	transition: all 0.3s;
+	cursor: pointer;
+}
+#uAddIcon:hover {
+	opacity: 0.8;
+	background-size: 45%;
+}

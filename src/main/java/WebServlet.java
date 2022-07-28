@@ -1,6 +1,7 @@
 package main.java;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,11 +31,9 @@ public class WebServlet extends HttpServlet {
 			data = Data.getData1(graphMode);
 			break;
 		case 2: //Units data
-			data = Data.getData2();
-			break;
+			data = Data.getData2(); break;
 		case 3: //History overview data
-			data = Data.getData3();
-			break;
+			data = Data.getData3(); break;
 		case 4: //Records for a period data
 			long rS;
 			long rE;
@@ -54,7 +53,15 @@ public class WebServlet extends HttpServlet {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {}
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		System.out.println("Recieving data....");
+		System.out.println("     Content type: "+req.getContentType());
+		String data = "";
+		if ("POST".equalsIgnoreCase(req.getMethod())) {
+		   data = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+		}
+		System.out.println("     Data: "+data);
+	}
 
 	@Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {}

@@ -68,11 +68,11 @@ public class Data {
 	}
 	
 	public static JSONObject getRecords(long start, long end) {
-		long rData[][] = new long[5][4];
+		long rData[][] = new long[25][4];
 		Date d = new Date(start);
 		
 		for (int i=0; i<rData.length; i++) {
-			rData[i][0] = (long) (d.getTime()+(8.64e+7*i));
+			rData[i][0] = (long) (d.getTime()+(9.504e+7*i));
 			rData[i][1] = (int) (Math.random()*(100-5)+5); //Wind speed
 			rData[i][2] = (int) (Math.random()*(360-0)+0); //Degrees
 			//Format alarm level

@@ -2,6 +2,15 @@ class DashboardPage extends Page {
 
 	constructor(contentName) {
 		super(contentName);
+		
+		//Add styles
+		var link = document.createElement('link');
+		link.setAttribute('rel', 'stylesheet');
+		link.setAttribute('href', '../styles/dashboard.css');
+		document.head.appendChild(link);
+
+		//Class vars
+
 		//Real-time data
 		this.rtWindSpeed;
 		this.rtLastUpdateTime;
@@ -191,9 +200,9 @@ class DashboardPage extends Page {
 		setTimeout(fadeIn, start+400, $("#cCont"));
 		setTimeout(fadeIn, start+600, $("#graph"));
 		setTimeout(fadeIn, start+800, $("#slider"));
-		setTimeout(() => {this.animateDirection()}, start+2000);
-		setTimeout(() => {this.animateCircleGraphs()}, start+600);
-		setTimeout(function() {
+		setTimeout(() => {this.animateDirection();}, start+2000);
+		setTimeout(() => {this.animateCircleGraphs();}, start+600);
+		setTimeout(() => {
 			if (this.rtAlarmLevel==3) this.initiateRedAlarm(); 
 			if (this.rtAlarmLevel==2) this.initiateAmberAlarm(); 
 		}, 4000);
@@ -290,7 +299,7 @@ class DashboardPage extends Page {
 			path.setAttribute("d", d);
 			path.setAttribute("class", 'gMarkingLine');
 			svg.append(path);
-
+			
 			//Text
 			var t = String(this.gYMarkings[(this.gYMarkings.length-1)-i]);
 			var text = document.createElementNS(nS, "text");
@@ -458,25 +467,26 @@ class DashboardPage extends Page {
 	 	this.redAlarmAniDir = -1;
 
 		if (!alertMessageShown) {
-				insertMessage("Warning - Extremely high wind speeds");
+				insertMessage("Warning - Extremely high wind speeds", 0);
 				alertMessageShown = true;
 		}
 
+		var self = this;
 		let flash = setInterval(function() {
-			if (this.redAlarmAniKill) clearInterval(flash);
+			if (self.redAlarmAniKill) clearInterval(flash);
 			else {
-				if (this.redAlarmAniOp>=100) this.redAlarmAniDir = -2;
-				if (this.redAlarmAniOp<=1) this.redAlarmAniDir = 2;
+				if (self.redAlarmAniOp>=100) self.redAlarmAniDir = -2;
+				if (self.redAlarmAniOp<=1) self.redAlarmAniDir = 2;
 				
-				this.redAlarmAniOp += this.redAlarmAniDir;
-				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 67, 27, '+(this.redAlarmAniOp/100)+') 0%, rgb(220, 8, 0, '+(this.redAlarmAniOp/100)+') 50%)');
+				self.redAlarmAniOp += self.redAlarmAniDir;
+				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 67, 27, '+(self.redAlarmAniOp/100)+') 0%, rgb(220, 8, 0, '+(self.redAlarmAniOp/100)+') 50%)');
 			}
 		}, 16);
 	}
 
 	initiateAmberAlarm() {
 		if (!alertMessageShown) {
-			insertMessage("Caution - Wind speeds are higher than normal");
+			insertMessage("Caution - Wind speeds are higher than normal", 0);
 			alertMessageShown = true;
 		}
 	}

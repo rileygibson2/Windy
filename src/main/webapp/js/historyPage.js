@@ -2,6 +2,14 @@ class HistoryPage extends Page {
 
 	constructor(contentName) {
 		super(contentName);
+
+		//Add styles
+		var link = document.createElement('link');
+		link.setAttribute('rel', 'stylesheet');
+		link.setAttribute('href', '../styles/history.css');
+		document.head.appendChild(link);
+
+		//Class vars
 		this.offset = 0; //Amount timeline has been offset by scrolls
 		this.historyData; //Data which shows overview of records over time
 		this.focussedRecords; //Individual records of a specific requested period of time
@@ -51,7 +59,8 @@ class HistoryPage extends Page {
 
 	animateEntrance(start) {
 		setTimeout(removeLoading, start);
-		setTimeout(fadeIn, start, $("#vHCont"));
+		setTimeout(fadeIn, start, $("#hTitleCont"));
+		setTimeout(fadeIn, start+200, $("#vHCont"));
 	}
 
 	//Visual History actions
@@ -135,13 +144,13 @@ class HistoryPage extends Page {
 			if (mT=='Jan') {
 				this.makeCircle('vHNodeCInnerL', null, x, midY, gOver);
 				this.makeCircle('vHNodeCOuterL', null, x, midY, gOver);
-				this.makeText('vHNodeTextL', String(month.getFullYear()), x, midY*1.47, w*0.03, gOver);
+				this.makeText('vHNodeTextL', String(month.getFullYear()), x, midY*1.18, w*0.03, gOver);
 				//x -= incrX;
 			}
 			else {
 				//Do month
 				this.makeCircle('vHNodeCS', 'vHNodeCS'+i, x, midY, gOver);
-				this.makeText('vHNodeTextS', mT, x, midY*1.2, w*0.011, gOver);
+				this.makeText('vHNodeTextS', mT, x, midY*1.08, w*0.011, gOver);
 			}
 
 			//Do data - look forward through data until match is found
@@ -212,8 +221,6 @@ class HistoryPage extends Page {
 		var w = parseFloat($("#vHSVG").css("width"));
 		var incrX = w/12;
 		var i = -Math.floor((event.clientX-(w*0.5)-this.offset-(incrX/2))/incrX);
-
-		$('#test').html("i: "+i+"<br>x: "+event.clientX+"<br>y: "+event.clientY);
 	
 		$('.vHNodeCS').each(function(i, obj) {$(obj).css("r", "7px");});
 		if (i>=0) $('#vHNodeCS'+i).css("r", "15px");
@@ -222,8 +229,6 @@ class HistoryPage extends Page {
 	vHOnUnHover(event) {
 		$('.vHNodeCS').each(function(i, obj) {$(obj).css("r", "7px");});
 		if (event==undefined) return;
-		$('#test').html("mouse out");
-
 	}
 
 	vHOnClick(event) {
@@ -246,22 +251,35 @@ class HistoryPage extends Page {
 		req.open('GET', 'data/?m=4&rS='+start.getTime()+'&rE='+end.getTime()+'&t='+Math.random(), true);
 		req.onreadystatechange = function() {
 			if (req.readyState==4&&req.status==200) {
-				var jArr = JSON.parse(req.responseText);
-				self.focussedRecords = eval(jArr[0].data);
-				alert(self.focussedRecords);
-				self.buildFocussedRecords();
+				self.focussedRecords = eval(JSON.parse(req.responseText)[0].data);
+				self.buildFocussedRecords(start, end);
 			}
 		}
 		req.send();
 	}
 
-	buildFocussedRecords() {
+	buildFocussedRecords(start, end) {
 		$('#fRCont').empty();
+
+		//Make title and close button
+		var fRT = document.createElement("div");
+		fRT.setAttribute('id', 'fRTitle');
+		fRT.innerHTML = "Records from <b>"+start.toLocaleDateString("en-UK", {year:'numeric', month:'long', day:'numeric'});
+		fRT.innerHTML += "</b> to <b>"+end.toLocaleDateString("en-UK", {year:'numeric', month:'long', day:'numeric'})+"</b>";
+		var fRC = document.createElement("div");
+		fRC.setAttribute('id', 'fRClose');
+		fRC.addEventListener('mousedown', (event) => {
+			this.closeFocussedRecords();
+		});
+		
+		fRT.append(fRC);
+		$('#fRCont').append(fRT);
 
 		//Make records
 		for (i=0; i<this.focussedRecords.length; i++) {
 			var fR = document.createElement("div");
 			fR.setAttribute('class', 'fRecord');
+			if (i==0) fR.style.marginTop = '7%';
 
 			//Icon
 			var ic = document.createElement("div");
@@ -281,21 +299,37 @@ class HistoryPage extends Page {
 			}
 
 			//Text
-			var wS = document.createElement("p");
-			wS.setAttribute('class', 'fRecordT');
-			wS.innerHTML = "<b>Speed:</b> "+this.focussedRecords[i][1]+"km/h";
-			wS.innerHTML += "\u00A0\u00A0\u00A0\u00A0\u00A0<b>Direction:</b> "+this.focussedRecords[i][2]+" degrees";
-			wS.innerHTML += "\u00A0\u00A0\u00A0\u00A0\u00A0<b>Alert: </b>Level "+this.focussedRecords[i][3];
+			var rT = document.createElement("p");
+			rT.setAttribute('class', 'fRecordT');
+			rT.innerHTML = "<b>Speed:</b> "+this.focussedRecords[i][1]+"km/h";
+			rT.innerHTML += "\u00A0\u00A0\u00A0\u00A0\u00A0<b>Direction:</b> "+this.focussedRecords[i][2]+" degrees";
+			rT.innerHTML += "\u00A0\u00A0\u00A0\u00A0\u00A0<b>Alert: </b>Level "+this.focussedRecords[i][3];
 
-			var tS = new Date(this.focussedRecords[0][0]);
-			var options = {year:'numeric', month:'long', day:'numeric'};
-			wS.innerHTML += "\u00A0\u00A0\u00A0\u00A0\u00A0<b>Log Time: </b>"+tS.toLocaleDateString("en-UK", options);
-			wS.innerHTML += " "+tS.toLocaleTimeString("en-UK", {hour: '2-digit', minute:'2-digit'});
+
+			var tS = new Date(this.focussedRecords[i][0]);
+			//alert(tS);
+			rT.innerHTML += "\u00A0\u00A0\u00A0\u00A0\u00A0<b>Log Time: </b>"+tS.toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
+			rT.innerHTML += " "+tS.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
 			fR.append(ic);
-			fR.append(wS);
+			fR.append(rT);
 			$('#fRCont').append(fR);
 		}
+
+		//Animate container entrance
+		$('#hTitle').css("opacity", "0");
+		$('#vHCont').css("margin-top", "-30vh");
+		$('#fRCont').css("display", "block");
+		$('#fRCont').css("animation", "fRContEntrance 1s ease forwards");
+	}
+
+	closeFocussedRecords() {
+		$('#hTitle').css("opacity", "1");
+		$('#vHCont').css("margin-top", "0vh");
+		$('#fRCont').css("animation", "fRContExit 1s ease forwards");
+		setTimeout(function() {
+			$('#fRCont').css("display", "none");
+		}, 1000);
 	}
 
 

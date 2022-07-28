@@ -1,0 +1,312 @@
+/*Dashboard page*/
+
+#rtCont { /*Real-time module container*/
+	position: absolute;
+	width: 40vw;
+	height: 30vh;
+	margin-left: 12vw;
+	margin-top: 6vh;
+	z-index: 20;
+	overflow: visible;
+}
+.rtN { /*Real time node*/
+	display: inline-block;
+	position: relative;
+	width: 15vw;
+	height: 15vw;
+	background-color: var(--fg);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	opacity: 0;
+}
+
+#rtSpeedIcon { /*Direction icon*/
+	position: absolute;
+	width: 20%;
+	height: 20%;
+	top: 5%;
+	left: 5%;
+	background-repeat: no-repeat;
+	background-size: 80%;
+	background-position: 50% 45%;
+	background-image: url("../assets/icons/windw.png");
+}
+#rtSpeed1 { /*Actual speed*/
+	position: absolute;
+	width: 88%;
+	top: 10%;
+	text-align: right;
+	font-family: openBold;
+	font-size: 3.8vw;
+	color: rgb(255, 255, 255);
+}
+#rtSpeed2 { /*Units*/
+	position: absolute;
+	width: 88%;
+	top: 42%;
+	text-align: right;
+	font-family: open;
+	font-size: 1.2vw;
+	color: rgb(255, 255, 255);
+}
+#rtSpeed3 { /*Last updated*/
+	position: absolute;
+	width: 90%;
+	top: 70%;
+	left: 10%;
+	text-align: left;
+	font-family: openSemiBold;
+	font-size: 0.9vw;
+	color: rgb(255, 255, 255);
+}
+#rtSpeed4 { /*Time ago*/
+	position: absolute;
+	width: 85%;
+	top: 79%;
+	left: 10%;
+	text-align: left;
+	font-family: openBold;
+	font-size: 1.2vw;
+	color: rgb(255, 255, 255);
+}
+
+#rtDir {
+	margin-left: 3vw;
+	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
+}
+#rtDirIcon { /*Wind icon*/
+	position: absolute;
+	width: 20%;
+	height: 20%;
+	top: 5%;
+	left: 5%;
+	background-repeat: no-repeat;
+	background-size: 200%;
+	background-position: 50% 65%;
+	background-image: url("../assets/icons/compass.svg");
+}
+#rtDir1 { /*Direction name*/
+	position: absolute;
+	width: 80%;
+	top: 10%;
+	left: 10%;
+	text-align: right;
+	font-family: openBold;
+	font-size: 3.8vw;
+	color: rgb(255, 255, 255);
+}
+#rtDir2 { /*Degrees*/
+	position: absolute;
+	width: 80%;
+	top: 42%;
+	left: 10%;
+	text-align: right;
+	font-family: open;
+	font-size: 1.2vw;
+	color: rgb(255, 255, 255);
+}
+#rtDirIndicator { /*Direction indicator*/
+	position: absolute;
+	width: 40%;
+	height: 32%;
+	top: 60%;
+	left: 8%;
+	background-repeat: no-repeat;
+	background-size: 100%;
+	background-position: 0% 0%;
+	background-image: url("../assets/icons/direction.svg");
+	transform: rotate(0deg);
+	transition: all 1s;
+}
+
+#gCont { /*Graph module container*/
+	position: absolute;
+	width: 85vw;
+	height: 85vh;
+	margin-left: 4vw;
+	margin-top: 23vh;
+}
+#graph {
+	width: 100%;
+	height: 88%;
+	margin-top: 5%;
+	opacity: 0;
+	z-index: -100;
+}
+#graphCover { /*Graph cover which provides a gradient out*/
+	position: absolute;
+	top: -12%;
+	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 70%, var(--bgGrad) 100%);
+	width: 100%;
+	height: 100%;
+	margin-top: 5%;
+	z-index: 10;
+}
+#gSVG {
+	width: 100%;
+	height: 95%;
+	margin-left: 2%;
+	margin-top: 1.1%;
+	/*background-color: rgb(40, 40, 40);*/
+	border-radius: 20px;
+}
+.gAxisLine { /*Graph axis lines paths*/
+	stroke: rgb(255, 255, 255);
+	stroke-width: 2px;
+	stroke-linecap: round;
+}
+.gMarkingLine { /*Graph marking lines paths*/
+	stroke: rgb(255, 255, 255);
+	stroke-width: 1px;
+}
+.gMarkingText { /*Graph marking text*/
+	fill: rgb(180, 180, 180);
+	font-family: open;
+}
+.gThinLine { /*Graph thin lines paths*/
+	stroke: rgb(180, 180, 180);
+	stroke-width: 0.5px;
+	stroke-linecap: round;
+	stroke-dasharray: 3;
+}
+.gDataLine { /*Data line path*/
+	stroke: rgb(50, 255, 50);
+	stroke-width: 1px;
+	stroke-linecap: round;
+	fill: none;
+	z-index: 100;
+}
+.gDataCircle { /*Data point circle*/
+	fill: rgb(50, 255, 50);
+	r: 2px;
+	z-index: 101;
+}
+/*Linear gradient under data line path*/
+.gDataGrad { fill: url(#gradient); z-index: 100;}
+        .stop1 { stop-color: rgb(50, 255, 50, 0.5); }
+        .stop2 { stop-color: rgb(50, 255, 50, 0);}
+
+#slider {
+	position: absolute;
+	width: 23%;
+	height: 6%;
+	top: 2vh;
+	margin-left: 65%;
+	opacity: 0;
+	z-index: 100;
+	cursor: pointer;
+}
+.sliderN { /*A slider node*/
+	position: relative;
+	display: inline-block;
+	top: 50%;
+	width: 18%;
+	margin-left: 7%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: openSemiBold;
+	font-size: 2vh;
+	opacity: 0.2;
+	transition: all 0.5s;
+	cursor: pointer;
+}
+.sliderN:hover {
+	opacity: 1;
+}
+.sliderNF { /*Used so js doesn't destruct the hover*/
+	opacity: 1;
+	text-shadow: 3px 3px 5px rgba(0, 0, 0, 1);
+}
+#sliderS { /*The sliding element*/
+	position: absolute;
+	left: 0;
+	top: 90%;
+	width: 18%;
+	height: 8%;
+	background-color: var(--focus);
+  border-radius: 10px;
+  box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
+  transition: all 1s;
+}
+
+#cCont { /*Alert level circles container*/
+	position: absolute;
+	width: 11vw;
+	height: 68vh;
+	margin-left: 87vw;
+	margin-top: 32vh;
+	opacity: 0;
+}
+#cM { /*Alert level circles module*/
+	width: 100%;
+	height: 100%;
+}
+.cSVG { /*The alert circle svg*/
+	position: relative;
+	width: 80%;
+	height: 28%;
+	margin-top: 9%;
+	margin-left: 10%;
+	overflow: visible;
+}
+.cSVGC { /*An alert circle*/
+	r: 50%;
+	cy: 50%;
+	cx: 50%;
+	stroke: rgb(150, 150, 150);
+	fill: none;
+	stroke-width: 12px;
+	stroke-linecap: round;
+	stroke-dasharray: 1, 10000;
+	transform-origin: center;
+	transform: rotate(-90deg);
+	filter: url(#shadow);
+	z-index: 11;
+	opacity: 1;
+	transition: stroke-dasharray 1.5s;
+}
+#cSVGC1 {stroke: rgb(0, 200, 0);}
+#cSVGC2 {stroke: rgb(252, 179, 8);}
+#cSVGC3 {stroke: rgb(200, 0, 0);}
+.cSVGF { /*Full alert circle*/
+	opacity: 0.3;
+	stroke-dasharray: 0, 0;
+	z-index: 10;
+}
+#cTOverlay { /*Circle text overlay container*/
+	position: absolute;
+	top: 0%;
+	width: 100%;
+	height: 100%;
+}
+.cT { /*Box containg text for each circle*/
+	height: 28%;
+	width: 100%;
+	margin-top: 10.5%;
+	opacity: 0;
+	transition: opacity 3s;
+	/*background-color: rgb(0, 0, 255, 0.2);*/
+}
+.cTB { /*Center circle big text*/
+	position: absolute;
+	width: 100%;
+	margin-top: 5.5vh;
+	color: rgb(255, 255, 255);
+	text-align: center;
+	font-family: openBold;
+	font-size: 2.2vw;
+}
+.cTS { /*Center circle small text*/
+	position: absolute;
+	width: 100%;
+	margin-top: 10vh;
+	color: rgb(180, 180, 180);
+	text-align: center;
+	font-family: open;
+	font-size: 0.9vw;
+}
+#cDS { /*Alert circle drop shadow*/
+	flood-color: rgb(0, 0, 0);
+	flood-opacity: 0.5;
+}

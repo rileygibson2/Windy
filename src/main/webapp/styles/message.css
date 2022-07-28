@@ -39,7 +39,6 @@
 	background-repeat: no-repeat;
 	background-size: 55%;
 	background-position: 50% 50%;
-	background-image: url("../assets/icons/warning.svg");
 	opacity: 0.4;
 }
 #messageCloseIcon { /*Sidebar node*/
