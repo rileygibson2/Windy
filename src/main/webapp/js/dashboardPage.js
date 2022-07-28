@@ -1,7 +1,4 @@
-class Dashboard extends Page {
-
-
-	//Required actions
+class DashboardPage extends Page {
 
 	constructor(contentName) {
 		super(contentName);
@@ -27,6 +24,8 @@ class Dashboard extends Page {
 		this.redAlarmAniOp = 100;
 		this.redAlarmAniDir = -1;
 	}
+
+	//Required actions
 
 	updatePageData() {
 		var self = this;
@@ -75,7 +74,8 @@ class Dashboard extends Page {
 		
 		$('#rtSpeed1').html(this.rtWindSpeed); //Set wind speed
 		
-		switch (this.rtAlarmLevel) { //Set background color according to alarm level
+		//Set wind speed module background color according to alarm level
+		switch (this.rtAlarmLevel) {
 			case 1: $('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(100, 199, 100) 0%, rgb(3, 173, 15) 50%)'); break;
 			case 2: 
 				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 182, 40) 0%, rgb(255, 153, 0) 50%)');
@@ -230,11 +230,11 @@ class Dashboard extends Page {
 	//Graph module actions
 
 	buildGraph() {
-		$('#gSVG').empty();
-		$('#gSVG').html('<defs><linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient></defs>');
+		var svg = $("#gSVG");
+		svg.empty();
+		svg.html('<defs><linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient></defs>');
 
 		//SVG dimensions
-		var svg = $("#gSVG");
 		var w = parseFloat(svg.css("width"));
 		var h = parseFloat(svg.css("height"));
 
@@ -351,20 +351,6 @@ class Dashboard extends Page {
 			svg.append(path);
 		}
 
-
-
-		/*path = document.createElementNS(nS, "path");
-		path.setAttribute("class", 'gDataLine');
-		d = "";
-		for (i=0; i<gVisualData.length; i++) {
-			var y1 = (gYTopVal-gVisualData[i])*ySplit+gTop;
-			var x1 = i*xSplit+gLeft;
-			if (i==0) d += "M "+x1+" "+y1;
-			else d += " L "+x1+" "+y1;
-		}
-		path.setAttribute("d", d);
-		svg.append(path);*/
-
 		//Data shape with gradient
 		//Need to build for every set of data points as there could be breaks
 		for (i=0; i<this.gVisualData.length; i++) {
@@ -396,13 +382,6 @@ class Dashboard extends Page {
 			svg.append(path);
 			i = end;
 		}
-
-		/*path = document.createElementNS(nS, "path");
-		path.setAttribute("class", 'gDataGrad');
-		//Complete path by dropping from last datapoint and returning to 0
-		d += " L "+((gData.length-1)*xSplit+gLeft)+" "+gBot+" L "+gLeft+" "+gBot+" Z";
-		path.setAttribute("d", d);
-		svg.append(path);*/
 	}
 
 	animateGraph() {

@@ -10,7 +10,7 @@ var page;
 
 function load() {
 	insertLoading(screen.width/2, screen.height/2, true);
-	setTimeout(switchSections, 0, 0);
+	setTimeout(switchSections, 0, 2);
 }
 
 function switchSections(i) {
@@ -22,10 +22,10 @@ function switchSections(i) {
 	activeSection = i;
 
 	switch (activeSection) {
-		case 0: page = new Dashboard("dashboard");
-		case 1: page = new Dashboard("dashboard");
-		case 2: page = new Dashboard("dashboard");
-		case 3: page = new Dashboard("dashboard");
+		case 0: page = new DashboardPage("dashboard"); break;
+		case 1: page = new UnitsPage("units"); break;
+		case 2: page = new HistoryPage("history"); break;
+		case 3: page = new DashboardPage("dashboard"); break;
 	}	
 
 	animateExit(0).then(function() {
@@ -76,7 +76,7 @@ function selectSB(obj, i) {
 
 function fadeIn(obj) {obj.css("animation", "fadeIn 1s ease-out forwards");}
 
-function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-out forwards");}
+function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-in forwards");}
 
 function refreshParent(p) {$(p).html($(p).html());}
 

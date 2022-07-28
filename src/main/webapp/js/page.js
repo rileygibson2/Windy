@@ -4,6 +4,5 @@ class Page {
 	}
 
 	updatePageData() {}
-	implementData() {}
 	animateEntrance() {}
 }

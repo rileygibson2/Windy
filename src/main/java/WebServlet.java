@@ -13,22 +13,42 @@ public class WebServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		int mode;
-		int graphMode;
 		System.out.println("Recieving....");
 		
-		
 		resp.setContentType("application/json");
-		try {
-			mode = Integer.parseInt(req.getParameter("m"));
-			graphMode = Integer.parseInt(req.getParameter("gm"));
-		}
-		catch (NumberFormatException e) {
-			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			System.out.println("    bad request.");
-			return;
+		//Get page mode
+		try {mode = Integer.parseInt(req.getParameter("m"));}
+		catch (NumberFormatException e) {fail(resp); return;}
+		
+		//Get data
+		String data = "";
+		switch (mode) {
+		case 1: //Dashboard data
+			int graphMode;
+			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
+			catch (NumberFormatException e) {fail(resp); return;}
+			data = Data.getData1(graphMode);
+			break;
+		case 2: //Units data
+			data = Data.getData2();
+			break;
+		case 3: //History overview data
+			data = Data.getData3();
+			break;
+		case 4: //Records for a period data
+			long rS;
+			long rE;
+			try {
+				rS = Long.parseLong(req.getParameter("rS"));
+				rE = Long.parseLong(req.getParameter("rE"));
+			}
+			catch (NumberFormatException e) {fail(resp); return;}
+			data = Data.getData4(rS, rE);
+			break;
+		default: fail(resp); return;
 		}
 		
-		String data = Data.getData(mode, graphMode);
+		//Send response
 		resp.setStatus(HttpServletResponse.SC_OK);
 		resp.getWriter().println(data);
 	}
@@ -38,4 +58,9 @@ public class WebServlet extends HttpServlet {
 
 	@Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {}
+	
+	public void fail(HttpServletResponse resp) {
+		resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		System.out.println("    bad request.");
+	}
 }
