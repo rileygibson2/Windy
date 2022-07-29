@@ -9,7 +9,7 @@
 	z-index: 20;
 	overflow: visible;
 	display: flex;
-  justify-content: center;
+	justify-content: center;
 }
 .uN { /*Unit node*/
 	width: 32vh;
@@ -23,28 +23,110 @@
 	cursor: pointer;
 }
 .uN:hover {
-	width: 34vh;
-	height: 34vh;
-	margin-top: -1vh;
+	margin-top: -1%;
+}
+.uNIcon { /*Unit node icon*/
+	width: 30%;
+	height: 25%;
+	margin-top: 12%;
+	margin-left: 35%;
+	background-image: url("../assets/icons/device.svg");
+	background-size: 90%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.7;
+	cursor: inherit;
+}
+.uNTitle { /* Unit node title*/
+	position: relative;
+	width: 100%;
+	margin-top: 0.5%;
+	text-align: center;
+	font-family: openSemiBold;
+	color: white;
+	font-size: 2vw;
+	cursor: inherit;
+}
+.uNText { /* Unit node text*/
+	position: absolute;
+	width: 100%;
+	margin-top: 28%;
+	margin-left: 32%;
+	text-align: center;
+	font-family: openMedium;
+	color: rgb(255, 255, 255, 0.5);
+	font-size: 1.05vw;
+	cursor: inherit;
+}
+.uNStatusIcon { /*Blob which shows status*/
+	position: absolute;
+	width: 1.7vw;
+	height: 1.7vw;
+	margin-top: 55%;
+	margin-left: 31%;
+	border-radius: 25px;
+	background-image: url("../assets/icons/status.svg");
+	background-size: 90%;
+	background-position: 48.5% 45%;
+	background-repeat: no-repeat;
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .3);
+	cursor: inherit;
+}
+.uNStatusText { /*Status text*/
+	position: absolute;
+	width: 1.5vw;
+	margin-top: 56%;
+	margin-left: 43%;
+	font-family: openBold;
+	color: white;
+	font-size: 1.05vw;
+	cursor: inherit;
+}
+.uNBatteryIcon { /*Blob which shows status*/
+	position: absolute;
+	width: 1.7vw;
+	height: 1.7vw;
+	margin-top: 83%;
+	margin-left: 6%;
+	border-radius: 25px;
+	background-image: url("../assets/icons/power.svg");
+	background-size: 90%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	background-color: rgb(110, 110, 110);
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .3);
+	cursor: inherit;
+}
+.uNBatteryText { /*Status text*/
+	position: absolute;
+	margin-top: 84%;
+	margin-left: 18%;
+	font-family: openBold;
+	color: white;
+	font-size: 1.05vw;
+	cursor: inherit;
 }
 #uAdd { /*Add new unit button*/
-	background-image: none;
-	background-color: var(--fg);
-	box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.1);
-	background-color: rgb(150, 150, 150, 0.2);
+	width: 10vh;
+	height: 10vh;
+	margin-left: 4%;
+	margin-top: 8%;
+	border-radius: 50px;
+	background-color: rgb(150, 150, 150, 0.1);
+	cursor: pointer;
+	transition: all 0.5s;
 }
 #uAddIcon {
 	height: 100%;
 	width: 100%;
 	background-image: url("../assets/icons/plus.svg");
-	background-size: 40%;
+	background-size: 70%;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
-	opacity: 0.3;
+	opacity: 0.2;
 	transition: all 0.3s;
 	cursor: pointer;
 }
 #uAddIcon:hover {
 	opacity: 0.8;
-	background-size: 45%;
 }
