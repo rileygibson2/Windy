@@ -196,10 +196,10 @@ class DashboardPage extends Page {
 		this.moveSlider(document.getElementsByClassName('sliderN')[0], true);
 		setTimeout(removeLoading, start);
 		setTimeout(fadeIn, start, $("#rtSpeed"));
-		setTimeout(fadeIn, start+200, $("#rtDir"));
-		setTimeout(fadeIn, start+400, $("#cCont"));
-		setTimeout(fadeIn, start+600, $("#graph"));
-		setTimeout(fadeIn, start+800, $("#slider"));
+		setTimeout(fadeIn, start+50, $("#rtDir"));
+		setTimeout(fadeIn, start+100, $("#cCont"));
+		setTimeout(fadeIn, start+150, $("#graph"));
+		setTimeout(fadeIn, start+200, $("#slider"));
 		setTimeout(() => {this.animateDirection();}, start+2000);
 		setTimeout(() => {this.animateCircleGraphs();}, start+600);
 		setTimeout(() => {

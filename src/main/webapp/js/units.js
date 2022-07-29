@@ -68,9 +68,7 @@ class UnitsPage extends Page {
 			d.setAttribute("class", 'uNBatteryIcon');
 			t = document.createElement("div");
 			t.setAttribute("class", 'uNBatteryText');
-			if (unitData[i][1]==1) {
-				t.innerHTML = "Healthy";
-			}
+			if (unitData[i][1]==1) t.innerHTML = "Healthy";
 			else {
 				d.style.backgroundColor = 'rgb(255, 153, 0)';
 				t.innerHTML = "Check power";

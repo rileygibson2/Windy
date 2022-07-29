@@ -320,7 +320,7 @@ class HistoryPage extends Page {
 		$('#hTitle').css("opacity", "0");
 		$('#vHCont').css("margin-top", "-30vh");
 		$('#fRCont').css("display", "block");
-		$('#fRCont').css("animation", "fRContEntrance 1s ease forwards");
+		$('#fRCont').css("animation", "fRContEntrance 0.8s ease forwards");
 	}
 
 	closeFocussedRecords() {

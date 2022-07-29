@@ -13,8 +13,8 @@
 	font-family: openBold;
 	font-size: 3vw;
 	text-shadow: 5px 5px 10px rgba(0, 0, 0);
-	/*border-bottom: 1px solid rgb(200, 200, 200);
-	*/transition: all 0.5s;
+	/*border-bottom: 1px solid rgb(200, 200, 200);*/
+	transition: all 0.5s;
 }
 
 #vHCont { /*Visual history section*/
@@ -24,7 +24,7 @@
 	margin-top: 0vh;
 	margin-left: 7vw;
 	opacity: 0;
-	transition: all 1s;
+	transition: all 0.8s;
 }
 #vHCoverL { /*L Overlay for gradient fade out*/
 	position: absolute;

@@ -69,17 +69,15 @@
 	background-color: rgb(37, 37, 37);
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .2);
 	border: none;
-	cursor: pointer;
-	overflow: hidden;
-
 	text-align: center;
 	color: rgb(160, 160, 160);
 	font-family: open;
 	font-size: 1.2vw;
-	cursor: pointer;
 	user-select: text;
 	-webkit-touch-callout: text; /* iOS Safari */
-  -webkit-user-select: text; /* Safari */
+  	-webkit-user-select: text; /* Safari */
+  	overflow: hidden;
+  	cursor: pointer;
 }
 .sEBoxIcon { /*Icon in an entry box*/
 	position: absolute;
@@ -105,10 +103,11 @@
 	background-color: rgb(100, 100, 100);
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	cursor: pointer;
+	opacity: 0.8;
 	transition: all 0.5s;
 }
 #sCancel:hover {
-	transform: translateY(-10%);
+	opacity: 1;
 }
 #sUpdate { /*Settings cancel button*/
 	position: absolute;
@@ -120,10 +119,11 @@
 	background-color: var(--focus);
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	cursor: pointer;
+	opacity: 0.8;
 	transition: all 0.5s;
 }
 #sUpdate:hover {
-	transform: translateY(-10%);
+	opacity: 1;
 }
 .sButtonT { /*Settings button text*/
 	position: relative;

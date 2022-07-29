@@ -9,8 +9,10 @@ var animatingIn;
 var page;
 
 function load() {
-	insertLoading(screen.width/2, screen.height/2, true);
-	setTimeout(switchSections, 0, 1);
+	//insertLoading(screen.width/2, screen.height/2, true);
+	//setTimeout(switchSections, 0, 1);
+
+	openLogin();
 }
 
 function switchSections(i) {
@@ -49,7 +51,6 @@ function switchSections(i) {
 
 function hoverSB(i) {
 	$('.sbN').eq(i).css('opacity', '1');
-	//if (i!=activeSection) $('#sbS').css('opacity', '0.2');
 	for (z=0; z<4; z++) {
 		if (i!=z) {
 			$('.sbN').eq(z).css('opacity', '0.4');
@@ -58,7 +59,6 @@ function hoverSB(i) {
 }
 
 function unhoverSB() {
-	//$('#sbS').css('opacity', '1');
 	for (z=0; z<4; z++) {
 		$('.sbN').eq(z).css('opacity', '1');
 	}
@@ -72,9 +72,94 @@ function selectSB(obj, i) {
 	switchSections(i);
 }
 
+//Login actions
+
+function openLogin() {
+	//Add login elements
+	//Container
+	var c = document.createElement("div");
+	c.setAttribute("id", 'lCont');
+	//Logo
+	var d = document.createElement("div");
+	d.setAttribute("id", 'lLogo');
+	c.append(d);
+	//Username Icon
+	d = document.createElement("div");
+	d.setAttribute("class", 'lInputIcon');
+	d.setAttribute("id", 'lUnitIcon');
+	d.style.backgroundImage = 'url("../assets/icons/device.svg")';
+	d.style.marginTop = "4vh";
+	c.append(d);
+	//Username
+	d = document.createElement("input");
+	d.setAttribute("class", 'lInput');
+	d.setAttribute("id", 'lUnit');
+	d.placeholder = "Unit ID";
+	d.style.marginTop = "4vh";
+	c.append(d);
+	//Password Icon
+	d = document.createElement("div");
+	d.setAttribute("class", 'lInputIcon');
+	d.setAttribute("id", 'lPasswordIcon');
+	d.style.backgroundImage = 'url("../assets/icons/lock.svg")';
+	c.append(d);
+	//Password
+	d = document.createElement("input");
+	d.setAttribute("class", 'lInput');
+	d.setAttribute("id", 'lPassword');
+	d.type = "password";
+	d.placeholder = "Password";
+	c.append(d);
+	//Login button
+	d = document.createElement("div");
+	d.setAttribute("id", 'lButton');
+	//Login button text
+	var t = document.createElement("div");
+	t.setAttribute("id", 'lButtonT');
+	t.innerHTML = "Login";
+	d.append(t);
+	c.append(d);
+
+	$('body').append(c);
+	
+	//Listeners
+	document.getElementById('lButton').addEventListener('mousedown', (event) => {
+		closeLogin();
+	});
+	document.getElementById('lButton').addEventListener('mouseover', (event) => {
+		$('#lButton').css('opacity', '1');
+		$('#lButtonT').css('opacity', '1');
+	});
+	document.getElementById('lButton').addEventListener('mouseout', (event) => {
+		$('#lButton').css('opacity', '0.8');
+		$('#lButtonT').css('opacity', '0.8');
+	});
+	document.getElementById('lPassword').addEventListener("keydown", event => {
+    	validateLogin(event);
+	});
+}
+
+function closeLogin() {
+	$('#lCont').css('opacity', '0');
+	setTimeout(function() {$('#lCont').remove()}, 500);
+	setTimeout(switchSections, 0, 0);
+}
+
+function validateLogin(event) {
+	if (event.key!=="Enter") return;
+	$('#lPassword').css("animation", "shake 0.3s forwards");
+	$('#lPasswordIcon').css("animation", "shake 0.3s forwards");
+	setTimeout(function() {
+		$('#lPassword').css("animation", "none");
+		$('#lPasswordIcon').css("animation", "none");
+	}, 300);
+	event.preventDefault();
+}
+
+
 //Generic functions
 
-function fadeIn(obj) {obj.css("animation", "fadeIn 1s ease-out forwards");}
+function fadeIn(obj) {obj.css("animation", "fadeIn 0.8s ease-out forwards");}
 
 function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-in forwards");}
 
