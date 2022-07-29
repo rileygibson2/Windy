@@ -128,7 +128,8 @@ public class Data {
 		int[] alarmLevelTimes = new int[3];
 		
 		Scanner s = null;
-		try {s = new Scanner(new File(System.getProperty("user.home")+"/Desktop/data/realtime.txt"));}
+		//try {s = new Scanner(new File(System.getProperty("user.home")+"/Desktop/data/realtime.txt"));}
+		try {s = new Scanner(new File("data/realtime.txt"));}
 		catch (FileNotFoundException e) {e.printStackTrace();}
 		if (s==null) System.out.println("There is a server-side data error");
 		
