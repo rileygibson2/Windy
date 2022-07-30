@@ -128,7 +128,7 @@ class DashboardPage extends Page {
 
 		switch (this.gViewMode) {
 		case 1: //Hour mode
-			this.gPointsOnX = 12*2; //24 readings an hour - every 5 mins
+			this.gPointsOnX = 12; //12 readings an hour - every 5 mins
 			var d = Math.floor(d/ms)*ms; //Round down to nearest 5 mins
 			
 			for (i=0; i<13; i++) {

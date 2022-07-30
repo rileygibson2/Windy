@@ -1,6 +1,7 @@
 package main.java;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServlet;
@@ -14,9 +15,9 @@ public class WebServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		int mode;
-		System.out.println("Recieving....");
-		
 		resp.setContentType("application/json");
+		Data.makeRecords();
+		
 		//Get page mode
 		try {mode = Integer.parseInt(req.getParameter("m"));}
 		catch (NumberFormatException e) {fail(resp); return;}
@@ -25,23 +26,27 @@ public class WebServlet extends HttpServlet {
 		String data = "";
 		switch (mode) {
 		case 1: //Dashboard data
+			System.out.println("Recieving real time data request....");
 			int graphMode;
 			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
 			catch (NumberFormatException e) {fail(resp); return;}
 			data = Data.getData1(graphMode);
 			break;
 		case 2: //Units data
+			System.out.println("Recieving units data request....");
 			data = Data.getData2(); break;
-		case 3: //History overview data
+		case 3: //Record overview data
+			System.out.println("Recieving record overview data request....");
 			data = Data.getData3(); break;
 		case 4: //Records for a period data
-			long rS;
-			long rE;
+			System.out.println("Recieving record period data request....");
+			long rS, rE;
 			try {
 				rS = Long.parseLong(req.getParameter("rS"));
 				rE = Long.parseLong(req.getParameter("rE"));
 			}
 			catch (NumberFormatException e) {fail(resp); return;}
+			System.out.println("     For records from "+new Date(rS).toString()+" to "+new Date(rE).toString());
 			data = Data.getData4(rS, rE);
 			break;
 		default: fail(resp); return;
