@@ -14,36 +14,15 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Data {
+public class DataManager {
 
-	static int orangeAlarm = 50;
-	static int redAlarm = 85;
+	final static int amberAlarm = 50;
+	final static int redAlarm = 85;
 	final static double msInMinute = 60000;
 	final static double msInHour = 3.6e+6;
 	final static double msInDay = 8.64e+7;
 	final static double msInWeek = 6.048e+8;
 	final static double msInMonth = 2.628e+9;
-
-
-	public static void makeRecords() {
-		long d = new Date().getTime();
-		try {
-			FileWriter out = new FileWriter("data/records.log");
-			for (int i=0; i<2000; i++) {
-				long record[] = new long[4];
-				record[0] = d; //Timestamp
-				record[1] = (int) (Math.random()*(100-0)+0); //Windspeed
-				record[2] = (int) (Math.random()*(360-0)+0); //Direction
-				record[3] = 1; //Alert level
-				if (record[1]>orangeAlarm) record[3] = 2;
-				if (record[1]>redAlarm) record[3] = 3;
-				out.write(Arrays.toString(record).replace(" ", ""));
-				d -= msInMinute*5;
-			}
-			out.close();
-			System.out.println("Successfully created records.");
-		} catch (IOException e) {System.out.println("An error occurred."+e.getStackTrace());}
-	}
 
 	/**
 	 * Get data required by the dashboard page.
@@ -307,7 +286,7 @@ public class Data {
 			System.out.println(recordsA.toString());
 			break;
 
-		case 2: //Day
+		case 2: //Day 
 			//Round to nearest hour
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);

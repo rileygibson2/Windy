@@ -1,0 +1,11 @@
+{
+ "Logging Frequency": "5",
+ "Preset Direction": "180",
+ "Email": "example@example.com",
+ "Number": "021583723",
+ "Unit": "windy32b1",
+ "AAL": 50,
+ "RAL": 85,
+ "ENF": "10",
+ "Password": "w1"
+}

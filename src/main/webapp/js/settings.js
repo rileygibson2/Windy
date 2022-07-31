@@ -15,13 +15,33 @@ function openSettings() {
 		//Load into body
 		$('body').append(req.responseText);
 
-		//Take stuff out
-		$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
-		$('#effCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
-		$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+		//Get settings data
+		var reqD = new XMLHttpRequest();
+		reqD.open('GET', 'data/?m=6&uID='+unit+'&t='+Math.random(), true);
+		reqD.onreadystatechange = function() {
+			if (reqD.readyState!=4&&reqD.status!=4) return;
+			var jObj = JSON.parse(reqD.responseText);
 
-		//Add settings container in
-		$('#sCont').css("animation", "openSettings 1s ease-in-out forwards");
+			//Load in settings data
+			$('#sRAL').val(jObj.RAL+"km/h");
+			$('#sAAL').val(jObj.AAL+"km/h");
+			$('#sLF').val(jObj["Logging Frequency"]+" mins");
+			$('#sPD').val(jObj["Preset Direction"]+"°");
+			$('#sNumber').val(jObj.Number);
+			$('#sEmail').val(jObj.Email);
+			$('#sENF').val(jObj.ENF+" mins");
+			$('#sUsername').val(jObj.Unit);
+			$('#sPassword').val(jObj.Password);
+
+			//Animate entrance - Take stuff out
+			$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			$('#effCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+
+			//Add settings container in
+			$('#sCont').css("animation", "openSettings 1s ease-in-out forwards");
+		}
+		reqD.send();
 	}
 	req.send();
 }
@@ -43,7 +63,7 @@ function postSettings() {
 	//Format data in JSON
 	var data = {
 		RAL:$('#sRAL').val(),
-		AAL:$('#sRAL').val(),
+		AAL:$('#sAAL').val(),
 		LF:$('#sLF').val(),
 		PD:$('#sPD').val(),
 		number:$('#sNumber').val(),

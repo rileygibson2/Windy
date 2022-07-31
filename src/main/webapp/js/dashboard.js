@@ -148,7 +148,7 @@ class DashboardPage extends Page {
 			break;
 
 		case 2: //Day mode
-			this.gPointsOnX = 12*24; //12 readings an hour - every 10 mins
+			this.gPointsOnX = 2*24; //2 readings an hour - every 30 mins
 
 			for (i=0; i<25; i++) {
 				var date = new Date(d-((i)*3600000));
@@ -437,7 +437,10 @@ class DashboardPage extends Page {
 		var v = this.alarmLevelTimes[i];
 		if (v>100) v = 100;
 
-		$('#cSVGC'+(i+1)).css("stroke-dasharray", (v*(c/100))+', '+c);
+		//Fudge a zero value to avoid weird looking circle
+		if (v==0) $('#cSVGC'+(i+1)).css("stroke-dasharray", '0, 100000');
+		else $('#cSVGC'+(i+1)).css("stroke-dasharray", (v*(c/100))+', '+c);
+		//Update text
 		$('#cTB'+(i+1)).html(this.alarmLevelTimes[i]);
 		$('#cT'+(i+1)).css("opacity", 1);
 	}

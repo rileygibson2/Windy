@@ -197,16 +197,16 @@ body {background-color: var(--bg);}
 }
 #lButton { /*Login button*/
 	position: relative;
-	width: 20vw;
+	width: 18vw;
 	height: 6vh;
 	margin-top: 3vh;
-	margin-left: 40vw;
+	margin-left: 41vw;
 	border-radius: 12px;
 	cursor: pointer;
 	background-color: white;
 	/*background-image: linear-gradient(90deg, rgb(15, 132, 242, 1) 0%, var(--focus) 40%, var(--focus) 60%, rgb(15, 132, 242, 0.92) 100%);*/
 	background-image: linear-gradient(90deg, var(--focus) 40%, rgb(15, 132, 242, 0.92) 100%);
-	opacity: 0.8;
+	opacity: 0.9;
 	transition: all 0.5s;
 }
 #lButtonT { /*Login button text*/
@@ -219,7 +219,7 @@ body {background-color: var(--bg);}
 	font-family: openSemiBold;
 	font-size: 1.4vw;
 	cursor: pointer;
-	opacity: 0.8;
+	opacity: 0.9;
 	transition: all 0.5s;
 }
 

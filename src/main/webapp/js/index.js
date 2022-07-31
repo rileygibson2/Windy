@@ -7,6 +7,7 @@ var animatingOut;
 var animatingIn;
 
 var page;
+var unit;
 
 function load() {
 	//insertLoading(screen.width/2, screen.height/2, true);
@@ -93,21 +94,21 @@ function openLogin() {
 	//Username
 	d = document.createElement("input");
 	d.setAttribute("class", 'lInput');
-	d.setAttribute("id", 'lUnit');
+	d.setAttribute("id", 'lUID');
 	d.placeholder = "Unit ID";
 	d.style.marginTop = "4vh";
 	c.append(d);
 	//Password Icon
 	d = document.createElement("div");
 	d.setAttribute("class", 'lInputIcon');
-	d.setAttribute("id", 'lPasswordIcon');
+	d.setAttribute("id", 'lPassIcon');
 	d.style.backgroundImage = 'url("../assets/icons/lock.svg")';
 	c.append(d);
 	//Password
 	d = document.createElement("input");
 	d.setAttribute("class", 'lInput');
-	d.setAttribute("id", 'lPassword');
-	d.type = "password";
+	d.setAttribute("id", 'lPass');
+	//d.type = "password";
 	d.placeholder = "Password";
 	c.append(d);
 	//Login button
@@ -124,18 +125,18 @@ function openLogin() {
 	
 	//Listeners
 	document.getElementById('lButton').addEventListener('mousedown', (event) => {
-		closeLogin();
+		validateLogin();
 	});
 	document.getElementById('lButton').addEventListener('mouseover', (event) => {
 		$('#lButton').css('opacity', '1');
 		$('#lButtonT').css('opacity', '1');
 	});
 	document.getElementById('lButton').addEventListener('mouseout', (event) => {
-		$('#lButton').css('opacity', '0.8');
-		$('#lButtonT').css('opacity', '0.8');
+		$('#lButton').css('opacity', '0.9');
+		$('#lButtonT').css('opacity', '0.9');
 	});
-	document.getElementById('lPassword').addEventListener("keydown", event => {
-    	validateLogin(event);
+	document.getElementById('lPass').addEventListener("keydown", event => {
+    	loginKeyPress(event);
 	});
 }
 
@@ -145,14 +146,29 @@ function closeLogin() {
 	setTimeout(switchSections, 0, 0);
 }
 
-function validateLogin(event) {
+function validateLogin() {
+	unit = $('#lUID').val();
+	var req = new XMLHttpRequest();
+	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+$('#lPass').val()+'&t='+Math.random(), true);
+	req.onreadystatechange = function() {
+		if (req.readyState!=4&&req.status!=4) return;
+		if (req.responseText.trim()=="valid") closeLogin(); //Success
+		else { //Fail
+			$('#lPass').css("animation", "shake 0.3s forwards");
+			$('#lPassIcon').css("animation", "shake 0.3s forwards");
+			setTimeout(function() {
+				$('#lPass').css("animation", "none");
+				$('#lPassIcon').css("animation", "none");
+			}, 300);
+		}
+	}
+
+	req.send();
+}
+
+function loginKeyPress(event) {
 	if (event.key!=="Enter") return;
-	$('#lPassword').css("animation", "shake 0.3s forwards");
-	$('#lPasswordIcon').css("animation", "shake 0.3s forwards");
-	setTimeout(function() {
-		$('#lPassword').css("animation", "none");
-		$('#lPasswordIcon').css("animation", "none");
-	}, 300);
+	validateLogin();
 	event.preventDefault();
 }
 
