@@ -98,9 +98,15 @@ class DashboardPage extends Page {
 
 		//Find diff between last update time and now and display
 		var timeDiff = Math.abs(this.rtLastUpdateTime-Date.now());
+		var days = Math.floor(timeDiff/8.64e+7);
 		var hours = Math.floor(timeDiff/3600000);
 		var mins = Math.floor(timeDiff/60000);
-		if (hours>=1) {
+		
+		if (days>=1) {
+			if (days==1) $('#rtSpeed4').html(days+" day ago");
+			else $('#rtSpeed4').html(days+" hours ago");
+		}
+		else if (hours>=1) {
 			if (hours==1) $('#rtSpeed4').html(hours+" hour ago");
 			else $('#rtSpeed4').html(hours+" hours ago");
 		}

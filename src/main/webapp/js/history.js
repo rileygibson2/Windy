@@ -163,8 +163,8 @@ class HistoryPage extends Page {
 
 				//Record is within desired month
 				var day = tS.getDate();
-				this.makeRect('vHNodeDR', x+((incrX/31)*day), midY-(this.historyData[dI][1]*7), (incrX/31)*0.8, (this.historyData[dI][1]*7), gUnder);
-				this.makeRect('vHNodeDRR', x+((incrX/31)*day), midY, (incrX/31)*0.8, (this.historyData[dI][1]*7), gUnder);
+				this.makeRect('vHNodeDR', x+((incrX/31)*day), midY-(this.historyData[dI][1]/2), (incrX/31)*0.8, (this.historyData[dI][1]/2), gUnder);
+				this.makeRect('vHNodeDRR', x+((incrX/31)*day), midY, (incrX/31)*0.8, (this.historyData[dI][1]/2), gUnder);
 				dI++;
 			}
 

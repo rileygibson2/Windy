@@ -23,10 +23,22 @@
 <body onload="load()">
 	<div id="sbCont" onmouseout="unhoverSB()">
 			<div id="sbS"></div>
-			<div class="sbN" onmouseover="hoverSB(0)" onmousedown="selectSB(this, 0)"></div>
-			<div class="sbN" onmouseover="hoverSB(1)" onmousedown="selectSB(this, 1)"></div>
-			<div class="sbN" onmouseover="hoverSB(2)" onmousedown="selectSB(this, 2)"></div>
-			<div class="sbN" onmouseover="hoverSB(3)" onmousedown="selectSB(this, 3)"></div>
+			<div class="sbN" id="sbN1" onmouseover="hoverSB(0)" onmousedown="switchSections(0)">
+				<div class="sbIcon" id="sbIcon1"></div>
+				<div class="sbLabel" id="sbLabel1">Dashboard</div>
+			</div>
+			<div class="sbN" id="sbN2" onmouseover="hoverSB(1)" onmousedown="switchSections(1)">
+				<div class="sbIcon" id="sbIcon2"></div>
+				<div class="sbLabel" id="sbLabel2">Units</div>
+			</div>
+			<div class="sbN" id="sbN3" onmouseover="hoverSB(2)" onmousedown="switchSections(2)">
+				<div class="sbIcon" id="sbIcon3"></div>
+				<div class="sbLabel" id="sbLabel3">Records</div>
+			</div>
+			<div class="sbN" id="sbN4" onmouseover="hoverSB(3)" onmousedown="switchSections(3)">
+				<div class="sbIcon" id="sbIcon4"></div>
+				<div class="sbLabel" id="sbLabel4">Reports</div>
+			</div>
 			<div class="sbN" id="sbLogo"></div>
 	</div>
 

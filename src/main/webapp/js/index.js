@@ -7,23 +7,32 @@ var animatingOut;
 var animatingIn;
 
 var page;
-var unit;
+var unit = "windy32b1";
 
 function load() {
 	//insertLoading(screen.width/2, screen.height/2, true);
-	//setTimeout(switchSections, 0, 1);
+	//setTimeout(switchSections, 0, 0);
 
 	openLogin();
 }
 
+function preset() {
+	var a = document.getElementById("sbCont").getBoundingClientRect().top;
+	$('#sbS').css("top", obj.getBoundingClientRect().top-a);
+}
+
 function switchSections(i) {
-	if (animatingOut||activeSection==i) {
-		if (animatingOut) alert('transitioning');
-		if (activeSection==i) alert('same section');
-		return;
-	}
+	
+	//Move the tab indicator
+	unhoverSB();
+	var a = document.getElementById("sbCont").getBoundingClientRect().top;
+	$('#sbS').css("top", document.getElementById("sbN"+(i+1)).getBoundingClientRect().top-a);
+
+	//Check sections
+	if (animatingOut||animatingOut||activeSection==i) return;
 	activeSection = i;
 
+	//Load new section
 	switch (activeSection) {
 		case 0: page = new DashboardPage("dashboard"); break;
 		case 1: page = new UnitsPage("units"); break;
@@ -51,26 +60,26 @@ function switchSections(i) {
 //Sidebar actions
 
 function hoverSB(i) {
+	//Dim all others and set this to full
 	$('.sbN').eq(i).css('opacity', '1');
 	for (z=0; z<4; z++) {
 		if (i!=z) {
 			$('.sbN').eq(z).css('opacity', '0.4');
 		}
 	}
+
+	//Move icon left
+	$('#sbIcon'+(i+1)).css({'margin-top':'-15%', 'background-size':'50%'});
+	$('#sbLabel'+(i+1)).css('opacity', '1');
 }
 
 function unhoverSB() {
-	for (z=0; z<4; z++) {
-		$('.sbN').eq(z).css('opacity', '1');
+	//Reset all
+	for (i=0; i<4; i++) {
+		$('.sbN').eq(i).css('opacity', '1');
+		$('#sbIcon'+(i+1)).css({'margin-top':'0%', 'background-size':'60%'});
+		$('#sbLabel'+(i+1)).css('opacity', '0');
 	}
-}
-
-function selectSB(obj, i) {
-	unhoverSB();
-	//Move the tab indicator
-	var a = document.getElementById("sbCont").getBoundingClientRect().top;
-	$('#sbS').css("top", obj.getBoundingClientRect().top-a);
-	switchSections(i);
 }
 
 //Login actions
@@ -148,6 +157,13 @@ function closeLogin() {
 
 function validateLogin() {
 	unit = $('#lUID').val();
+
+	//Check inputs are filled
+	if ($('#lUID').val()=="") $('#lUID').css('border-color', 'rgb(255, 20, 20)');
+	else $('#lUID').css('border-color', 'rgb(60, 60, 60)');
+	if ($('#lPass').val()=="") $('#lPass').css('border-color', 'rgb(255, 20, 20)');
+	else $('#lPass').css('border-color', 'rgb(60, 60, 60)');
+
 	var req = new XMLHttpRequest();
 	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+$('#lPass').val()+'&t='+Math.random(), true);
 	req.onreadystatechange = function() {
