@@ -1,22 +1,5 @@
 /*History page*/
 
-#hTitleCont { /*Title container to get over an animation hump*/
-	position: absolute;
-	width: 25vw;
-	margin-top: 10vh;
-	margin-left: 12vw;
-	opacity: 0;
-}
-#hTitle { /*Page title*/
-	width: 100%;
-	color: rgb(200, 200, 200);
-	font-family: openBold;
-	font-size: 3vw;
-	text-shadow: 5px 5px 10px rgba(0, 0, 0);
-	/*border-bottom: 1px solid rgb(200, 200, 200);*/
-	transition: all 0.5s;
-}
-
 #vHCont { /*Visual history section*/
 	position: absolute;
 	width: 93vw;
@@ -26,7 +9,7 @@
 	opacity: 0;
 	transition: all 0.8s;
 }
-#vHCoverL { /*L Overlay for gradient fade out*/
+#vHCoverL { /*Left overlay for gradient fade out*/
 	position: absolute;
 	width: 10%;
 	height: 100%;
@@ -34,7 +17,7 @@
 	z-index: 101;
 	background-image: linear-gradient(to right, var(--bg) 0%, rgb(0, 0, 0, 0) 100%);
 }
-#vHCoverR { /*R Overlay for gradient fade out*/
+#vHCoverR { /*Right overlay for gradient fade out*/
 	position: absolute;
 	width: 20%;
 	height: 100%;
@@ -60,8 +43,8 @@
 .vHNodeCS { /*Small inner node circle*/
 	fill: rgb(255, 255, 255);
 	r: 7px;
-	transition: all 0.4s;
 	cursor: pointer;
+	transition: all 0.3s;
 }
 .vHNodeTextS { /*Small node text*/
 	fill: rgb(150, 150, 150);
@@ -99,6 +82,7 @@
 	z-index: 102;
 	opacity: 0;
 	color: rgb(150, 150, 150, 0.5);
+	cursor: pointer;
 	transition: all 0.5s;
 }
 #vHReset:hover {
@@ -110,12 +94,13 @@
 	position: relative;
 	top: 50%;
 	width: 100%;
-  transform: translateY(-50%);
-  text-align: center;
-  color: inherit;
-  font-family: open;
-  font-size: 1.1vw;
-  z-index: 150;
+	transform: translateY(-50%);
+	text-align: center;
+ 	color: inherit;
+  	font-family: open;
+  	font-size: 1.1vw;
+  	z-index: 150;
+  	cursor: pointer;
 }
 #vHArrow { /*Left arrow to encourage scrolling*/
 	position: absolute;
@@ -154,13 +139,13 @@
 	margin-left: 10vw;
 	background-image: linear-gradient(165deg, rgb(100, 100, 100) 0%, rgb(50, 50, 50) 50%);
 	border-radius: 20px;
-	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8), inset 0px -5px 20px rgba(0, 0, 0, .5);
 	opacity: 1;
 	z-index: 150;
-	transition: all 0.5s;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	display: none;
+	transition: all 0.5s;
 }
 @keyframes fRContEntrance {
 	0% {height: 0; opacity: 0;}
@@ -173,8 +158,9 @@
 }
 #fRTitle { /*Focussed records container title*/
 	position: fixed;
-	width: 100%;
+	width: 83vw;
 	padding: 1.5% 0% 1.5% 2%;
+	border-radius: 20px 20px 0 0;
 	color: white;
 	font-family: openBold;
 	font-size: 1.8vw;
@@ -191,7 +177,7 @@ b {
 	position: absolute;
 	width: 7%;
 	height: 100%;
-	left: 76%;
+	left: 92%;
 	top: 0%;
 	background-repeat: no-repeat;
 	background-size: 25%;

@@ -33,12 +33,38 @@ function switchSections(i) {
 	activeSection = i;
 
 	//Load new section
+	var title;
+	var text;
 	switch (activeSection) {
-		case 0: page = new DashboardPage("dashboard"); break;
-		case 1: page = new UnitsPage("units"); break;
-		case 2: page = new HistoryPage("history"); break;
-		case 3: page = new DashboardPage("dashboard"); break;
-	}	
+		case 0: 
+			title = "Dashboard";
+			text = "Real time data and stats";
+			page = new DashboardPage("dashboard");
+			break;
+		case 1:
+			title = "Devices";
+			text = "Check status and add/remove units";
+			page = new UnitsPage("units");
+			break;
+		case 2:
+			title = "Records";
+			text = "See historical records";
+			page = new HistoryPage("history");
+			break;
+		case 3:
+			title = "Reports";
+			text = "Formatted reports for different events";
+			page = new DashboardPage("dashboard");
+			break;
+	}
+
+	//Swap section indicator elements
+	$("#sICont").css("animation", "none");
+	setTimeout(function() {
+		$("#sITitle").html(title);
+		$("#sIText").html(text);
+		$("#sICont").css("animation", "sIMoveIn 0.5s ease-in forwards");
+	}, 100);
 
 	animateExit(0).then(function() {
 		$('#effCont').empty(); //Empty container
@@ -147,6 +173,20 @@ function openLogin() {
 	document.getElementById('lPass').addEventListener("keydown", event => {
     	loginKeyPress(event);
 	});
+
+	//Input focus style listeners
+	$('#lUID').on("focus", function() {
+		$('#lUnitIcon').css("background-color", "rgb(100, 100, 100)");
+	});
+	$('#lUID').on("focusout", function() {
+		$('#lUnitIcon').css("background-color", "rgb(60, 60, 60)");
+	});
+	$('#lPass').on("focus", function() {
+		$('#lPassIcon').css("background-color", "rgb(100, 100, 100)");
+	});
+	$('#lPass').on("focusout", function() {
+		$('#lPassIcon').css("background-color", "rgb(60, 60, 60)");
+	});
 }
 
 function closeLogin() {
@@ -165,7 +205,7 @@ function validateLogin() {
 	else $('#lPass').css('border-color', 'rgb(60, 60, 60)');
 
 	var req = new XMLHttpRequest();
-	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+$('#lPass').val()+'&t='+Math.random(), true);
+	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+hash($('#lPass').val())+'&t='+Math.random(), true);
 	req.onreadystatechange = function() {
 		if (req.readyState!=4&&req.status!=4) return;
 		if (req.responseText.trim()=="valid") closeLogin(); //Success
@@ -196,6 +236,10 @@ function fadeIn(obj) {obj.css("animation", "fadeIn 0.8s ease-out forwards");}
 function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-in forwards");}
 
 function refreshParent(p) {$(p).html($(p).html());}
+
+function hash(s) {
+	return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+}
 
 function animateExit(start) {
 	//Animate elements out - nested for loop used because first element is a container for visible modules

@@ -36,14 +36,14 @@ public class DataMockup {
 		for (int i=1; i<3; i++) {
 			JSONObject jObj = new JSONObject();
 			String unit =  "windy"+(32*i)+alph[i]+i;
-			jObj.put("Unit", unit);
-			jObj.put("Password", "r");
+			jObj.put("username", unit);
+			jObj.put("password", "r");
 			jObj.put("AAL", DataManager.amberAlarm);
 			jObj.put("RAL", DataManager.redAlarm);
-			jObj.put("Logging Frequency", "5");
-			jObj.put("Preset Direction", "180");
-			jObj.put("Number", "021583723");
-			jObj.put("Email", "example@example.com");
+			jObj.put("LF", "5");
+			jObj.put("PD", "180");
+			jObj.put("number", "021583723");
+			jObj.put("email", "example@example.com");
 			jObj.put("ENF", "10");
 			
 			try {

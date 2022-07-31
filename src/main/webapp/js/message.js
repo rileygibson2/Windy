@@ -40,6 +40,7 @@ function insertMessage(message, mode) {
 		$('#sc').css('filter', 'blur(10px)');
 		$('#effCont').css('filter', 'blur(10px)');
 		$('#sbCont').css('filter', 'blur(10px)');
+		$('#sICont').css('filter', 'blur(10px)');
 	}, 500);
 }
 
@@ -57,6 +58,7 @@ function removeMessage() {
 	$('#sc').css('filter', 'none');
 	$('#effCont').css('filter', 'none');
 	$('#sbCont').css('filter', 'none');
+	$('#sICont').css('filter', 'none');
 }
 
 function addMessageStyles() {

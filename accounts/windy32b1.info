@@ -1,11 +1,11 @@
 {
- "Logging Frequency": "5",
- "Preset Direction": "180",
- "Email": "example@example.com",
- "Number": "021583723",
- "Unit": "windy32b1",
- "AAL": 50,
- "RAL": 85,
+ "number": "021583723",
+ "password": 3738,
+ "PD": "180",
+ "LF": "5",
+ "RAL": "85",
+ "AAL": "50",
  "ENF": "10",
- "Password": "w1"
+ "email": "example@example.com",
+ "username": "windy32b1"
 }

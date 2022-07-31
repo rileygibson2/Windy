@@ -2,8 +2,6 @@ package main.java;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -45,9 +43,7 @@ public class DataManager {
 	 * @return
 	 */
 	public static String getData2() {
-		JSONArray jArr = new JSONArray();
-		jArr.put(getUnitsData());
-		return jArr.toString(1);
+		return getUnitsData().toString(1);
 	}
 
 	/**
@@ -173,11 +169,28 @@ public class DataManager {
 		return jObj;
 	}
 
-	public static JSONObject getUnitsData() {
-		JSONObject jObj = new JSONObject();
-		jObj.put("name", "units");
-		jObj.put("numUnits", 2);
-		return jObj;
+	public static JSONArray getUnitsData() {
+		//Look at all unit files
+		JSONArray units = new JSONArray();
+		File path = new File("accounts/");
+		File[] files = path.listFiles();
+		for (int i=0; i<files.length; i++){
+			if (files[i].isFile()&&!files[i].getName().equals(".DS_Store")) {
+				JSONObject jObj = new JSONObject();
+				//Remove file extension from unit name
+				jObj.put("unit", files[i].getName().substring(0, files[i].getName().length()-5));
+				if (jObj.get("unit").equals("windy32b1")) {
+					jObj.put("status", "1");
+					jObj.put("battery", "1");
+				}
+				else {
+					jObj.put("status", "0");
+					jObj.put("battery", "0");
+				}
+				units.put(jObj);
+			}
+		}
+		return units;
 	}
 
 	/**

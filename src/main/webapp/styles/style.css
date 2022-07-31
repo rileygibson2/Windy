@@ -23,6 +23,10 @@
   font-family: openBold;
   src: url('../assets/fonts/OpenSans/OpenSans-Bold.ttf');
 }
+@font-face {
+  font-family: fugaz;
+  src: url('../assets/fonts/FugazOne/FugazOne-Regular.ttf');
+}
 
 :root {
   --focusOld: rgb(15, 132, 242);
@@ -40,7 +44,7 @@ body {background-color: var(--bg);}
 	height: 100vh;
 	background-color: var(--bg);
 	overflow: hidden;
-	transition: all 1s;
+	transition: all 0.8s;
 }
 
 #sbCont { /*Sidebar container*/
@@ -55,7 +59,7 @@ body {background-color: var(--bg);}
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	z-index: 500;
 	overflow: hidden;
-	transition: all 1s;
+	transition: all 0.8s;
 }
 .sbN { /*Sidebar node*/
 	position: relative;
@@ -84,10 +88,9 @@ body {background-color: var(--bg);}
 	background-image: url("../assets/icons/graph.svg");
 }
 #sbIcon2 {
-	background-image: url("../assets/icons/wind.svg");
+	background-image: url("../assets/icons/device.svg");
 }
 #sbIcon3 {
-	background-size: 68%;
 	background-image: url("../assets/icons/history.svg");
 }
 #sbIcon4 {
@@ -133,7 +136,7 @@ body {background-color: var(--bg);}
 	margin-top: 5vh;
 	overflow: visible;
 	z-index: 500;
-	transition: all 1s;
+	transition: all 0.8s;
 }
 #sc:hover {
 	transform: rotate(360deg);
@@ -160,6 +163,42 @@ body {background-color: var(--bg);}
 	background-repeat: no-repeat;
 	opacity: 1;
 	cursor: pointer;
+}
+
+#sICont { /*Section indicator container*/
+	position: absolute;
+	width: 16vw;
+	margin-left: 73vw;
+	margin-top: 6vh;
+	opacity: 1;
+	transition: all 0.8s;
+}
+#sITitle { /*Section title text*/
+	position: relative;
+	width: 100%;
+	padding-bottom: 2%;
+	color: rgb(255, 255, 255, 0.8);
+	text-align: right;
+	font-family: openMedium;
+	font-size: 2.1vw;
+	border-bottom: 1px solid rgb(255, 255, 255, 0.4);
+}
+#sIText { /*Section description text*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	margin-top: 2%;
+	color: rgb(255, 255, 255, 0.7);
+	text-align: right;
+	font-family: open;
+	font-size: 0.9vw;
+}
+@keyframes sIMoveOut {
+	100% {opacity: 0;}
+}
+@keyframes sIMoveIn {
+	0% {opacity: 0;}
+	100% {opacity: 1;}
 }
 
 #lCont { /*Login container*/
@@ -222,10 +261,10 @@ body {background-color: var(--bg);}
 }
 #lButton { /*Login button*/
 	position: relative;
-	width: 18vw;
+	width: 20vw;
 	height: 6vh;
 	margin-top: 3vh;
-	margin-left: 41vw;
+	margin-left: 40vw;
 	border-radius: 12px;
 	cursor: pointer;
 	background-color: white;
@@ -260,7 +299,7 @@ body {background-color: var(--bg);}
 @keyframes fadeIn {
 	from {
 		opacity: 0;
-		transform: translateX(-50px);
+		transform: translateX(-1px);
 	}
 	to {opacity: 1;}
 }

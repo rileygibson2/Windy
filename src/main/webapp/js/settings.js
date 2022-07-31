@@ -25,56 +25,78 @@ function openSettings() {
 			//Load in settings data
 			$('#sRAL').val(jObj.RAL+"km/h");
 			$('#sAAL').val(jObj.AAL+"km/h");
-			$('#sLF').val(jObj["Logging Frequency"]+" mins");
-			$('#sPD').val(jObj["Preset Direction"]+"°");
-			$('#sNumber').val(jObj.Number);
-			$('#sEmail').val(jObj.Email);
+			$('#sLF').val(jObj.LF+" mins");
+			$('#sPD').val(jObj.PD+"°");
+			$('#sNumber').val(jObj.number);
+			$('#sEmail').val(jObj.email);
 			$('#sENF').val(jObj.ENF+" mins");
-			$('#sUsername').val(jObj.Unit);
-			$('#sPassword').val(jObj.Password);
+			$('#sUsername').val(jObj.username);
+			addKeyListenersSettings();
 
 			//Animate entrance - Take stuff out
 			$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
 			$('#effCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
 			$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			$('#sICont').css({'filter':'blur(10px)', 'opacity':'0.2'});
 
 			//Add settings container in
-			$('#sCont').css("animation", "openSettings 1s ease-in-out forwards");
+			$('#sCont').css("animation", "openSettings 0.8s ease-in-out forwards");
 		}
 		reqD.send();
 	}
 	req.send();
 }
 
+function addKeyListenersSettings() {
+	$('#sRAL').on("focusout", function() {formatSettingsInput('sRAL', 'km/h');});
+	$('#sAAL').on("focusout", function() {formatSettingsInput('sAAL', 'km/h');});
+	$('#sLF').on("focusout", function() {formatSettingsInput('sLF', ' mins');});
+	$('#sPD').on("focusout", function() {formatSettingsInput('sPD', '°');});
+	$('#sENF').on("focusout", function() {formatSettingsInput('sENF', ' mins');});
+	$('#sNumber').on("focusout", function() {formatSettingsInput('sNumber', '');});
+}
+
 function closeSettings() {
+	//Animate settings container out
+	$('#sCont').css("animation", "closeSettings 0.8s ease-in-out forwards");
+	
 	//Bring stuff in
 	$('#sc').css({'filter':'none', 'opacity':'1'});
 	$('#effCont').css({'filter':'none', 'opacity':'1'});
 	$('#sbCont').css({'filter':'none', 'opacity':'1'});
+	$('#sICont').css({'filter':'none', 'opacity':'1'});
 
-	//Animate settings container out
-	$('#sCont').css("animation", "closeSettings 1s ease-in-out forwards");
 	setTimeout(function() { //Remove settings content
 		$('#sCont').remove();
 	}, 1000);
 }
 
+function formatSettingsInput(id, add) {
+	$('#'+id).val($('#'+id).val().replace(/\D/g,''));
+	//Add 0 if empty
+	if ($('#'+id).val()=="") $('#'+id).val('0'+add);
+	else $('#'+id).val($('#'+id).val()+add);
+}
+
 function postSettings() {
 	//Format data in JSON
 	var data = {
-		RAL:$('#sRAL').val(),
-		AAL:$('#sAAL').val(),
-		LF:$('#sLF').val(),
-		PD:$('#sPD').val(),
-		number:$('#sNumber').val(),
+		RAL:$('#sRAL').val().replace(/\D/g,''),
+		AAL:$('#sAAL').val().replace(/\D/g,''),
+		LF:$('#sLF').val().replace(/\D/g,''),
+		PD:$('#sPD').val().replace(/\D/g,''),
+		number:$('#sNumber').val().replace(/\D/g,''),
 		email:$('#sEmail').val(),
-		ENF:$('#sENF').val(),
+		ENF:$('#sENF').val().replace(/\D/g,''),
 		username:$('#sUsername').val(),
-		password:$('#sPassword').val()
+	}
+
+	if ($('#sPassword').val()!="") { //Only if a new password has been entered
+		data.password = hash($('#sPassword').val());
 	}
 
 	var req = new XMLHttpRequest(); //Fetch data
-	req.open('POST', 'data/?m=1&t='+Math.random(), true);
+	req.open('POST', 'data/?m=1&uID='+unit+'&t='+Math.random(), true);
 	req.setRequestHeader("Content-type", "application/json");
 	req.onreadystatechange = function() {
 		if (req.readyState==4&&req.status==200) {

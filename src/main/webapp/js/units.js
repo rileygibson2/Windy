@@ -10,7 +10,7 @@ class UnitsPage extends Page {
 		document.head.appendChild(link);
 
 		//Class vars
-		this.numUnits;
+		this.units;
 	}
 
 	//Required actions
@@ -32,27 +32,25 @@ class UnitsPage extends Page {
 	}
 
 	recieveData(req) {
-		var jArr = JSON.parse(req.responseText);
-		this.numUnits = jArr[0].numUnits;
+		this.units = JSON.parse(req.responseText);
 		this.implementData();
 	}
 
 	implementData() {
-		var unitData = [[0, 0], [1, 1], [1, 1]];
-
 		//Add units
-		for (i=0; i<unitData.length; i++) {
+		for (i=this.units.length-1; i>=0; i--) {
 			//Node
 			var n = document.createElement("div");
 			n.setAttribute("class", 'uN');
-			//n.style.borderBottom = "3px solid rgb(3, 220, 15)";
+			/*if (unitData[i][0]==1) n.style.borderBottom = "3px solid rgb(3, 220, 15)";
+			else n.style.borderBottom = "3px solid rgb(220, 0, 0)";*/
 			
 			//Status icon and text
 			d = document.createElement("div");
 			d.setAttribute("class", 'uNStatusIcon');
 			var t = document.createElement("div");
 			t.setAttribute("class", 'uNStatusText');
-			if (unitData[i][0]==1) {
+			if (this.units[i].status==1) {
 				d.style.backgroundColor = 'rgb(3, 220, 15)';
 				t.innerHTML = "Online";
 			}
@@ -68,7 +66,7 @@ class UnitsPage extends Page {
 			d.setAttribute("class", 'uNBatteryIcon');
 			t = document.createElement("div");
 			t.setAttribute("class", 'uNBatteryText');
-			if (unitData[i][1]==1) t.innerHTML = "Healthy";
+			if (this.units[i].battery==1) t.innerHTML = "Healthy";
 			else {
 				d.style.backgroundColor = 'rgb(255, 153, 0)';
 				t.innerHTML = "Check power";
@@ -83,7 +81,7 @@ class UnitsPage extends Page {
 			//Title
 			d = document.createElement("div");
 			d.setAttribute("class", 'uNTitle');
-			d.innerHTML = "windy"+(i+3)+"c"+(i+3)*24;
+			d.innerHTML = this.units[i].unit;
 			n.append(d);
 			//Version
 			d = document.createElement("div");
@@ -97,13 +95,10 @@ class UnitsPage extends Page {
 
 	animateEntrance(start) {
 		setTimeout(removeLoading, start);
-		var c1 = $('#effCont').children();
-		for (i=0; i<c1.length; i++) {
-			var c2 = c1.eq(i).children();
-			for (var z=c2.length; z>=0; z--) {
-				setTimeout(fadeIn, start, c2.eq(z));
-				start += 40;
-			}
+		var c = $('#uCont').children();
+		for (var i=c.length; i>=0; i--) {
+			setTimeout(fadeIn, start, c.eq(i));
+			start += 40;
 		}
 	}
 }

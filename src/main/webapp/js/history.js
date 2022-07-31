@@ -59,8 +59,7 @@ class HistoryPage extends Page {
 
 	animateEntrance(start) {
 		setTimeout(removeLoading, start);
-		setTimeout(fadeIn, start, $("#hTitleCont"));
-		setTimeout(fadeIn, start+200, $("#vHCont"));
+		setTimeout(fadeIn, start, $("#vHCont"));
 	}
 
 	//Visual History actions
@@ -223,7 +222,7 @@ class HistoryPage extends Page {
 		var i = -Math.floor((event.clientX-(w*0.5)-this.offset-(incrX/2))/incrX);
 	
 		$('.vHNodeCS').each(function(i, obj) {$(obj).css("r", "7px");});
-		if (i>=0) $('#vHNodeCS'+i).css("r", "15px");
+		if (i>=0) $('#vHNodeCS'+i).css("r", "12px");
 	}
 
 	vHOnUnHover(event) {
@@ -266,6 +265,7 @@ class HistoryPage extends Page {
 		fRT.setAttribute('id', 'fRTitle');
 		fRT.innerHTML = "Records from <b>"+start.toLocaleDateString("en-UK", {year:'numeric', month:'long', day:'numeric'});
 		fRT.innerHTML += "</b> to <b>"+end.toLocaleDateString("en-UK", {year:'numeric', month:'long', day:'numeric'})+"</b>";
+		fRT.innerHTML += " - "+this.focussedRecords.length+" records";
 		var fRC = document.createElement("div");
 		fRC.setAttribute('id', 'fRClose');
 		fRC.addEventListener('mousedown', (event) => {
@@ -277,6 +277,8 @@ class HistoryPage extends Page {
 
 		//Make records
 		for (i=0; i<this.focussedRecords.length; i++) {
+			if (i>200) break; //Laggy after this many records
+
 			var fR = document.createElement("div");
 			fR.setAttribute('class', 'fRecord');
 			if (i==0) fR.style.marginTop = '7%';

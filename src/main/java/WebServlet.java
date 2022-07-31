@@ -27,7 +27,7 @@ public class WebServlet extends HttpServlet {
 		String data = "";
 		switch (mode) {
 		case 1: //Dashboard data
-			System.out.println("Recieving real time data request....");
+			System.out.println(" --- Recieving real time data request --- ");
 			int graphMode;
 			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
 			catch (NumberFormatException e) {fail(resp); return;}
@@ -35,17 +35,17 @@ public class WebServlet extends HttpServlet {
 			break;
 			
 		case 2: //Units data
-			System.out.println("Recieving units data request....");
+			System.out.println(" --- Recieving units data request --- ");
 			data = DataManager.getData2();
 			break;
 			
 		case 3: //Record overview data
-			System.out.println("Recieving record overview data request....");
+			System.out.println(" --- Recieving record overview data request --- ");
 			data = DataManager.getData3();
 			break;
 			
 		case 4: //Records for a period data
-			System.out.println("Recieving record period data request....");
+			System.out.println(" --- Recieving record period data request --- ");
 			long rS, rE;
 			try {
 				rS = Long.parseLong(req.getParameter("rS"));
@@ -57,7 +57,7 @@ public class WebServlet extends HttpServlet {
 			break;
 			
 		case 5: //Authentication
-			System.out.println("Recieving authentication request....");
+			System.out.println(" --- Recieving authentication request --- ");
 			String unit = req.getParameter("uID");
 			String pass = req.getParameter("p");
 			if (unit==null||pass==null) fail(resp);
@@ -66,7 +66,7 @@ public class WebServlet extends HttpServlet {
 			break;
 			
 		case 6: //Account info (for settings)
-			System.out.println("Recieving account info data request....");
+			System.out.println(" --- Recieving account info data request --- ");
 			unit = req.getParameter("uID");
 			if (unit==null) fail(resp);
 			data = AccountManager.getAccountInfo(unit);
@@ -74,7 +74,7 @@ public class WebServlet extends HttpServlet {
 	
 		default: fail(resp); return;
 		}
-		System.out.println();
+		System.out.println(" --- End GET  ---\n");
 		
 		//Send response
 		resp.setStatus(HttpServletResponse.SC_OK);
@@ -83,13 +83,22 @@ public class WebServlet extends HttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		System.out.println("Recieving data....");
-		System.out.println("     Content type: "+req.getContentType());
+		System.out.println(" --- Recieving data --- ");
+		
+		//Get data
 		String data = "";
+		String unit = req.getParameter("uID");
+		if (unit==null) fail(resp);
 		if ("POST".equalsIgnoreCase(req.getMethod())) {
 		   data = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		}
-		System.out.println("     Data: "+data);
+		System.out.println("Data: "+data);
+		
+		//Update unit records
+		boolean success = AccountManager.updateAccountInfo(unit, data);
+		if (success) resp.setStatus(HttpServletResponse.SC_OK);
+		else fail(resp);
+		System.out.println(" --- End Post ---\n");
 	}
 
 	@Override

@@ -20,7 +20,7 @@
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	opacity: 0;
 	cursor: pointer;
-	transition: all 0.3s;
+	transition: margin-top 0.3s;
 }
 .uN:hover {
 	margin-top: -0.5%;
