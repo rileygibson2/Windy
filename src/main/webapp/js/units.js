@@ -16,6 +16,7 @@ class UnitsPage extends Page {
 	//Required actions
 	updatePageData() {
 		var self = this;
+		responseRecieved = false;
 
 		let promise = new Promise(function (resolve, reject) {
 			var req = new XMLHttpRequest(); //Fetch data
@@ -27,6 +28,9 @@ class UnitsPage extends Page {
 				}
 			}
 			req.send();
+
+			//Initiate loading
+			setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
 		});
 		return promise;
 	}

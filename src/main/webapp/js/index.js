@@ -1,34 +1,44 @@
 //Global
 var nS = "http://www.w3.org/2000/svg";
+var page;
 var activeSection; //Which side bar section we are on
 var alertMessageShown = false; //Whether a high wind speed alert message has been shown
 
+//Synchronisation booleans
 var animatingOut;
 var animatingIn;
 
-var page;
+//Request stuff
 var unit = "windy32b1";
 var sessionKey;
+var responseRecieved; //Used for delayed fuse loading screens after requests
+var loadingWait = 500; //Time to delay a loading screen for
 
 function load() {
 	//insertLoading(screen.width/2, screen.height/2, true);
-	//deleteCookie();
+	deleteCookie();
 
 	//Check cookies for stored session keys
 	var cookie = getCookie("wTXsK");
 	if (cookie=="") openLogin(); //No stored session key
 	else { //Check to see if stored key is still a valid key
 		sessionKey = cookie;
+		responseRecieved = false;
 		var req = new XMLHttpRequest();
 		req.open('GET', 'data/?sK='+sessionKey+'&m=7&t='+Math.random(), true);
 		req.onreadystatechange = function() {
 			if (req.readyState!=4) return;
+			responseRecieved = true;
+			removeLoading();
 			if (req.status==200) { //Key is still valid
 				setTimeout(switchSections, 0, 0);
 			}
 			else openLogin(); //Key is not still valid
 		}
 		req.send();
+
+		//Initiate loading
+		setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, true);}, loadingWait);
 	}
 }
 
@@ -186,7 +196,7 @@ function openLogin() {
 		$('#lButton').css('opacity', '0.9');
 		$('#lButtonT').css('opacity', '0.9');
 	});
-	document.getElementById('lPass').addEventListener("keydown", event => {
+	document.getElementById('lPass').addEventListener("keyup", event => {
     	loginKeyPress(event);
 	});
 
@@ -219,11 +229,15 @@ function validateLogin() {
 	else $('#lUID').css('border-color', 'rgb(60, 60, 60)');
 	if ($('#lPass').val()=="") $('#lPass').css('border-color', 'rgb(255, 20, 20)');
 	else $('#lPass').css('border-color', 'rgb(60, 60, 60)');
+	if ($('#lUID').val()==""||$('#lPass').val()=="") return;
 
+	responseRecieved = false;
 	var req = new XMLHttpRequest();
-	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+hash($('#lPass').val())+'&t='+Math.random(), true);
+	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+hash(passwordField)+'&t='+Math.random(), true);
 	req.onreadystatechange = function() {
 		if (req.readyState!=4) return;
+		responseRecieved = true;
+		removeLoading();
 		if (req.status==200) { //Success
 			//Add session key and cookie
 			sessionKey = req.responseText;
@@ -244,12 +258,23 @@ function validateLogin() {
 	}
 
 	req.send();
+
+	//Initiate loading
+	setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, true);}, loadingWait);
 }
 
+var passwordField = "";
+
 function loginKeyPress(event) {
+	//Simulate password field style value hiding
+	if (event.key=="Backspace") passwordField = passwordField.substring(0, passwordField.length-1);
+	else if (event.key.length==1) passwordField+=event.key;
+	var bullets = "";
+	for (i=0; i<passwordField.length; i++) bullets += '\u2022';
+	$('#lPass').val(bullets);
+
 	if (event.key!=="Enter") return;
 	validateLogin();
-	event.preventDefault();
 }
 
 function logout() {
@@ -266,8 +291,6 @@ function logout() {
 function fadeIn(obj) {obj.css("animation", "fadeIn 0.8s ease-out forwards");}
 
 function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-in forwards");}
-
-function refreshParent(p) {$(p).html($(p).html());}
 
 function hash(s) {
 	return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
@@ -316,6 +339,8 @@ function animateExit(start) {
 
 function checkResponse(req) {
 	if (req.readyState!=4) return false;
+	responseRecieved = true;
+	removeLoading();
 	if (req.status==500) serverErrorResp();
 	if (req.status==401) unauthorisedResp();
 	if (req.status==200) return true;

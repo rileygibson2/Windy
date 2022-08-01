@@ -4,12 +4,12 @@
 	height: 100vh;
 	background-color: black;
 	opacity: 0.9;
-	z-index: 100;
+	z-index: 600;
 }
 #loadingSVG {
 	position: absolute;
 	overflow: visible;
-	z-index: 101;
+	z-index: 601;
 }
 .circle {
 	stroke: rgb(255, 255, 255);

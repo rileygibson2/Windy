@@ -16,6 +16,7 @@ function openSettings() {
 		$('body').append(req.responseText);
 
 		//Get settings data
+		responseRecieved = false;
 		var reqD = new XMLHttpRequest();
 		reqD.open('GET', 'data/?sK='+sessionKey+'&m=6&uID='+unit+'&t='+Math.random(), true);
 		reqD.onreadystatechange = function() {
@@ -43,6 +44,9 @@ function openSettings() {
 			$('#sCont').css("animation", "openSettings 0.8s ease-in-out forwards");
 		}
 		reqD.send();
+
+		//Initiate loading
+		setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
 	}
 	req.send();
 }

@@ -5,8 +5,6 @@ var r2 = lW/3;
 var fS;
 
 function insertLoading(x, y, fullscreen) {
-	addLoadingStyles();
-
 	fS = fullscreen;
 	if (fS) { //Add screen blocker if fullscreen
 		var blocker = document.createElement("div");
@@ -15,7 +13,7 @@ function insertLoading(x, y, fullscreen) {
 	}
 
 	//Initialise svg
-	var svg = document.createElement("svg");
+	var svg = document.createElementNS(nS, "svg");
 	svg.id = 'loadingSVG';
 	svg.style.width = lW+'px';
 	svg.style.height = lW+'px';
@@ -60,17 +58,10 @@ function insertLoading(x, y, fullscreen) {
 
 	//Finish
 	$('body').append(svg);
-	refreshParent('body');
+	//refreshParent('body');
 }
 
 function removeLoading() {
 	$('#loadingSVG').remove();
 	if (fS) $('#loadingBlocker').remove();
-}
-
-function addLoadingStyles() {
-	var link = document.createElement('link');
-	link.setAttribute('rel', 'stylesheet');
-	link.setAttribute('href', '../styles/loading.css');
-	document.head.appendChild(link);
 }

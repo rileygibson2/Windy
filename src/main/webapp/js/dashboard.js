@@ -38,6 +38,7 @@ class DashboardPage extends Page {
 
 	updatePageData() {
 		var self = this;
+		responseRecieved = false;
 
 		let promise = new Promise(function (resolve, reject) {
 			var req = new XMLHttpRequest(); //Fetch data
@@ -50,6 +51,9 @@ class DashboardPage extends Page {
 				}
 			}
 			req.send();
+
+			//Initiate loading
+			setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
 		});
 		return promise;
 	}

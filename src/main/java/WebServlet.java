@@ -24,8 +24,11 @@ public class WebServlet extends HttpServlet {
 		String sessionKey;
 		int mode;
 		resp.setContentType("application/json");
+		
 		//DataMockup.makeRecords();
 		//DataMockup.makeAccountRecords();
+		/*try {Thread.sleep(2000);}
+		catch (InterruptedException e1) {e1.printStackTrace();}*/
 
 		//Get session key and page mode
 		try {

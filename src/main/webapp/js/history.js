@@ -18,6 +18,7 @@ class HistoryPage extends Page {
 	//Required actions
 	updatePageData() {
 		var self = this;
+		responseRecieved = false;
 
 		let promise = new Promise(function (resolve, reject) {
 			var req = new XMLHttpRequest(); //Fetch data
@@ -29,6 +30,9 @@ class HistoryPage extends Page {
 				}
 			}
 			req.send();
+
+			//Initiate loading
+			setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
 		});
 		return promise;
 	}
@@ -246,6 +250,7 @@ class HistoryPage extends Page {
 
 		//alert(i+" s: "+start+" e: "+end);
 		var self = this;
+		responseRecieved = false;
 		var req = new XMLHttpRequest(); //Fetch data
 		req.open('GET', 'data/?sK='+sessionKey+'&m=4&rS='+start.getTime()+'&rE='+end.getTime()+'&t='+Math.random(), true);
 		req.onreadystatechange = function() {
@@ -255,6 +260,9 @@ class HistoryPage extends Page {
 			}
 		}
 		req.send();
+
+		//Initiate loading
+		setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
 	}
 
 	buildFocussedRecords(start, end) {
