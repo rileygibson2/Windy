@@ -15,8 +15,7 @@ var responseRecieved; //Used for delayed fuse loading screens after requests
 var loadingWait = 500; //Time to delay a loading screen for
 
 function load() {
-	//insertLoading(screen.width/2, screen.height/2, true);
-	deleteCookie();
+	//deleteCookie();
 
 	//Check cookies for stored session keys
 	var cookie = getCookie("wTXsK");
@@ -282,6 +281,7 @@ function logout() {
 	$('#effCont').empty();
 	sessionKey = null;
 	activeSection = null;
+	passwordField = "";
 	deleteCookie();
 	openLogin();
 }
