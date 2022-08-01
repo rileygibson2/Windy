@@ -4,13 +4,32 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.json.JSONObject;
 
 public class AccountManager {
 
-	public static boolean authenticateAccount(String unit, String pass) {
+	private final Set<SessionKey> sessionKeys;
+	
+	public AccountManager() {
+		sessionKeys = new HashSet<SessionKey>();
+	}
+	
+	public boolean validateSessionKey(String key) {
+		boolean valid = false;
+		Set<SessionKey> toRemove = new HashSet<>(); //Take chance to clean expired keys
+		for (SessionKey sK : sessionKeys) {
+			if (sK.isExpired()) toRemove.add(sK);
+			else if (sK.getKey().equals(key)) valid = true;
+		}
+		sessionKeys.removeAll(toRemove);
+		return valid;
+	}
+	
+	public String authenticateAccount(String unit, String pass) {
 		String obj;
 		try {
 			Scanner s = new Scanner(new File("accounts/"+unit+".info"));
@@ -18,20 +37,22 @@ public class AccountManager {
 			s.close();
 		}
 		catch (FileNotFoundException e) {
-			System.out.println("Invalid unit name"); return false;
+			System.out.println("Invalid unit name"); return null;
 		}
 		
 		JSONObject jObj = new JSONObject(obj);
 		System.out.println("Requested Unit: "+unit+" Stored Pass: "+jObj.get("password")+" Given Pass: "+pass);
 		if (jObj.get("password").toString().equals(pass)) {
-			System.out.println("valid");
-			return true;
+			SessionKey sK = new SessionKey((long) 2.16e+7);
+			sessionKeys.add(sK);
+			System.out.println("Valid authentication - issuing session key "+sK.getKey());
+			return sK.getKey();
 		}
 		System.out.println("invalid");
-		return false;
+		return null;
 	}
 	
-	public static String getAccountInfo(String unit) {
+	public String getAccountInfo(String unit) {
 		String obj;
 		try {
 			Scanner s = new Scanner(new File("accounts/"+unit+".info"));
@@ -46,7 +67,7 @@ public class AccountManager {
 		return jObj.toString(1);
 	}
 	
-	public static boolean updateAccountInfo(String unit, String jObjS) {
+	public boolean updateAccountInfo(String unit, String jObjS) {
 		JSONObject jObj = new JSONObject(jObjS);
 		try {
 			//Check for unit file existence

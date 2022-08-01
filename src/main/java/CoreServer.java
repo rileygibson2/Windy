@@ -8,10 +8,13 @@ import org.eclipse.jetty.servlet.ServletHandler;
 
 
 public class CoreServer {
+	public static AccountManager accountManager;
+	
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(80);
 		String webappPath = System.getProperty("user.dir")+"/src/main/webapp";
 		System.out.println(webappPath);
+		accountManager = new AccountManager();
 
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setResourceBase(webappPath);

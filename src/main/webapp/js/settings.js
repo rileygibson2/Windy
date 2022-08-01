@@ -11,15 +11,15 @@ function openSettings() {
 	var req = new XMLHttpRequest();
 	req.open('GET', 'settings.html', true);
 	req.onreadystatechange = function() {
-		if (req.readyState!=4&&req.status!=4) return;
+		if (!checkResponse(req)) return;
 		//Load into body
 		$('body').append(req.responseText);
 
 		//Get settings data
 		var reqD = new XMLHttpRequest();
-		reqD.open('GET', 'data/?m=6&uID='+unit+'&t='+Math.random(), true);
+		reqD.open('GET', 'data/?sK='+sessionKey+'&m=6&uID='+unit+'&t='+Math.random(), true);
 		reqD.onreadystatechange = function() {
-			if (reqD.readyState!=4&&reqD.status!=4) return;
+			if (!checkResponse(reqD)) return;
 			var jObj = JSON.parse(reqD.responseText);
 
 			//Load in settings data
@@ -96,11 +96,15 @@ function postSettings() {
 	}
 
 	var req = new XMLHttpRequest(); //Fetch data
-	req.open('POST', 'data/?m=1&uID='+unit+'&t='+Math.random(), true);
+	req.open('POST', 'data/?sK='+sessionKey+'&m=1&uID='+unit+'&t='+Math.random(), true);
 	req.setRequestHeader("Content-type", "application/json");
 	req.onreadystatechange = function() {
-		if (req.readyState==4&&req.status==200) {
+		if (req.readyState!=4) return;
+		if (req.status==200) {
 			insertMessage("Settings updated succesfully", 1);
+		}
+		else {
+			insertMessage("There was an error updating settings", 0);
 		}
 	}
 	req.send(JSON.stringify(data));

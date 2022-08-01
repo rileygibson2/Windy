@@ -41,9 +41,9 @@ class DashboardPage extends Page {
 
 		let promise = new Promise(function (resolve, reject) {
 			var req = new XMLHttpRequest(); //Fetch data
-			req.open('GET', 'data/?m=1&gm='+self.gViewMode+'&t='+Math.random(), true);
+			req.open('GET', 'data/?sK='+sessionKey+'&m=1&gm='+self.gViewMode+'&t='+Math.random(), true);
 			req.onreadystatechange = function() {
-				if (req.readyState==4&&req.status==200) {
+				if (checkResponse(req)) {
 					self.recieveData(req);
 					//setTimeout(resolve, 2000);
 					resolve();

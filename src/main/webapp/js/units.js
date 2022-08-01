@@ -19,9 +19,9 @@ class UnitsPage extends Page {
 
 		let promise = new Promise(function (resolve, reject) {
 			var req = new XMLHttpRequest(); //Fetch data
-			req.open('GET', 'data/?m=2&t='+Math.random(), true);
+			req.open('GET', 'data/?sK='+sessionKey+'&m=2&t='+Math.random(), true);
 			req.onreadystatechange = function() {
-				if (req.readyState==4&&req.status==200) {
+				if (checkResponse(req)) {
 					self.recieveData(req);
 					resolve();
 				}

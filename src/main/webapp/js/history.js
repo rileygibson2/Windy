@@ -21,9 +21,9 @@ class HistoryPage extends Page {
 
 		let promise = new Promise(function (resolve, reject) {
 			var req = new XMLHttpRequest(); //Fetch data
-			req.open('GET', 'data/?m=3&t='+Math.random(), true);
+			req.open('GET', 'data/?sK='+sessionKey+'&m=3&t='+Math.random(), true);
 			req.onreadystatechange = function() {
-				if (req.readyState==4&&req.status==200) {
+				if (checkResponse(req)) {
 					self.recieveData(req);
 					resolve();
 				}
@@ -247,9 +247,9 @@ class HistoryPage extends Page {
 		//alert(i+" s: "+start+" e: "+end);
 		var self = this;
 		var req = new XMLHttpRequest(); //Fetch data
-		req.open('GET', 'data/?m=4&rS='+start.getTime()+'&rE='+end.getTime()+'&t='+Math.random(), true);
+		req.open('GET', 'data/?sK='+sessionKey+'&m=4&rS='+start.getTime()+'&rE='+end.getTime()+'&t='+Math.random(), true);
 		req.onreadystatechange = function() {
-			if (req.readyState==4&&req.status==200) {
+			if (checkResponse(req)) {
 				self.focussedRecords = eval(JSON.parse(req.responseText)[0].data);
 				self.buildFocussedRecords(start, end);
 			}

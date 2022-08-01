@@ -8,6 +8,7 @@ var animatingIn;
 
 var page;
 var unit = "windy32b1";
+var sessionKey;
 
 function load() {
 	//insertLoading(screen.width/2, screen.height/2, true);
@@ -74,7 +75,7 @@ function switchSections(i) {
 		var req = new XMLHttpRequest();
 		req.open('GET', page.contentName+'.html', true);
 		req.onreadystatechange = function() {
-			if (req.readyState!=4&&req.status!=4) return;
+			if (!checkResponse(req)) return;
 			$('#effCont').html(req.responseText); //Load new elements into container
 			page.updatePageData().then(result => page.animateEntrance(0));
 		}
@@ -207,8 +208,11 @@ function validateLogin() {
 	var req = new XMLHttpRequest();
 	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+hash($('#lPass').val())+'&t='+Math.random(), true);
 	req.onreadystatechange = function() {
-		if (req.readyState!=4&&req.status!=4) return;
-		if (req.responseText.trim()=="valid") closeLogin(); //Success
+		if (req.readyState!=4) return;
+		if (req.status==200) { //Success
+			sessionKey = req.responseText;
+			closeLogin();
+		}
 		else { //Fail
 			$('#lPass').css("animation", "shake 0.3s forwards");
 			$('#lPassIcon').css("animation", "shake 0.3s forwards");
@@ -259,6 +263,24 @@ function animateExit(start) {
 		animatingOut = false;
 	});
 	return promise;
+}
+
+function checkResponse(req) {
+	if (req.readyState!=4) return false;
+	if (req.status==500) serverErrorResp();
+	if (req.status==401) unauthorisedResp();
+	if (req.status==200) return true;
+	return false;
+}
+
+function unauthorisedResp() {
+	alert("unauthorised");
+	insertMessage("There was an authorisation error", 0);
+}
+
+function serverErrorResp() {
+	alert("server error");
+	insertMessage("There was an error on the other end", 0);
 }
 
 
