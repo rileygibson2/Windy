@@ -15,8 +15,9 @@ public class WebServlet extends HttpServlet {
 	private static final int unitsData = 2;
 	private static final int recordsOverview = 3;
 	private static final int recordsForPeriod = 4;
-	private static final int authentication = 5;
+	private static final int authenticationLogin = 5;
 	private static final int accountData = 6;
+	private static final int checkSessionKey = 7;
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -34,9 +35,9 @@ public class WebServlet extends HttpServlet {
 		catch (NumberFormatException e) {failBadRequest(resp); return;}
 
 		//Check session key
-		if (mode!=authentication) {
+		if (mode!=authenticationLogin) {
 			if (sessionKey==null) {failBadRequest(resp); return;}
-			if (!CoreServer.accountManager.validateSessionKey(sessionKey)) {
+			if (!CoreServer.accountManager.authenticateSessionKey(sessionKey)) {
 				failNotAuthorised(resp);
 				return;
 			}
@@ -75,7 +76,7 @@ public class WebServlet extends HttpServlet {
 			data = DataManager.getData4(rS, rE);
 			break;
 
-		case authentication:
+		case authenticationLogin:
 			System.out.println(" --- Recieving authentication request --- ");
 			String unit = req.getParameter("uID");
 			String pass = req.getParameter("p");
@@ -93,6 +94,11 @@ public class WebServlet extends HttpServlet {
 			if (unit==null) failBadRequest(resp);
 			data = CoreServer.accountManager.getAccountInfo(unit);
 			break;
+			
+		case checkSessionKey:
+			System.out.println(" --- Recieving session key check request --- ");
+			//Validation has already taken place at the top
+			break;
 
 		default: failBadRequest(resp); return;
 		}
@@ -108,7 +114,7 @@ public class WebServlet extends HttpServlet {
 		//Get and check session key
 		String sessionKey = req.getParameter("sK");
 		if (sessionKey==null) {failBadRequest(resp); return;}
-		if (!CoreServer.accountManager.validateSessionKey(sessionKey)) {
+		if (!CoreServer.accountManager.authenticateSessionKey(sessionKey)) {
 			failNotAuthorised(resp);
 			return;
 		}

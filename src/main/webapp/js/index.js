@@ -12,9 +12,24 @@ var sessionKey;
 
 function load() {
 	//insertLoading(screen.width/2, screen.height/2, true);
-	//setTimeout(switchSections, 0, 0);
+	//deleteCookie();
 
-	openLogin();
+	//Check cookies for stored session keys
+	var cookie = getCookie("wTXsK");
+	if (cookie=="") openLogin(); //No stored session key
+	else { //Check to see if stored key is still a valid key
+		sessionKey = cookie;
+		var req = new XMLHttpRequest();
+		req.open('GET', 'data/?sK='+sessionKey+'&m=7&t='+Math.random(), true);
+		req.onreadystatechange = function() {
+			if (req.readyState!=4) return;
+			if (req.status==200) { //Key is still valid
+				setTimeout(switchSections, 0, 0);
+			}
+			else openLogin(); //Key is not still valid
+		}
+		req.send();
+	}
 }
 
 function preset() {
@@ -210,7 +225,12 @@ function validateLogin() {
 	req.onreadystatechange = function() {
 		if (req.readyState!=4) return;
 		if (req.status==200) { //Success
+			//Add session key and cookie
 			sessionKey = req.responseText;
+			var d = new Date();
+			d.setTime(d.getTime()+3.6e+6);
+			document.cookie = "wTXsK="+sessionKey+"; expires="+d.toGMTString()+"; path=/";
+			//Finish up
 			closeLogin();
 		}
 		else { //Fail
@@ -232,6 +252,14 @@ function loginKeyPress(event) {
 	event.preventDefault();
 }
 
+function logout() {
+	closeSettings();
+	$('#effCont').empty();
+	sessionKey = null;
+	activeSection = null;
+	deleteCookie();
+	openLogin();
+}
 
 //Generic functions
 
@@ -243,6 +271,27 @@ function refreshParent(p) {$(p).html($(p).html());}
 
 function hash(s) {
 	return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+}
+
+function getCookie(cname) {
+	let name = cname + "=";
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(';');
+
+  	for (let i = 0; i <ca.length; i++) {
+    	let c = ca[i];
+   		while (c.charAt(0) == ' ') {
+      		c = c.substring(1);
+    	}
+    	if (c.indexOf(name) == 0) {
+      		return c.substring(name.length, c.length);
+    	}
+  }
+  return "";
+}
+
+function deleteCookie() {
+	document.cookie = "wTXsK=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
 function animateExit(start) {
@@ -274,12 +323,10 @@ function checkResponse(req) {
 }
 
 function unauthorisedResp() {
-	alert("unauthorised");
 	insertMessage("There was an authorisation error", 0);
 }
 
 function serverErrorResp() {
-	alert("server error");
 	insertMessage("There was an error on the other end", 0);
 }
 

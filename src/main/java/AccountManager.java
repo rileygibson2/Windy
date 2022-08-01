@@ -16,9 +16,10 @@ public class AccountManager {
 	
 	public AccountManager() {
 		sessionKeys = new HashSet<SessionKey>();
+		sessionKeys.add(new SessionKey(true));
 	}
 	
-	public boolean validateSessionKey(String key) {
+	public boolean authenticateSessionKey(String key) {
 		boolean valid = false;
 		Set<SessionKey> toRemove = new HashSet<>(); //Take chance to clean expired keys
 		for (SessionKey sK : sessionKeys) {

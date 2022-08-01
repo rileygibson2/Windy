@@ -16,6 +16,11 @@ public class SessionKey {
 		expiry = new Date().getTime()+life;
 	}
 	
+	public SessionKey(boolean dev) {
+		key = "dev1";
+		expiry = new Date().getTime()+1000000;
+	}
+	
 	public String getKey() {return this.key;}
 	
 	public long getExpiry() {return this.expiry;}

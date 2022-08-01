@@ -34,12 +34,16 @@
 		<div class="sETitle">New Password</div>
 		<div class="sEBoxIcon" style="background-image: url('../assets/icons/lock.svg'); background-size: 85%;"></div>
 		<input type="text" id="sPassword" class="sEBox">
+
+		<div class="sButton" id="sLogOut" onclick="logout()">
+		<p class="sButtonT">Log Out</p>
+	</div>
 	</div>
 
-	<div id="sCancel" onclick="closeSettings()">
+	<div class="sButton" id="sCancel" onclick="closeSettings()">
 		<p class="sButtonT">Cancel</p>
 	</div>
-	<div id="sUpdate" onclick="postSettings()">
+	<div class="sButton" id="sUpdate" onclick="postSettings()">
 		<p class="sButtonT">Update</p>
 	</div>
 </div>
