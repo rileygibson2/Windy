@@ -16,7 +16,6 @@ public class AccountManager {
 	
 	public AccountManager() {
 		sessionKeys = new HashSet<SessionKey>();
-		sessionKeys.add(new SessionKey(true));
 	}
 	
 	public boolean authenticateSessionKey(String key) {
