@@ -76,6 +76,7 @@ class DashboardPage extends Page {
 
 		//Load graph data
 		this.gData = jArr[1].gData.slice(1, -1).split(",");
+		this.gData.reverse();
 		this.gVisualData = [];
 		for (i=0; i<this.gData.length; i++) this.gVisualData[i] = 0; //Copy incase no animation is run
 		this.implementData();
@@ -134,14 +135,13 @@ class DashboardPage extends Page {
 
 		//Find y axis markings based on graph view mode and current time
 		var ms = 1000*60*5; //Num ms in 5 minutes for rounding
-		var d = Date.now();
 
 		switch (this.gViewMode) {
 		case 1: //Hour mode
 			this.gPointsOnX = 12; //12 readings an hour - every 5 mins
-			var d = Math.floor(d/ms)*ms; //Round down to nearest 5 mins
+			var d = Math.floor(Date.now()/ms)*ms+300000; //Round up to nearest 5 mins and add one increment
 			
-			for (i=0; i<13; i++) {
+			for (i=0; i<12; i++) {
 				var date = new Date(d-((i)*300000));
 
 				if (date.getHours()==0&&date.getMinutes()==0) { //New day so add day format
@@ -158,9 +158,10 @@ class DashboardPage extends Page {
 			break;
 
 		case 2: //Day mode
-			this.gPointsOnX = 2*24; //2 readings an hour - every 30 mins
+			this.gPointsOnX = 48; //2 readings an hour - every 30 mins
+			var d = Date.now()+3600000; //Add one increment
 
-			for (i=0; i<25; i++) {
+			for (i=0; i<24; i++) {
 				var date = new Date(d-((i)*3600000));
 				var h = date.getHours();
 				if (h==0) { //New day so add day format
@@ -180,25 +181,40 @@ class DashboardPage extends Page {
 			break;
 
 		case 3: //Week mode
-			this.gPointsOnX = 24*7; //24 readings a day - every 1 hour
-			
+			this.gPointsOnX = 168; //24 readings a day - every 1 hour
+			//Round date to nearest day
+			var date = new Date();
+			date.setHours(0);
+			date.setMinutes(0);
+			date.setSeconds(0);
+			date.setMilliseconds(0);
+			var d = date.getTime()+3.6e+6; //Add one increment
+
 			for (i=0; i<8; i++) {
-				var date = new Date(d-((i)*86400000));
+				date = new Date(d-((i)*8.64e+7));
 				this.gXMarkings[i] = date.toLocaleDateString('default', {weekday: 'short'})+" "+date.getDate()+this.dateSuffix(date.getDate());
 			}
 			break;
 
 		case 4: //Month mode
 			this.gPointsOnX = 60; //2 readings a day - every 6 hours
+			//Round date to nearest day
+			var date = new Date();
+			date.setHours(0);
+			date.setMinutes(0);
+			date.setSeconds(0);
+			date.setMilliseconds(0);
+			var d = date.getTime()+4.32e+7; //Add one increment
 
-			for (i=0; i<31; i++) {
-				var date = new Date(d-((i)*86400000));
+			for (i=0; i<30; i++) {
+				date = new Date(d-((i)*8.64e+7));
 				if (date.getDate()==1) this.gXMarkings[i] = date.toLocaleString('default', {month: 'long'})
 				else this.gXMarkings[i] = date.getDate()+this.dateSuffix(date.getDate());
 			}
 			break;
 		}
 
+		this.gXMarkings.reverse();
 		this.animateGraph();
 	}
 
@@ -277,7 +293,7 @@ class DashboardPage extends Page {
 		svg.append(path);	
 
 		//X Axis Markings
-		var split = (gRight-gLeft)/(this.gXMarkings.length-1);
+		var split = (gRight-gLeft)/this.gXMarkings.length;
 		for (i=0; i<this.gXMarkings.length; i++) {
 			var w1 = (split*i)+gLeft;
 			//Line
@@ -334,101 +350,104 @@ class DashboardPage extends Page {
 			svg.append(path);
 		}
 
-		//Data line
+		//Data line and gradient
 		var ySplit = (gBot-gTop)/(this.gYTopVal-this.gYBotVal);
 		var xSplit = (gRight-gLeft)/this.gPointsOnX;
+		var d = null;
+		var xStart = null;
 
-		for (i=0; i<this.gVisualData.length; i++) {
-			//Search forward to find end of block
-			var end = i;
-			while (end<this.gVisualData.length) {
-				if (this.gVisualData[end]<=0) break;
-				else end++;
+		var i = 0;
+		while (i<this.gVisualData.length) {
+			if (this.gVisualData[i]==0) {i++; continue;}
+
+			//Search forward to find next non-zero data point
+			var end = true;
+			var next;
+			for (var z=i+1; z<this.gVisualData.length; z++) {
+				if (this.gVisualData[z]>0) {
+					end = false;
+					next = z;
+					break;
+				}
 			}
-			if (end==i||end-i==1) continue;
 
-			//Build path for block
-			path = document.createElementNS(nS, "path");
-			path.setAttribute("class", 'gDataLine');
-			var d = '';
+			//Add data point to path
+			var y = (this.gYTopVal-this.gVisualData[i])*ySplit+gTop;
+			var x = i*xSplit+gLeft;
+			if (d==null) {
+				d = "M"+x+" "+y;
+				xStart = x;
+			}
 			
-			for (var z=i; z<end; z++) {
-				y1 = (this.gYTopVal-this.gVisualData[z])*ySplit+gTop;
-				x1 = z*xSplit+gLeft;
-				
-				if (z==i) d += " M "+x1+" "+y1;
-				else d +=" L "+x1+" "+y1;
+			/*Bezier curve split into 4 quadrants. Curve to
+			half way between d and d+1, with control point at
+			quater of way, then terminate at d+1, other control
+			point will be infered.*/
+			if (!end&&i<this.gVisualData.length) {
+				var y1 = (this.gYTopVal-this.gVisualData[next])*ySplit+gTop;
+				var x1 = next*xSplit+gLeft;
+				var midY;
+				if (y1>y) midY = y1-(y1-y)/2;
+				else midY = y-(y-y1)/2;
 
-				var circle = document.createElementNS(nS, "circle");
-				circle.setAttribute("class", 'gDataCircle');
-				circle.setAttribute("cx", x1);
-				circle.setAttribute("cy", y1);
-				svg.append(circle);
+				d += " Q"+(x+(x1-x)/4)+","+y;
+				d += " "+(x+(x1-x)/2)+","+midY;
+				d += " T"+x1+","+y1;
 			}
 
-			path.setAttribute("d", d);
-			svg.append(path);
+			//Add circle
+			var circle = document.createElementNS(nS, "circle");
+			circle.setAttribute("class", 'gDataCircle');
+			circle.setAttribute("cx", x);
+			circle.setAttribute("cy", y);
+			svg.append(circle);
+
+			i = next;
+			if (end) break;
 		}
 
-		//Data shape with gradient
-		//Need to build for every set of data points as there could be breaks
-		for (i=0; i<this.gVisualData.length; i++) {
-			//Search forward to find end of block
-			var end = i;
-			while (end<this.gVisualData.length) {
-				if (this.gVisualData[end]<=0) break;
-				else end++;
-			}
-			if (end==i||end-i==1) continue;
-
-			//Build path for block
+		if (xStart!=null) { //Add elements to svg
+			//Data line
 			path = document.createElementNS(nS, "path");
-			path.setAttribute("class", 'gDataGrad');
-			var y1 = (this.gYTopVal-this.gVisualData[i])*ySplit+gTop;
-			var x1 = i*xSplit+gLeft;
-			var x2;
-			var d = " M "+x1+" "+y1;
-			
-			for (z=i+1; z<end; z++) {
-				var y2 = (this.gYTopVal-this.gVisualData[z])*ySplit+gTop;
-				x2 = z*xSplit+gLeft;
-				d +=" L "+x2+" "+y2;
-			}
-
-			//Close path back to start of block
-			d +=" L "+x2+" "+gBot+" L "+x1+" "+gBot+" Z";
+			path.setAttribute("class", 'gDataLine');
 			path.setAttribute("d", d);
 			svg.append(path);
-			i = end;
+
+			//Close gradient path back to start of path
+			d +=" L "+(i*xSplit+gLeft)+" "+gBot+" L "+xStart+" "+gBot+" Z";
+			//Gradient
+			path = document.createElementNS(nS, "path");
+			path.setAttribute("class", 'gDataGrad');
+			path.setAttribute("d", d);
+			svg.append(path);
 		}
 	}
 
 	animateGraph() {
 		//Bypass
-		for (i=0; i<this.gVisualData.length; i++) {
+		/*for (i=0; i<this.gVisualData.length; i++) {
 			this.gVisualData[i] = this.gData[i];
 		}
 		this.buildGraph();
-		return;
+		return;*/
 
 		//Reset visual data
 		for (i=0; i<this.gVisualData.length; i++) {
-			//gVisualData[i] = gData[i]/4;
+			this.gVisualData[i] = this.gData[i]*0.8;
 			if (this.gVisualData[i]<0) this.gVisualData[i] = 0;
 		}
 
 		//Animate points on graph sliding up
+		var self = this;
 		let slide = setInterval(function() {
-			if (graphSlideFinished()) {
-				clearInterval(slide);
-			}
+			if (self.graphSlideFinished()) clearInterval(slide);
 			else {
-				for (i=0; i<this.gVisualData.length; i++) {
-					if (this.gVisualData[i]<this.gData[i]) this.gVisualData[i]++;
+				for (i=0; i<self.gVisualData.length; i++) {
+					if (self.gVisualData[i]<self.gData[i]) self.gVisualData[i]++;
 				}
-				this.buildGraph();
+				self.buildGraph();
 			}
-		}, 15);
+		}, 8);
 	}
 
 	graphSlideFinished() {
@@ -504,3 +523,68 @@ class DashboardPage extends Page {
 		}
 	}
 }
+
+
+/*for (i=0; i<this.gVisualData.length; i++) {
+			//Search forward to find end of block
+			var end = i;
+			while (end<this.gVisualData.length) {
+				if (this.gVisualData[end]<=0) break;
+				else end++;
+			}
+			if (end==i||end-i==1) continue;
+
+			//Build path for block
+			path = document.createElementNS(nS, "path");
+			path.setAttribute("class", 'gDataLine');
+			var d = '';
+			
+			for (var z=i; z<end; z++) {
+				y1 = (this.gYTopVal-this.gVisualData[z])*ySplit+gTop;
+				x1 = z*xSplit+gLeft;
+				
+				if (z==i) d += " M "+x1+" "+y1;
+				else d +=" L "+x1+" "+y1;
+
+				var circle = document.createElementNS(nS, "circle");
+				circle.setAttribute("class", 'gDataCircle');
+				circle.setAttribute("cx", x1);
+				circle.setAttribute("cy", y1);
+				svg.append(circle);
+			}
+
+			path.setAttribute("d", d);
+			svg.append(path);
+		}
+
+		//Data shape with gradient
+		//Need to build for every set of data points as there could be breaks
+		for (i=0; i<this.gVisualData.length; i++) {
+			//Search forward to find end of block
+			var end = i;
+			while (end<this.gVisualData.length) {
+				if (this.gVisualData[end]<=0) break;
+				else end++;
+			}
+			if (end==i||end-i==1) continue;
+
+			//Build path for block
+			path = document.createElementNS(nS, "path");
+			path.setAttribute("class", 'gDataGrad');
+			var y1 = (this.gYTopVal-this.gVisualData[i])*ySplit+gTop;
+			var x1 = i*xSplit+gLeft;
+			var x2;
+			var d = " M "+x1+" "+y1;
+			
+			for (z=i+1; z<end; z++) {
+				var y2 = (this.gYTopVal-this.gVisualData[z])*ySplit+gTop;
+				x2 = z*xSplit+gLeft;
+				d +=" L "+x2+" "+y2;
+			}
+
+			//Close path back to start of block
+			d +=" L "+x2+" "+gBot+" L "+x1+" "+gBot+" Z";
+			path.setAttribute("d", d);
+			svg.append(path);
+			i = end;
+		}*/

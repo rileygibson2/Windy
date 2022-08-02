@@ -233,48 +233,59 @@ public class DataManager {
 	 * Averages records by increments over a period.
 	 * Guarentees an array with the correct number of holes.
 	 * 
-	 * @param records
-	 * @param increment
-	 * @param start
+	 * @param records - the records to average
+	 * @param increment - the size of one of the averaging buckets
+	 * @param start - the start ts for the averaging
+	 * @param period - the whole period being averaged over
 	 * @return
 	 */
 	public static List<Integer> averageRecords(List<List<Long>> records, long increment, long start, long period) {
 		List<Integer> recordsA = new ArrayList<>();
+		List<Long> recordsTS = new ArrayList<>();
 		long currentInc = start;
 		int averageWS = 0, count = 0;
 
 		//Average records
 		for (int i=0; i<records.size(); i++) {
-			if (records.get(i).get(0)<currentInc-increment) { //In next increment below
-				//System.out.println(i+" BELOW "+new Date(records.get(i).get(0)).toString()+", "+new Date(currentInc).toString());
+			if (records.get(i).get(0)<currentInc-increment) {
+				//In next increment below
 				if (count==0) recordsA.add(0); //Avoid number format exception
 				else recordsA.add(averageWS/count);
+				recordsTS.add(currentInc);
+				
 				averageWS = 0;
 				count = 0;
 				currentInc -= increment;
-
-				//Loop to fill gaps in data
+				//Loop to retry current value against new increment
 				i--;
 				continue;
 			}
 
 			if (records.get(i).get(0)>=currentInc-increment&&records.get(i).get(0)<currentInc) {
 				//Within increment
-				//System.out.println(i+" WITHIN "+new Date(records.get(i).get(0)).toString()+", "+new Date(currentInc).toString()+", ws "+records.get(i).get(1));
 				averageWS += records.get(i).get(1);
 				count++;
 			}
 		}
-		if (count>0) recordsA.add(averageWS/count); //Catch last
+		if (count>0) {
+			recordsA.add(averageWS/count); //Catch last
+			recordsTS.add(currentInc);
+		}
 
 		//Top up array if not correct size
 		if (recordsA.size()<(period/increment)) {
 			int topUp = (int) Math.abs((period/increment)-recordsA.size());
 			System.out.println("TOPPING UP WITH "+topUp);
-			for (int i=0; i<topUp; i++) recordsA.add(0);
+			for (int i=0; i<topUp; i++) {
+				recordsA.add(0);
+				recordsTS.add((long) 0);
+			}
 		}
 
 		System.out.println("end "+recordsA.size());
+		for (int i=0; i<recordsTS.size(); i++) {
+			System.out.println(new Date(recordsTS.get(i)).toString()+" v: "+recordsA.get(i));
+		}
 		return recordsA;
 	}
 
@@ -294,8 +305,16 @@ public class DataManager {
 			d = cal.getTimeInMillis();
 			d -= (d%(msInMinute*5));
 
-			records = getRecordsFromPeriod((long) (d-msInHour+(msInMinute*5)), d);
-			recordsA = averageRecords(records, (long) (msInMinute*5), d, (long) (msInHour));
+			/*
+			 * Note the getRecordsFromPeriod call parameters specify the
+			 * earliest time and latest time records should be pulled from.
+			 * Here the earliest parameter has one of the increments added to
+			 * it, to only get values up to the actual earliest point.
+			 * The latest parameter also has one increment added, to catch 
+			 * values up to and including the latest point.
+			 */
+			records = getRecordsFromPeriod((long) (d-msInHour+(msInMinute*5)), (long) (d+(msInMinute*5)));
+			recordsA = averageRecords(records, (long) (msInMinute*5), (long) (d+(msInMinute*5)), (long) (msInHour));
 			System.out.println(recordsA.toString());
 			break;
 
@@ -306,8 +325,8 @@ public class DataManager {
 			cal.set(Calendar.MILLISECOND, 0);
 			d = cal.getTimeInMillis();
 
-			records = getRecordsFromPeriod((long) (d-msInDay+(msInHour/2)), d);
-			recordsA = averageRecords(records, (long) (msInHour/2), d, (long) (msInDay));
+			records = getRecordsFromPeriod((long) (d-msInDay+(msInHour/2)), (long) (d+(msInHour/2)));
+			recordsA = averageRecords(records, (long) (msInHour/2), (long) (d+(msInHour/2)), (long) (msInDay));
 			System.out.println(recordsA.toString());
 			break;
 
@@ -319,8 +338,8 @@ public class DataManager {
 			cal.set(Calendar.MILLISECOND, 0);
 			d = cal.getTimeInMillis();
 
-			records = getRecordsFromPeriod((long) (d-msInWeek+msInHour), d);
-			recordsA = averageRecords(records, (long) (msInHour), d, (long) (msInWeek));
+			records = getRecordsFromPeriod((long) (d-msInWeek+msInHour), (long) (d+msInHour));
+			recordsA = averageRecords(records, (long) (msInHour), (long) (d+msInHour), (long) (msInWeek));
 			System.out.println(recordsA.toString());
 			break;
 
@@ -333,7 +352,7 @@ public class DataManager {
 			d = cal.getTimeInMillis();
 
 			records = getRecordsFromPeriod((long) (d-msInMonth+(msInDay/2)), d);
-			recordsA = averageRecords(records, (long) (msInDay/2), d, (long) (msInMonth));
+			recordsA = averageRecords(records, (long) (msInDay/2), (long) (d+(msInDay/2)), (long) (msInMonth));
 			System.out.println(recordsA.toString());
 		}
 

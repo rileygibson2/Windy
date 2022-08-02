@@ -12,14 +12,14 @@ public class DataMockup {
 
 	final static char alph[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'};
 	
-	public static void makeRecords() {
-		long d = new Date().getTime();
+	public static void makeRecords(long start) {
+		long d = new Date().getTime()-start;
 		try {
 			FileWriter out = new FileWriter("data/records.log");
-			for (int i=0; i<5000; i++) {
+			for (int i=0; i<525600; i++) {
 				long record[] = new long[4];
 				record[0] = d; //Timestamp
-				record[1] = (int) (Math.random()*(100-0)+0); //Windspeed
+				record[1] = (int) (Math.random()*(100-1)+1); //Windspeed
 				record[2] = (int) (Math.random()*(360-0)+0); //Direction
 				record[3] = 1; //Alert level
 				if (record[1]>DataManager.amberAlarm) record[3] = 2;

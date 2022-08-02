@@ -28,6 +28,9 @@ public class CoreServer {
         handlers.setHandlers(new Handler[] { resourceHandler, dataHandler});
         server.setHandler(handlers);
 
+        DataMockup.makeRecords(300000);
+      	//DataMockup.makeAccountRecords();
+        
 		server.start();
 		System.out.println("Server running!");
 		server.join();
