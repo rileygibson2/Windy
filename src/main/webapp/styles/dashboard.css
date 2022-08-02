@@ -177,7 +177,7 @@
 	z-index: 100;
 }
 .gDataCircle { /*Data point circle*/
-	fill: rgb(50, 255, 50);
+	fill: rgb(50, 255, 50, 0.8);
 	r: 2px;
 	z-index: 101;
 }

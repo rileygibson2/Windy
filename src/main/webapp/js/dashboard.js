@@ -226,12 +226,12 @@ class DashboardPage extends Page {
 		setTimeout(fadeIn, start+100, $("#cCont"));
 		setTimeout(fadeIn, start+150, $("#graph"));
 		setTimeout(fadeIn, start+200, $("#slider"));
-		setTimeout(() => {this.animateDirection();}, start+2000);
 		setTimeout(() => {this.animateCircleGraphs();}, start+600);
+		setTimeout(() => {this.animateDirection();}, start+800);
 		setTimeout(() => {
 			if (this.rtAlarmLevel==3) this.initiateRedAlarm(); 
 			if (this.rtAlarmLevel==2) this.initiateAmberAlarm(); 
-		}, 4000);
+		}, 2000);
 	}
 
 	//Real-time module actions
