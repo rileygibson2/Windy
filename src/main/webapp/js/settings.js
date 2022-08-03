@@ -104,12 +104,8 @@ function postSettings() {
 	req.setRequestHeader("Content-type", "application/json");
 	req.onreadystatechange = function() {
 		if (req.readyState!=4) return;
-		if (req.status==200) {
-			insertMessage("Settings updated succesfully", 1);
-		}
-		else {
-			insertMessage("There was an error updating settings", 0);
-		}
+		if (req.status==200) insertMessage("Settings updated succesfully", 1);
+		else insertMessage("There was an error updating settings", 0);
 	}
 	req.send(JSON.stringify(data));
 	this.closeSettings();

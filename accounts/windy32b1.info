@@ -1,6 +1,7 @@
 {
  "number": "021583723",
- "password": 3738,
+ "password": "d1822ca9d6c36b174aedd2896a1ebb01e9beda863060d944d4e100888e4a28f2",
+ "salt": "4327181319458447",
  "PD": "180",
  "LF": "5",
  "RAL": "80",
