@@ -9,7 +9,7 @@ var animatingOut;
 var animatingIn;
 
 //Request stuff
-var unit = "windy32b1";
+var unit;
 var sessionKey;
 var responseRecieved; //Used for delayed fuse loading screens after requests
 var loadingWait = 500; //Time to delay a loading screen for
@@ -232,44 +232,43 @@ function validateLogin() {
 	//Create authentication session on server and get salts
 	responseRecieved = false;
 	var req = new XMLHttpRequest();
-	req.open('GET', 'data/?m=8&uID='+$('#lUID').val()+'&t='+Math.random(), true);
+	req.open('GET', 'data/?m=8&user='+$('#lUID').val()+'&t='+Math.random(), true);
 	req.onreadystatechange = function() {
-		if (!checkResponse(req)) return;
-		responseRecieved = false;
+		if (req.readyState!=4) return;
+		responseRecieved = true;
+		if (req.status==500) serverErrorResp();
+		if (req.status==400) clientErrorResp();
+		if (req.status==401) badLogin();
+		if (req.status==200) { //Successfully retrieved an authorisation session
+			var authSesh = JSON.parse(req.responseText);
 
-		var authSesh = JSON.parse(req.responseText);
-		console.log("authsesh: "+authSesh);
+			//Hash password with both auth salts
+			var p = hash(passwordField, authSesh.s1);
+			p = hash(p, authSesh.s2);
 
-		//Hash password with both auth salts
-		var p = hash(passwordField, authSesh.s1);
-		p = hash(p, authSesh.s2);
-
-		var req1 = new XMLHttpRequest();
-		req1.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+p+'&aSID='+authSesh.id+'&t='+Math.random(), true);
-		req1.onreadystatechange = function() {
-			if (req1.readyState!=4) return;
-			responseRecieved = true;
-			removeLoading();
-			if (req1.status==200) { //Success
-				//Add session key and cookie
-				sessionKey = req1.responseText;
-				var d = new Date();
-				d.setTime(d.getTime()+3.6e+6);
-				document.cookie = "wTXsK="+sessionKey+"; expires="+d.toGMTString()+"; path=/";
-				//Finish up
-				closeLogin();
+			responseRecieved = false;
+			var req1 = new XMLHttpRequest();
+			req1.open('GET', 'data/?m=5&user='+$('#lUID').val()+'&p='+p+'&asID='+authSesh.id+'&t='+Math.random(), true);
+			req1.onreadystatechange = function() {
+				if (req1.readyState!=4) return;
+				responseRecieved = true;
+				removeLoading();
+				if (req1.status==200) { //Success
+					//Set session key and default unit
+					var jObj = JSON.parse(req1.responseText);
+					sessionKey = jObj.sK;
+					unit = jObj.defunit;
+					//Add cookie
+					var d = new Date();
+					d.setTime(d.getTime()+3.6e+6);
+					document.cookie = "wTXsK="+sessionKey+"; expires="+d.toGMTString()+"; path=/";
+					//Finish up
+					closeLogin();
+				}
+				else badLogin(); //Fail
 			}
-			else { //Fail
-				$('#lPass').css("animation", "shake 0.3s forwards");
-				$('#lPassIcon').css("animation", "shake 0.3s forwards");
-				setTimeout(function() {
-					$('#lPass').css("animation", "none");
-					$('#lPassIcon').css("animation", "none");
-				}, 300);
-			}
+			req1.send();
 		}
-
-		req1.send();
 	}
 	req.send();
 
@@ -299,6 +298,16 @@ function logout() {
 	passwordField = "";
 	deleteCookie();
 	openLogin();
+}
+
+function badLogin() {
+	//Let user know by shaking the password box
+	$('#lPass').css("animation", "shake 0.3s forwards");
+	$('#lPassIcon').css("animation", "shake 0.3s forwards");
+	setTimeout(function() {
+		$('#lPass').css("animation", "none");
+		$('#lPassIcon').css("animation", "none");
+	}, 300);
 }
 
 //Generic functions

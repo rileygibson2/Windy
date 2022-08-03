@@ -22,7 +22,7 @@ class HistoryPage extends Page {
 
 		let promise = new Promise(function (resolve, reject) {
 			var req = new XMLHttpRequest(); //Fetch data
-			req.open('GET', 'data/?sK='+sessionKey+'&m=3&t='+Math.random(), true);
+			req.open('GET', 'data/?sK='+sessionKey+'&m=3&u='+unit+'&t='+Math.random(), true);
 			req.onreadystatechange = function() {
 				if (checkResponse(req)) {
 					self.recieveData(req);
@@ -38,8 +38,8 @@ class HistoryPage extends Page {
 	}
 
 	recieveData(req) {
-		var jArr = JSON.parse(req.responseText);
-		this.historyData = eval(jArr[0].data);
+		var jObj = JSON.parse(req.responseText);
+		this.historyData = eval(jObj.data);
 		this.implementData();
 	}
 
@@ -248,14 +248,13 @@ class HistoryPage extends Page {
 		var end = new Date(Date.now()-(2.628e+9*(i-1)));
 		end = new Date(end.getFullYear(), end.getMonth(), 1);
 
-		//alert(i+" s: "+start+" e: "+end);
 		var self = this;
 		responseRecieved = false;
 		var req = new XMLHttpRequest(); //Fetch data
-		req.open('GET', 'data/?sK='+sessionKey+'&m=4&rS='+start.getTime()+'&rE='+end.getTime()+'&t='+Math.random(), true);
+		req.open('GET', 'data/?sK='+sessionKey+'&m=4&u='+unit+'&rS='+start.getTime()+'&rE='+end.getTime()+'&t='+Math.random(), true);
 		req.onreadystatechange = function() {
 			if (checkResponse(req)) {
-				self.focussedRecords = eval(JSON.parse(req.responseText)[0].data);
+				self.focussedRecords = eval(req.responseText);
 				self.buildFocussedRecords(start, end);
 			}
 		}
@@ -317,7 +316,6 @@ class HistoryPage extends Page {
 
 
 			var tS = new Date(this.focussedRecords[i][0]);
-			//alert(tS);
 			rT.innerHTML += "\u00A0\u00A0\u00A0\u00A0\u00A0<b>Log Time: </b>"+tS.toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
 			rT.innerHTML += " "+tS.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 

@@ -18,7 +18,7 @@ function openSettings() {
 		//Get settings data
 		responseRecieved = false;
 		var reqD = new XMLHttpRequest();
-		reqD.open('GET', 'data/?sK='+sessionKey+'&m=6&uID='+unit+'&t='+Math.random(), true);
+		reqD.open('GET', 'data/?sK='+sessionKey+'&m=6&t='+Math.random(), true);
 		reqD.onreadystatechange = function() {
 			if (!checkResponse(reqD)) return;
 			var jObj = JSON.parse(reqD.responseText);
@@ -103,8 +103,8 @@ function postSettings() {
 		data.salt = salt;
 	}
 
-	var req = new XMLHttpRequest(); //Fetch data
-	req.open('POST', 'data/?sK='+sessionKey+'&m=1&uID='+unit+'&t='+Math.random(), true);
+	var req = new XMLHttpRequest(); //Post data
+	req.open('POST', 'data/?sK='+sessionKey+'&m=1&t='+Math.random(), true);
 	req.setRequestHeader("Content-type", "application/json");
 	req.onreadystatechange = function() {
 		if (req.readyState!=4) return;

@@ -21,16 +21,19 @@ import org.json.JSONObject;
 public class AccountManager {
 
 	private final Map<Integer, AuthenticationSession> authSessions;
-	private final Set<SessionKey> sessionKeys;
+	private final Set<Session> sessions;
+
+	private static final String[] infoAttrs = {"number","password","salt","PD","LF","RAL","AAL", "ENF","email","username","defunit","units"};
 
 	public AccountManager() {
-		sessionKeys = new HashSet<SessionKey>();
+		sessions = new HashSet<Session>();
 		authSessions = new HashMap<Integer, AuthenticationSession>();
 	}
 
-	public String createAuthenticationSession(String unit) {
-		JSONObject jObj = getAccountInfo(unit);
+	public String createAuthenticationSession(String user) {
+		JSONObject jObj = getAccountInfo(user);
 		if (jObj==null) return null;
+		
 		int id = authSessions.size()+1;
 		AuthenticationSession auth = null;
 
@@ -49,7 +52,7 @@ public class AccountManager {
 			if (m.getValue().isExpired()) toRemove.add(m.getKey());
 		}
 		for (Integer i : toRemove) authSessions.remove(i);
-		
+
 		//Get requested authentication session
 		AuthenticationSession auth = authSessions.get(id);
 		if (auth==null) return null;
@@ -58,13 +61,20 @@ public class AccountManager {
 
 	public boolean authenticateSessionKey(String key) {
 		boolean valid = false;
-		Set<SessionKey> toRemove = new HashSet<>(); //Take chance to clean expired keys
-		for (SessionKey sK : sessionKeys) {
+		Set<Session> toRemove = new HashSet<>(); //Take chance to clean expired keys
+		for (Session sK : sessions) {
 			if (sK.isExpired()) toRemove.add(sK);
 			else if (sK.getKey().equals(key)) valid = true;
 		}
-		sessionKeys.removeAll(toRemove);
+		sessions.removeAll(toRemove);
 		return valid;
+	}
+	
+	public Session getSession(String key) {
+		for (Session sK : sessions) {
+			if (sK.getKey().equals(key)&&!sK.isExpired()) return sK;
+		}
+		return null;
 	}
 
 	/**
@@ -82,80 +92,72 @@ public class AccountManager {
 	 * @param key
 	 * @return the generated session key, or "invalid"
 	 */
-	public String authenticateAccount(String unit, String pass, int authID) {
+	public String authenticateAccount(String user, String pass, int authID) {
 		//Find relevant authentication session
 		AuthenticationSession auth = getAuthSession(authID);
 		if (auth==null) {System.out.println("Invalid or expired authentication session."); return null;}
 
 		//Read account file
-		JSONObject jObj = getAccountInfo(unit);
-		if (jObj==null) {System.out.println("Invalid unit name"); return null;}
-		
+		JSONObject jObj = getAccountInfo(user);
+		if (jObj==null) return null;
+
 		//Hash stored pass with authentication session salt
 		String actualPass = hash(jObj.get("password").toString(), auth.getS2());
 		System.out.println("Actual Pass: "+actualPass+"\nGiven Pass: "+pass);
 		authSessions.remove(authID); //Done with authentication session
-		
+
 		if (actualPass.equals(pass)) { //Generate session key
-			SessionKey sK = new SessionKey((long) 2.16e+7);
-			sessionKeys.add(sK);
+			Session sK = new Session(user, (long) 2.16e+7);
+			sessions.add(sK);
 			System.out.println("Valid authentication - issuing session key "+sK.getKey());
-			return sK.getKey();
+			
+			JSONObject toSend = new JSONObject();
+			toSend.put("sK", sK.getKey()).put("defunit", jObj.get("defunit"));
+			return toSend.toString(1);
 		}
-		
+
 		System.out.println("Invalid.");
 		return null;
 	}
 
-	public JSONObject getAccountInfo(String unit) {
-		//Read account file
-		JSONObject jObj = null;
-		try {
-			Scanner s = new Scanner(new File("accounts/"+unit+".info"));
-			jObj = new JSONObject(s.useDelimiter("\\A").next());
-			s.close();
-		}
-		catch (FileNotFoundException e) {System.out.println("Invalid unit name"); return null;}
-		catch (JSONException e) {System.out.println("Empty or invalid unit file contents"); return null;}
-		System.out.println("Requested Unit: "+unit);
-		
-		return jObj;
-	}
-
-	public boolean updateAccountInfo(String unit, String jObjS) {
+	public boolean updateAccountInfo(String user, String jObjS) {
 		JSONObject jObj = new JSONObject(jObjS);
-		try {
-			//Check for unit file existence
-			File f = new File("accounts/"+unit+".info");
-			if (!f.exists()||f.isDirectory()) { 
-				System.out.println("Unit file does not exist.");
-				return false;
-			}
+		JSONObject oldObj = getAccountInfo(user); //Get old object
+		
+		//Go through all attributes and fill in gaps in data object
+		for (String s : infoAttrs) {
+			//If not provided then pull from old
+			if (!jObj.has(s)) jObj.put(s, oldObj.get(s));
+		}
 
-			if (!jObj.has("password")) { //If provided data doesn't include a password change
-				System.out.println("No new password, fetching from old file.");
-				Scanner s = new Scanner(new File("accounts/"+unit+".info"));
-				String oldObjS = s.useDelimiter("\\A").next();
-				s.close();
-				JSONObject oldObj = new JSONObject(oldObjS);
-				jObj.put("password", oldObj.get("password"));
-				jObj.put("salt", oldObj.get("salt"));
-			}
-			else { //If provided data does contain password change
-				if (!jObj.has("salt")) return false;
-				jObj.put("password", jObj.get("password").toString());
-				jObj.put("salt", jObj.get("salt").toString());
-				System.out.println("Password: "+jObj.get("password").toString()+"\nSalt: "+jObj.get("salt").toString());
-			}
-
-			//Update unit file
-			FileWriter out = new FileWriter("accounts/"+unit+".info");
+		try { //Update account file
+			FileWriter out = new FileWriter("accounts/"+user+".acc");
 			out.write(jObj.toString(1));
 			out.close();
 			System.out.println("Successfully updated accounts.");
 		} catch (IOException e) {System.out.println("IO Error."); return false;}	
 
 		return true;
+	}
+	
+	public String getDefaultUnit(String user) {
+		JSONObject jObj = getAccountInfo(user);
+		if (jObj==null) return null;
+		return jObj.get("defunit").toString();
+	}
+	
+	public JSONObject getAccountInfo(String user) {
+		//Read account file
+		JSONObject jObj = null;
+		try {
+			Scanner s = new Scanner(new File("accounts/"+user+".acc"));
+			jObj = new JSONObject(s.useDelimiter("\\A").next());
+			s.close();
+		}
+		catch (FileNotFoundException e) {System.out.println("Invalid user."); return null;}
+		catch (JSONException e) {System.out.println("Empty or invalid account file contents - JSON error."); return null;}
+		System.out.println("Requested user: "+user);
+		return jObj;
 	}
 
 	public String hash(String toHash, String salt) {

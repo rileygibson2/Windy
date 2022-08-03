@@ -15,7 +15,7 @@ public class DataMockup {
 	public static void makeRecords(long start) {
 		long d = new Date().getTime()-start;
 		try {
-			FileWriter out = new FileWriter("data/records.log");
+			FileWriter out = new FileWriter("data/windy32b1.log");
 			for (int i=0; i<525600; i++) {
 				long record[] = new long[4];
 				record[0] = d; //Timestamp

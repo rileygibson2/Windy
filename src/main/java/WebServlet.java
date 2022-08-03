@@ -2,6 +2,7 @@ package main.java;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServlet;
@@ -18,103 +19,135 @@ public class WebServlet extends HttpServlet {
 	private static final int authenticationLogin = 5;
 	private static final int accountData = 6;
 	private static final int checkSessionKey = 7;
-	private static final int getAuthenticationSalts = 8;
+	private static final int authenticationSalts = 8;
+	
+	private static final String blue = "\033[36m";
+	private static final String red = "\033[31m";
+	private static final String reset = "\033[49m\033[39m";
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		String sessionKey;
-		int mode;
 		resp.setContentType("application/json");
 		
-		/*try {Thread.sleep(2000);}
-		catch (InterruptedException e1) {e1.printStackTrace();}*/
-
 		//Get session key and page mode
-		try {
-			sessionKey = req.getParameter("sK");
-			mode = Integer.parseInt(req.getParameter("m"));
-		}
+		String sK = req.getParameter("sK");
+		Session session = null;
+		int mode;
+		try {mode = Integer.parseInt(req.getParameter("m"));}
 		catch (NumberFormatException e) {failBadRequest(resp); return;}
 
 		//Check session key
-		if (mode!=getAuthenticationSalts&&mode!=authenticationLogin) {
-			if (sessionKey==null) {failBadRequest(resp); return;}
-			if (!CoreServer.accountManager.authenticateSessionKey(sessionKey)) {
+		if (mode!=authenticationSalts&&mode!=authenticationLogin) {
+			if (sK==null) {failBadRequest(resp); return;}
+			if (!CoreServer.accountManager.authenticateSessionKey(sK)) {
 				failNotAuthorised(resp);
 				return;
 			}
+			session = CoreServer.accountManager.getSession(sK);
 		}
 
 		//Get data
 		String data = "";
 		switch (mode) {
 		case dashboardData:
-			System.out.println(" --- Recieving real time data request --- ");
+			System.out.println(blue+" --- Recieving real time data request --- "+reset);
 			int graphMode;
+			String unit = req.getParameter("u");
 			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
-			data = DataManager.getDashboardData(graphMode);
+			
+			//If no unit defined then use default one
+			if (unit.equals("undefined")) {
+				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
+				System.out.println("Using default unit.");
+			}
+			
+			data = DataManager.getDashboardData(unit, graphMode);
+			if (data==null) {failBadRequest(resp); return;}
 			break;
 
 		case unitsData:
-			System.out.println(" --- Recieving units data request --- ");
-			data = DataManager.getUnitsData().toString(1);;
+			System.out.println(blue+" --- Recieving units data request --- "+reset);
+			
+			data = DataManager.getUnitsData();
+			if (data==null) {failBadRequest(resp); return;}
 			break;
 
 		case recordsOverview:
-			System.out.println(" --- Recieving record overview data request --- ");
-			data = DataManager.getRecordCount().toString(1);
+			System.out.println(blue+" --- Recieving record overview data request --- "+reset);
+			unit = req.getParameter("u");
+			
+			//If no unit defined then use default one
+			if (unit.equals("undefined")) {
+				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
+				System.out.println("Using default unit.");
+			}
+			
+			data = DataManager.getRecordCount(unit);
+			if (data==null) {failBadRequest(resp); return;}
 			break;
 
 		case recordsForPeriod:
-			System.out.println(" --- Recieving record period data request --- ");
+			System.out.println(blue+" --- Recieving record period data request --- "+reset);
 			long rS, rE;
+			unit = req.getParameter("u");
 			try {
 				rS = Long.parseLong(req.getParameter("rS"));
 				rE = Long.parseLong(req.getParameter("rE"));
 			}
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
-			System.out.println("     For records from "+new Date(rS).toString()+" to "+new Date(rE).toString());
-			data = DataManager.getData4(rS, rE);
-			break;
-
-		case authenticationLogin:
-			System.out.println(" --- Recieving authentication request --- ");
-			String unit = req.getParameter("uID");
-			String pass = req.getParameter("p");
-			int authID;
-			try {authID = Integer.parseInt(req.getParameter("aSID"));}
-			catch (NumberFormatException e) {failBadRequest(resp); return;}
-			if (unit==null||pass==null) failBadRequest(resp);
 			
-			data = CoreServer.accountManager.authenticateAccount(unit, pass, authID);
-			if (data==null) {failNotAuthorised(resp); return;}
+			//If no unit defined then use default one
+			if (unit.equals("undefined")) {
+				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
+				System.out.println("Using default unit.");
+			}
+			
+			System.out.println("For records from "+new Date(rS).toString()+" to "+new Date(rE).toString());
+			List<List<Long>> records = DataManager.getRecordsFromPeriod(unit, rS, rE);
+			if (records==null) {failBadRequest(resp); return;}
+			data = records.toString();
 			break;
-
+			
 		case accountData:
-			System.out.println(" --- Recieving account info data request --- ");
-			unit = req.getParameter("uID");
-			if (unit==null) {failBadRequest(resp); return;}
-			data = CoreServer.accountManager.getAccountInfo(unit).toString(1);
+			System.out.println(blue+" --- Recieving account info data request --- "+reset);
+			data = CoreServer.accountManager.getAccountInfo(session.getUser()).toString(1);
 			if (data==null) {failBadRequest(resp); return;}
 			break;
 			
 		case checkSessionKey:
-			System.out.println(" --- Recieving session key check request --- ");
+			System.out.println(blue+" --- Recieving session key check request --- "+reset);
 			//Validation has already taken place at the top
 			break;
+
+		case authenticationLogin:
+			System.out.println(blue+" --- Recieving login request --- "+reset);
+			String user = req.getParameter("user");
+			String pass = req.getParameter("p");
+			int authID;
+			try {authID = Integer.parseInt(req.getParameter("asID"));}
+			catch (NumberFormatException e) {failBadRequest(resp); return;}
+			if (user==null||pass==null) failBadRequest(resp);
 			
-		case getAuthenticationSalts:
-			System.out.println(" --- Recieving authentication session init request --- ");
-			unit = req.getParameter("uID");
-			if (unit==null) {failBadRequest(resp); return;}
-			data = CoreServer.accountManager.createAuthenticationSession(unit);
-			if (data==null) {failBadRequest(resp); return;}
+			data = CoreServer.accountManager.authenticateAccount(user, pass, authID);
+			if (data==null) {failNotAuthorised(resp); return;}
+			break;
+			
+		case authenticationSalts:
+			System.out.println(blue+" --- Recieving authentication session init request --- "+reset);
+			user = req.getParameter("user");
+			if (user==null) {failBadRequest(resp); return;}
+			data = CoreServer.accountManager.createAuthenticationSession(user);
+			
+			/* Need to fail not authorised here instead of bad request, because
+			 * the primary way this goes bad is a wrong username, which should trigger
+			 * the not authorised client response, not the bad request one. */
+			if (data==null) {failNotAuthorised(resp); return;}
 			break;
 
 		default: failBadRequest(resp); return;
 		}
-		System.out.println("sessionKey: "+sessionKey+"\n --- End GET  ---\n");
+		System.out.println("sessionKey: "+sK+"\n"+blue+" --- End GET  --- "+reset+"\n");
 
 		//Send response
 		resp.setStatus(HttpServletResponse.SC_OK);
@@ -124,28 +157,27 @@ public class WebServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		//Get and check session key
-		String sessionKey = req.getParameter("sK");
-		if (sessionKey==null) {failBadRequest(resp); return;}
-		if (!CoreServer.accountManager.authenticateSessionKey(sessionKey)) {
+		String sK = req.getParameter("sK");
+		if (sK==null) {failBadRequest(resp); return;}
+		if (!CoreServer.accountManager.authenticateSessionKey(sK)) {
 			failNotAuthorised(resp);
 			return;
 		}
+		Session session = CoreServer.accountManager.getSession(sK);
 
 		//Get data
-		System.out.println(" --- Recieving data --- ");
+		System.out.println(blue+" --- Recieving data --- "+reset);
 		String data = "";
-		String unit = req.getParameter("uID");
-		if (unit==null) failBadRequest(resp);
 		if ("POST".equalsIgnoreCase(req.getMethod())) {
 			data = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		}
 		System.out.println("Data: "+data);
 
-		//Update unit records
-		boolean success = CoreServer.accountManager.updateAccountInfo(unit, data);
+		//Update user records
+		boolean success = CoreServer.accountManager.updateAccountInfo(session.getUser(), data);
 		if (success) resp.setStatus(HttpServletResponse.SC_OK);
 		else failBadRequest(resp);
-		System.out.println("sessionKey: "+sessionKey+"\n --- End Post ---\n");
+		System.out.println("sessionKey: "+sK+"\n"+blue+" --- End Post --- "+reset+"\n");
 	}
 
 	@Override
@@ -153,16 +185,16 @@ public class WebServlet extends HttpServlet {
 
 	public void failBadRequest(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		System.out.println(" --- Bad request. ---\n");
+		System.out.println(red+" --- Bad request --- "+reset+"\n");
 	}
 
 	public void failNotAuthorised(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		System.out.println(" --- Unauthorised request. ---\n");
+		System.out.println(red+" --- Unauthorised request --- "+reset+"\n");
 	}
 
 	public void failServerError(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		System.out.println(" --- Server error. ---\n");
+		System.out.println(red+" --- Server error --- "+reset+"\n");
 	}
 }

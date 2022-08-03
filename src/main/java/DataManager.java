@@ -28,46 +28,32 @@ public class DataManager {
 	 * @param graphMode
 	 * @return
 	 */
-	public static String getDashboardData(int graphMode) {
+	public static String getDashboardData(String unit, int graphMode) {
 		JSONArray jArr = new JSONArray();
-
-		jArr.put(getRealTimeData());
-		jArr.put(getRealTimeGraphData(graphMode));
+		JSONObject rTD = getRealTimeData(unit);
+		JSONObject rTDG = getRealTimeGraphData(unit, graphMode);
+		if (rTD==null||rTD==null) return null;
+		
+		jArr.put(rTD);
+		jArr.put(rTDG);
 		return jArr.toString(1);
 	}
 
+
 	/**
-	 * Get data about records between a start and an end date
-	 * for the history page.
+	 * Get all records from a pre-defiend period.
 	 * Returns individual records, not overviews.
 	 * 
-	 * @return
+	 * @param dS - period start date
+	 * @param dE - period end date
+	 * @return all records in this period
 	 */
-	public static String getData4(long start, long end) {
-		JSONArray jArr = new JSONArray();
-		//Format in JSON
-		JSONObject jObj = new JSONObject();
-		jObj.put("name", "records");
-		jObj.put("data", getRecordsFromPeriod(start, end).toString());
-		jArr.put(jObj);
-		return jArr.toString(1);
-	}
-
-	/**
-	 * Get all records from a predefiend period.
-	 * 
-	 * @param dS
-	 * @param dE
-	 * @return
-	 */
-	public static List<List<Long>> getRecordsFromPeriod(long dS, long dE) {
+	public static List<List<Long>> getRecordsFromPeriod(String unit, long dS, long dE) {
 		List<List<Long>> records = new ArrayList<>();
 
-		Scanner s = null;
-		try {s = new Scanner(new File("data/records.log"));}
-		catch (FileNotFoundException e) {e.printStackTrace();}
-		if (s==null) System.out.println("There is a server-side data error");
-		s.useDelimiter("\\[");
+		//Get log scanner
+		Scanner s = getLogScanner(unit);
+		if (s==null) return null;
 
 		//Get records from period
 		while (s.hasNext()) {
@@ -97,7 +83,7 @@ public class DataManager {
 	 * 
 	 * @return
 	 */
-	public static JSONObject getRecordCount() {
+	public static String getRecordCount(String unit) {
 		List<List<Long>> recordCount = new ArrayList<>();
 		//Round date to start of current day
 		Calendar cal = Calendar.getInstance();
@@ -109,11 +95,9 @@ public class DataManager {
 		long dS = (long) (cal.getTimeInMillis()+msInDay); //Start time for count
 		long dE = (long) (dS+msInDay); //End time for count
 
-		Scanner s = null;
-		try {s = new Scanner(new File("data/records.log"));}
-		catch (FileNotFoundException e) {e.printStackTrace();}
-		if (s==null) System.out.println("There is a server-side data error");
-		s.useDelimiter("\\[");
+		//Get log scanner
+		Scanner s = getLogScanner(unit);
+		if (s==null) return null;
 
 		//Count records for each day
 		int count = 0;
@@ -145,10 +129,10 @@ public class DataManager {
 		JSONObject jObj = new JSONObject();
 		jObj.put("name", "historydata");
 		jObj.put("data", recordCount.toString());
-		return jObj;
+		return jObj.toString(1);
 	}
 
-	public static JSONArray getUnitsData() {
+	public static String getUnitsData() {
 		//Look at all unit files
 		JSONArray units = new JSONArray();
 		File path = new File("accounts/");
@@ -169,7 +153,7 @@ public class DataManager {
 				units.put(jObj);
 			}
 		}
-		return units;
+		return units.toString(1);
 	}
 
 	/**
@@ -177,15 +161,14 @@ public class DataManager {
 	 * 
 	 * @return
 	 */
-	public static JSONObject getRealTimeData() {
+	public static JSONObject getRealTimeData(String unit) {
 		long record[] = new long[4];
 		int[] alarmLevelTimes = new int[3];
 
-		Scanner s = null;
-		try {s = new Scanner(new File("data/records.log"));}
-		catch (FileNotFoundException e) {e.printStackTrace();}
-		if (s==null) System.out.println("There is a server-side data error");
-		s.useDelimiter("\\[");
+		//Get log scanner
+		Scanner s = getLogScanner(unit);
+		if (s==null) return null;
+
 
 		if (s.hasNext()) {
 			String r = s.next();
@@ -231,7 +214,7 @@ public class DataManager {
 				if (count==0) recordsA.add(0); //Avoid number format exception
 				else recordsA.add(averageWS/count);
 				recordsTS.add(currentInc);
-				
+
 				averageWS = 0;
 				count = 0;
 				currentInc -= increment;
@@ -268,7 +251,7 @@ public class DataManager {
 		return recordsA;
 	}
 
-	public static JSONObject getRealTimeGraphData(int mode) {
+	public static JSONObject getRealTimeGraphData(String unit, int mode) {
 		List<List<Long>> records;
 		List<Integer> recordsA = null;
 		Calendar cal = Calendar.getInstance();
@@ -292,7 +275,8 @@ public class DataManager {
 			 * The latest parameter also has one increment added, to catch 
 			 * values up to and including the latest point.
 			 */
-			records = getRecordsFromPeriod((long) (d-msInHour+(msInMinute*5)), (long) (d+(msInMinute*5)));
+			records = getRecordsFromPeriod(unit, (long) (d-msInHour+(msInMinute*5)), (long) (d+(msInMinute*5)));
+			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInMinute*5), (long) (d+(msInMinute*5)), (long) (msInHour));
 			System.out.println(recordsA.toString());
 			break;
@@ -304,7 +288,8 @@ public class DataManager {
 			cal.set(Calendar.MILLISECOND, 0);
 			d = cal.getTimeInMillis();
 
-			records = getRecordsFromPeriod((long) (d-msInDay+(msInHour/2)), (long) (d+(msInHour/2)));
+			records = getRecordsFromPeriod(unit, (long) (d-msInDay+(msInHour/2)), (long) (d+(msInHour/2)));
+			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInHour/2), (long) (d+(msInHour/2)), (long) (msInDay));
 			System.out.println(recordsA.toString());
 			break;
@@ -317,7 +302,8 @@ public class DataManager {
 			cal.set(Calendar.MILLISECOND, 0);
 			d = cal.getTimeInMillis();
 
-			records = getRecordsFromPeriod((long) (d-msInWeek+msInHour), (long) (d+msInHour));
+			records = getRecordsFromPeriod(unit, (long) (d-msInWeek+msInHour), (long) (d+msInHour));
+			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInHour), (long) (d+msInHour), (long) (msInWeek));
 			System.out.println(recordsA.toString());
 			break;
@@ -330,15 +316,24 @@ public class DataManager {
 			cal.set(Calendar.MILLISECOND, 0);
 			d = cal.getTimeInMillis();
 
-			records = getRecordsFromPeriod((long) (d-msInMonth+(msInDay/2)), d);
+			records = getRecordsFromPeriod(unit, (long) (d-msInMonth+(msInDay/2)), d);
+			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInDay/2), (long) (d+(msInDay/2)), (long) (msInMonth));
 			System.out.println(recordsA.toString());
 		}
 
 		//Format in JSON
 		JSONObject jObj = new JSONObject();
-		jObj.put("name", "graph");
 		jObj.put("gData", recordsA.toString());
 		return jObj;
+	}
+
+	public static Scanner getLogScanner(String unit) {
+		try {
+			Scanner s = new Scanner(new File("data/"+unit+".log"));
+			s.useDelimiter("\\[");
+			return s;
+		}
+		catch (FileNotFoundException e) {System.out.println("Invalid unit."); return null;}
 	}
 }
