@@ -28,35 +28,11 @@ public class DataManager {
 	 * @param graphMode
 	 * @return
 	 */
-	public static String getData1(int graphMode) {
+	public static String getDashboardData(int graphMode) {
 		JSONArray jArr = new JSONArray();
 
 		jArr.put(getRealTimeData());
-		jArr.put(getGData(graphMode));
-		return jArr.toString(1);
-	}
-
-	/**
-	 * Units page data.
-	 * 
-	 * @param graphMode
-	 * @return
-	 */
-	public static String getData2() {
-		return getUnitsData().toString(1);
-	}
-
-	/**
-	 * Get the overview of records over time for history page data.
-	 * Data is in form of one entry for every day there was at least one record,
-	 * with the entry containing the day time stamp and the number of records there
-	 * were that day.
-	 * 
-	 * @return
-	 */
-	public static String getData3() {
-		JSONArray jArr = new JSONArray();
-		jArr.put(getRecordCount());
+		jArr.put(getRealTimeGraphData(graphMode));
 		return jArr.toString(1);
 	}
 
@@ -114,7 +90,10 @@ public class DataManager {
 	}
 
 	/**
-	 * Returns counts of records for each day 
+	 * Returns data regarding number of records for each day .
+	 * Data is in form of one entry for every day there was at least one record,
+	 * with the entry containing the day time stamp and the number of records there
+	 * were that day.
 	 * 
 	 * @return
 	 */
@@ -282,14 +261,14 @@ public class DataManager {
 			}
 		}
 
-		System.out.println("end "+recordsA.size());
+		/*System.out.println("end "+recordsA.size());
 		for (int i=0; i<recordsTS.size(); i++) {
 			System.out.println(new Date(recordsTS.get(i)).toString()+" v: "+recordsA.get(i));
-		}
+		}*/
 		return recordsA;
 	}
 
-	public static JSONObject getGData(int mode) {
+	public static JSONObject getRealTimeGraphData(int mode) {
 		List<List<Long>> records;
 		List<Integer> recordsA = null;
 		Calendar cal = Calendar.getInstance();
@@ -360,38 +339,6 @@ public class DataManager {
 		JSONObject jObj = new JSONObject();
 		jObj.put("name", "graph");
 		jObj.put("gData", recordsA.toString());
-		return jObj;
-	}
-
-	public static JSONObject getGraphData(int mode) {
-		int gPointsOnX = 0;
-		switch (mode) {
-		case 1: gPointsOnX = 12*2; break;
-		case 2: gPointsOnX = 12*24; break;
-		case 3: gPointsOnX = 24*7; break;
-		case 4: gPointsOnX = 60;
-		}
-
-		//Get data
-		int gYTopVal = 100;
-		int gYBotVal = 10;
-		int gData[] = new int[gPointsOnX+1];
-		for (int i=0; i<gData.length-1; i++) {
-			/*if (i<3) gData[i] = 0;
-			else if (i>=10&&i<=12) {
-				if (i==11) gData[i] = 50;
-				else gData[i] = 0;
-			}
-			else gData[i] = (int) (Math.random()*((gYTopVal/2)-gYBotVal)+gYBotVal);
-			 */
-			gData[i] = (int) (Math.random()*((gYTopVal/2)-gYBotVal)+gYBotVal);
-		}
-		gData[gData.length-1] = 0;
-
-		//Format in JSON
-		JSONObject jObj = new JSONObject();
-		jObj.put("name", "graph");
-		jObj.put("gData", Arrays.toString(gData));
 		return jObj;
 	}
 }

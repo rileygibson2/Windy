@@ -18,6 +18,7 @@ public class WebServlet extends HttpServlet {
 	private static final int authenticationLogin = 5;
 	private static final int accountData = 6;
 	private static final int checkSessionKey = 7;
+	private static final int getAuthenticationSalts = 8;
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -36,7 +37,7 @@ public class WebServlet extends HttpServlet {
 		catch (NumberFormatException e) {failBadRequest(resp); return;}
 
 		//Check session key
-		if (mode!=authenticationLogin) {
+		if (mode!=getAuthenticationSalts&&mode!=authenticationLogin) {
 			if (sessionKey==null) {failBadRequest(resp); return;}
 			if (!CoreServer.accountManager.authenticateSessionKey(sessionKey)) {
 				failNotAuthorised(resp);
@@ -52,17 +53,17 @@ public class WebServlet extends HttpServlet {
 			int graphMode;
 			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
-			data = DataManager.getData1(graphMode);
+			data = DataManager.getDashboardData(graphMode);
 			break;
 
 		case unitsData:
 			System.out.println(" --- Recieving units data request --- ");
-			data = DataManager.getData2();
+			data = DataManager.getUnitsData().toString(1);;
 			break;
 
 		case recordsOverview:
 			System.out.println(" --- Recieving record overview data request --- ");
-			data = DataManager.getData3();
+			data = DataManager.getRecordCount().toString(1);
 			break;
 
 		case recordsForPeriod:
@@ -81,24 +82,34 @@ public class WebServlet extends HttpServlet {
 			System.out.println(" --- Recieving authentication request --- ");
 			String unit = req.getParameter("uID");
 			String pass = req.getParameter("p");
+			int authID;
+			try {authID = Integer.parseInt(req.getParameter("aSID"));}
+			catch (NumberFormatException e) {failBadRequest(resp); return;}
 			if (unit==null||pass==null) failBadRequest(resp);
-			data = CoreServer.accountManager.authenticateAccount(unit, pass);
-			if (data==null) {
-				failNotAuthorised(resp);
-				return;
-			}
+			
+			data = CoreServer.accountManager.authenticateAccount(unit, pass, authID);
+			if (data==null) {failNotAuthorised(resp); return;}
 			break;
 
 		case accountData:
 			System.out.println(" --- Recieving account info data request --- ");
 			unit = req.getParameter("uID");
-			if (unit==null) failBadRequest(resp);
-			data = CoreServer.accountManager.getAccountInfo(unit);
+			if (unit==null) {failBadRequest(resp); return;}
+			data = CoreServer.accountManager.getAccountInfo(unit).toString(1);
+			if (data==null) {failBadRequest(resp); return;}
 			break;
 			
 		case checkSessionKey:
 			System.out.println(" --- Recieving session key check request --- ");
 			//Validation has already taken place at the top
+			break;
+			
+		case getAuthenticationSalts:
+			System.out.println(" --- Recieving authentication session init request --- ");
+			unit = req.getParameter("uID");
+			if (unit==null) {failBadRequest(resp); return;}
+			data = CoreServer.accountManager.createAuthenticationSession(unit);
+			if (data==null) {failBadRequest(resp); return;}
 			break;
 
 		default: failBadRequest(resp); return;
@@ -120,9 +131,8 @@ public class WebServlet extends HttpServlet {
 			return;
 		}
 
-		System.out.println(" --- Recieving data --- ");
-
 		//Get data
+		System.out.println(" --- Recieving data --- ");
 		String data = "";
 		String unit = req.getParameter("uID");
 		if (unit==null) failBadRequest(resp);
@@ -143,16 +153,16 @@ public class WebServlet extends HttpServlet {
 
 	public void failBadRequest(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		System.out.println("Bad request.\n");
+		System.out.println(" --- Bad request. ---\n");
 	}
 
 	public void failNotAuthorised(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		System.out.println("Unauthorised request.\n");
+		System.out.println(" --- Unauthorised request. ---\n");
 	}
 
 	public void failServerError(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		System.out.println("Server error.\n");
+		System.out.println(" --- Server error. ---\n");
 	}
 }

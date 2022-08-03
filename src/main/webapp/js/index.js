@@ -221,8 +221,6 @@ function closeLogin() {
 }
 
 function validateLogin() {
-	unit = $('#lUID').val();
-
 	//Check inputs are filled
 	if ($('#lUID').val()=="") $('#lUID').css('border-color', 'rgb(255, 20, 20)');
 	else $('#lUID').css('border-color', 'rgb(60, 60, 60)');
@@ -230,32 +228,49 @@ function validateLogin() {
 	else $('#lPass').css('border-color', 'rgb(60, 60, 60)');
 	if ($('#lUID').val()==""||$('#lPass').val()=="") return;
 
+
+	//Create authentication session on server and get salts
 	responseRecieved = false;
 	var req = new XMLHttpRequest();
-	req.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+hash(passwordField)+'&t='+Math.random(), true);
+	req.open('GET', 'data/?m=8&uID='+$('#lUID').val()+'&t='+Math.random(), true);
 	req.onreadystatechange = function() {
-		if (req.readyState!=4) return;
-		responseRecieved = true;
-		removeLoading();
-		if (req.status==200) { //Success
-			//Add session key and cookie
-			sessionKey = req.responseText;
-			var d = new Date();
-			d.setTime(d.getTime()+3.6e+6);
-			document.cookie = "wTXsK="+sessionKey+"; expires="+d.toGMTString()+"; path=/";
-			//Finish up
-			closeLogin();
-		}
-		else { //Fail
-			$('#lPass').css("animation", "shake 0.3s forwards");
-			$('#lPassIcon').css("animation", "shake 0.3s forwards");
-			setTimeout(function() {
-				$('#lPass').css("animation", "none");
-				$('#lPassIcon').css("animation", "none");
-			}, 300);
-		}
-	}
+		if (!checkResponse(req)) return;
+		responseRecieved = false;
 
+		var authSesh = JSON.parse(req.responseText);
+		console.log("authsesh: "+authSesh);
+
+		//Hash password with both auth salts
+		var p = hash(passwordField, authSesh.s1);
+		p = hash(p, authSesh.s2);
+
+		var req1 = new XMLHttpRequest();
+		req1.open('GET', 'data/?m=5&uID='+$('#lUID').val()+'&p='+p+'&aSID='+authSesh.id+'&t='+Math.random(), true);
+		req1.onreadystatechange = function() {
+			if (req1.readyState!=4) return;
+			responseRecieved = true;
+			removeLoading();
+			if (req1.status==200) { //Success
+				//Add session key and cookie
+				sessionKey = req1.responseText;
+				var d = new Date();
+				d.setTime(d.getTime()+3.6e+6);
+				document.cookie = "wTXsK="+sessionKey+"; expires="+d.toGMTString()+"; path=/";
+				//Finish up
+				closeLogin();
+			}
+			else { //Fail
+				$('#lPass').css("animation", "shake 0.3s forwards");
+				$('#lPassIcon').css("animation", "shake 0.3s forwards");
+				setTimeout(function() {
+					$('#lPass').css("animation", "none");
+					$('#lPassIcon').css("animation", "none");
+				}, 300);
+			}
+		}
+
+		req1.send();
+	}
 	req.send();
 
 	//Initiate loading
@@ -292,8 +307,10 @@ function fadeIn(obj) {obj.css("animation", "fadeIn 0.8s ease-out forwards");}
 
 function fadeOut(obj) {obj.css("animation", "fadeOut 0.5s ease-in forwards");}
 
-function hash(s) {
-	return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+function hash(message, salt) {
+	var hash = sha256.create();
+	hash.update(salt+message);
+	return hash.hex();
 }
 
 function getCookie(cname) {
@@ -342,17 +359,22 @@ function checkResponse(req) {
 	responseRecieved = true;
 	removeLoading();
 	if (req.status==500) serverErrorResp();
+	if (req.status==400) clientErrorResp();
 	if (req.status==401) unauthorisedResp();
 	if (req.status==200) return true;
 	return false;
 }
 
 function unauthorisedResp() {
-	insertMessage("There was an authorisation error", 0);
+	insertMessage("There was an authorisation error.", 0);
+}
+
+function clientErrorResp() {
+	insertMessage("There was an error on your side.", 0);
 }
 
 function serverErrorResp() {
-	insertMessage("There was an error on the other end", 0);
+	insertMessage("There was an error on the other end.", 0);
 }
 
 

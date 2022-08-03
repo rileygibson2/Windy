@@ -96,7 +96,11 @@ function postSettings() {
 	}
 
 	if ($('#sPassword').val()!="") { //Only if a new password has been entered
-		data.password = hash($('#sPassword').val());
+		//Generate salt
+		var salt = "";
+		for (var i=0; i<10; i++) salt += new String(Math.floor(Math.random()*(200-0)+0));
+		data.password = hash($('#sPassword').val(), salt);
+		data.salt = salt;
 	}
 
 	var req = new XMLHttpRequest(); //Fetch data

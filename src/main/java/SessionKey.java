@@ -3,6 +3,13 @@ package main.java;
 import java.security.SecureRandom;
 import java.util.Date;
 
+/**
+ * Defines a session key that has been generated for a client and has a life
+ * span.
+ * 
+ * @author thesmileyone
+ *
+ */
 public class SessionKey {
 	
 	final private String key;
