@@ -43,6 +43,10 @@ class UnitsPage extends Page {
 	implementData() {
 		//Add units
 		for (i=this.units.length-1; i>=0; i--) {
+			console.log(this.units[i].name);
+			console.log(this.units[i].status);
+			console.log(this.units[i].power);
+
 			//Node
 			var n = document.createElement("div");
 			n.setAttribute("class", 'uN');
@@ -85,7 +89,7 @@ class UnitsPage extends Page {
 			//Title
 			d = document.createElement("div");
 			d.setAttribute("class", 'uNTitle');
-			d.innerHTML = this.units[i].unit;
+			d.innerHTML = this.units[i].name;
 			n.append(d);
 			//Version
 			d = document.createElement("div");

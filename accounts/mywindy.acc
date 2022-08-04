@@ -1,0 +1,14 @@
+{
+ "number": "021583723",
+ "password": "bd3db778bb035180d2e44cb804b44feaa180961874f6a6b49ec31cabc3695ec0",
+ "salt": "15884157662233862117386",
+ "PD": "180",
+ "LF": "5",
+ "RAL": "80",
+ "AAL": "50",
+ "ENF": "10",
+ "email": "example@example.com",
+ "username": "mywindy",
+ "defunit": "windy32b1",
+ "units": "windy32b1 windy64c2 windy128d3"
+}

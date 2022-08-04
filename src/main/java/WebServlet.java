@@ -56,8 +56,7 @@ public class WebServlet extends HttpServlet {
 			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
 			
-			//If no unit defined then use default one
-			if (unit.equals("undefined")) {
+			if (unit.equals("undefined")) { //If no unit defined then use default one
 				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
 				System.out.println("Using default unit.");
 			}
@@ -69,7 +68,7 @@ public class WebServlet extends HttpServlet {
 		case unitsData:
 			System.out.println(blue+" --- Recieving units data request --- "+reset);
 			
-			data = DataManager.getUnitsData();
+			data = DataManager.getUnitsData(session.getUser());
 			if (data==null) {failBadRequest(resp); return;}
 			break;
 
@@ -77,8 +76,7 @@ public class WebServlet extends HttpServlet {
 			System.out.println(blue+" --- Recieving record overview data request --- "+reset);
 			unit = req.getParameter("u");
 			
-			//If no unit defined then use default one
-			if (unit.equals("undefined")) {
+			if (unit.equals("undefined")) { //If no unit defined then use default one
 				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
 				System.out.println("Using default unit.");
 			}
@@ -97,8 +95,7 @@ public class WebServlet extends HttpServlet {
 			}
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
 			
-			//If no unit defined then use default one
-			if (unit.equals("undefined")) {
+			if (unit.equals("undefined")) { //If no unit defined then use default one
 				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
 				System.out.println("Using default unit.");
 			}

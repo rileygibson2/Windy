@@ -47,7 +47,6 @@ function preset() {
 }
 
 function switchSections(i) {
-	
 	//Move the tab indicator
 	unhoverSB();
 	var a = document.getElementById("sbCont").getBoundingClientRect().top;

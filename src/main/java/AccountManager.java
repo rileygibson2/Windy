@@ -154,7 +154,7 @@ public class AccountManager {
 			jObj = new JSONObject(s.useDelimiter("\\A").next());
 			s.close();
 		}
-		catch (FileNotFoundException e) {System.out.println("Invalid user."); return null;}
+		catch (FileNotFoundException e) {System.out.println("Invalid user - "+user); return null;}
 		catch (JSONException e) {System.out.println("Empty or invalid account file contents - JSON error."); return null;}
 		System.out.println("Requested user: "+user);
 		return jObj;

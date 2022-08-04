@@ -28,7 +28,9 @@ public class CoreServer {
         handlers.setHandlers(new Handler[] { resourceHandler, dataHandler});
         server.setHandler(handlers);
 
-        DataMockup.makeRecords(300000);
+        DataMockup.makeRecords(300000, "windy32b1", "LAB Stage");
+        DataMockup.makeRecords(300000, "windy64c2", "Rock Stage");
+        DataMockup.makeRecords(300000, "windy128d3", "Frank Kitts");
       	//DataMockup.makeAccountRecords();
         
 		server.start();

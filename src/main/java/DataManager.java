@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DataManager {
@@ -32,10 +33,12 @@ public class DataManager {
 		JSONArray jArr = new JSONArray();
 		JSONObject rTD = getRealTimeData(unit);
 		JSONObject rTDG = getRealTimeGraphData(unit, graphMode);
-		if (rTD==null||rTD==null) return null;
+		JSONObject rTM = getMinutesAtAlertLevels(unit, graphMode);
+		if (rTD==null||rTD==null||rTM==null) return null;
 		
 		jArr.put(rTD);
 		jArr.put(rTDG);
+		jArr.put(rTM);
 		return jArr.toString(1);
 	}
 
@@ -132,28 +135,24 @@ public class DataManager {
 		return jObj.toString(1);
 	}
 
-	public static String getUnitsData() {
-		//Look at all unit files
-		JSONArray units = new JSONArray();
-		File path = new File("accounts/");
-		File[] files = path.listFiles();
-		for (int i=0; i<files.length; i++){
-			if (files[i].isFile()&&!files[i].getName().equals(".DS_Store")) {
-				JSONObject jObj = new JSONObject();
-				//Remove file extension from unit name
-				jObj.put("unit", files[i].getName().substring(0, files[i].getName().length()-5));
-				if (jObj.get("unit").equals("windy32b1")) {
-					jObj.put("status", "1");
-					jObj.put("battery", "1");
-				}
-				else {
-					jObj.put("status", "0");
-					jObj.put("battery", "0");
-				}
-				units.put(jObj);
-			}
+	public static String getUnitsData(String user) {
+		//Look at account file to get assigned unit names
+		JSONObject jObj = CoreServer.accountManager.getAccountInfo(user);
+		if (jObj==null) return null;
+		String[] units = jObj.get("units").toString().split(" ");
+		System.out.println("Units assigned to user: "+Arrays.toString(units));
+		
+		//Get status on all assigned units
+		JSONArray jArr = new JSONArray();
+		for (String unit : units) {
+			JSONObject uS = getUnitStatus(unit);
+			if (uS==null) return null;
+			jObj = new JSONObject();
+			jObj.put("name", uS.get("name")).put("status", uS.get("status")).put("power", uS.get("power"));
+			jArr.put(jObj);
 		}
-		return units.toString(1);
+		
+		return jArr.toString(1);
 	}
 
 	/**
@@ -163,7 +162,6 @@ public class DataManager {
 	 */
 	public static JSONObject getRealTimeData(String unit) {
 		long record[] = new long[4];
-		int[] alarmLevelTimes = new int[3];
 
 		//Get log scanner
 		Scanner s = getLogScanner(unit);
@@ -187,7 +185,41 @@ public class DataManager {
 		jObj.put("rtWindSpeed", record[1]);
 		jObj.put("rtDegrees", record[2]);
 		jObj.put("rtAlarmLevel", record[3]);
-		jObj.put("alarmLevelTimes", Arrays.toString(alarmLevelTimes));
+		return jObj;
+	}
+
+	public static JSONObject getMinutesAtAlertLevels(String unit, int mode) {
+		long limit = new Date().getTime(); //Lower limit of data
+		switch (mode) { //Look back different amount based on mode
+		case 1 : limit -= msInHour; break;
+		case 2 : limit -= msInDay; break;
+		case 3 : limit -= msInDay*7; break;
+		case 4 : limit -= msInDay*30; break;
+		}
+		
+		int[] mins = new int[3];
+		
+		//Get log scanner
+		Scanner s = getLogScanner(unit);
+		if (s==null) return null;
+		
+		//Search back through logs for last two hours
+		while (s.hasNext()) {
+			if (s.hasNext()) {
+				String r = s.next();
+				String[] a = r.substring(0, r.length()-1).split(",");
+				long ts = Long.parseLong(a[0]);
+				if (ts>=limit) {
+					int level = Integer.parseInt(a[3]);
+					mins[level-1] = mins[level-1]+5;
+				}
+				else break;
+			}
+		}
+		s.close();
+		
+		JSONObject jObj = new JSONObject();
+		jObj.put("level1", mins[0]).put("level2", mins[1]).put("level3", mins[2]);
 		return jObj;
 	}
 
@@ -330,10 +362,45 @@ public class DataManager {
 
 	public static Scanner getLogScanner(String unit) {
 		try {
-			Scanner s = new Scanner(new File("data/"+unit+".log"));
+			Scanner s = new Scanner(new File("units/"+unit+"/records.log"));
 			s.useDelimiter("\\[");
 			return s;
 		}
 		catch (FileNotFoundException e) {System.out.println("Invalid unit."); return null;}
 	}
+	
+	public static JSONObject getUnitStatus(String unit) {
+		//Read account file
+		JSONObject jObj = null;
+		try {
+			Scanner s = new Scanner(new File("units/"+unit+"/status.log"));
+			jObj = new JSONObject(s.useDelimiter("\\A").next());
+			s.close();
+		}
+		catch (FileNotFoundException e) {System.out.println("Invalid unit - "+unit); return null;}
+		catch (JSONException e) {System.out.println("Empty or invalid status file contents - JSON error."); return null;}
+		return jObj;
+	}
 }
+
+
+/*JSONArray units = new JSONArray();
+File path = new File("accounts/");
+File[] files = path.listFiles();
+for (int i=0; i<files.length; i++){
+	if (files[i].isFile()&&!files[i].getName().equals(".DS_Store")) {
+		JSONObject jObj = new JSONObject();
+		//Remove file extension from unit name
+		jObj.put("unit", files[i].getName().substring(0, files[i].getName().length()-5));
+		if (jObj.get("unit").equals("windy32b1")) {
+			jObj.put("status", "1");
+			jObj.put("battery", "1");
+		}
+		else {
+			jObj.put("status", "0");
+			jObj.put("battery", "0");
+		}
+		units.put(jObj);
+	}
+}
+return units.toString(1);*/

@@ -72,7 +72,6 @@ class DashboardPage extends Page {
 		this.rtDegrees = jArr[0].rtDegrees;
 		this.rtLastUpdateTime = jArr[0].rtLastUpdateTime;
 		this.rtAlarmLevel = jArr[0].rtAlarmLevel;
-		this.alarmLevelTimes = jArr[0].alarmLevelTimes.slice(1, -1).split(",");
 
 		//Load graph data
 		this.gData = jArr[1].gData.slice(1, -1).split(",");
@@ -80,6 +79,9 @@ class DashboardPage extends Page {
 		this.gVisualData = [];
 		for (i=0; i<this.gData.length; i++) this.gVisualData[i] = 0; //Copy incase no animation is run
 		this.implementData();
+
+		//Load alert level circle data
+		this.alarmLevelTimes = [jArr[2].level1, jArr[2].level2, jArr[2].level3];
 	}
 
 
@@ -216,6 +218,7 @@ class DashboardPage extends Page {
 
 		this.gXMarkings.reverse();
 		this.animateGraph();
+		setTimeout(() => {this.animateCircleGraphs();}, 200);
 	}
 
 	animateEntrance(start) {
@@ -226,7 +229,6 @@ class DashboardPage extends Page {
 		setTimeout(fadeIn, start+100, $("#cCont"));
 		setTimeout(fadeIn, start+150, $("#graph"));
 		setTimeout(fadeIn, start+200, $("#slider"));
-		setTimeout(() => {this.animateCircleGraphs();}, start+600);
 		setTimeout(() => {this.animateDirection();}, start+800);
 		setTimeout(() => {
 			if (this.rtAlarmLevel==3) this.initiateRedAlarm(); 
@@ -258,7 +260,7 @@ class DashboardPage extends Page {
 		if (obj.innerHTML=="Week") this.gViewMode = 3;
 		if (obj.innerHTML=="Month") this.gViewMode = 4;
 
-		//Get new data and reload graph
+		//Get new data and reload graph and circle graphs
 		if (!updated) this.updatePageData();
 	}
 
@@ -424,13 +426,6 @@ class DashboardPage extends Page {
 	}
 
 	animateGraph() {
-		//Bypass
-		/*for (i=0; i<this.gVisualData.length; i++) {
-			this.gVisualData[i] = this.gData[i];
-		}
-		this.buildGraph();
-		return;*/
-
 		//Reset visual data
 		for (i=0; i<this.gVisualData.length; i++) {
 			this.gVisualData[i] = this.gData[i]*0.8;
@@ -462,19 +457,43 @@ class DashboardPage extends Page {
 	updateCircleGraph(i) {
 		var svg = $('#cSVG'+(i+1));
 		var r = parseFloat(svg.css('width'))*0.5;	
-		var c = 2*Math.PI*r;
+		var c = 2*Math.PI*(r+10);
 		var v = this.alarmLevelTimes[i];
-		if (v>100) v = 100;
+		//Average off total
+		v = v/(this.alarmLevelTimes[0]+this.alarmLevelTimes[1]+this.alarmLevelTimes[2]);
+		v *= 100;
 
 		//Fudge a zero value to avoid weird looking circle
 		if (v==0) $('#cSVGC'+(i+1)).css("stroke-dasharray", '0, 100000');
 		else $('#cSVGC'+(i+1)).css("stroke-dasharray", (v*(c/100))+', '+c);
-		//Update text
-		$('#cTB'+(i+1)).html(this.alarmLevelTimes[i]);
+
+		//Update smaller text with units
+		var s = "mins";
+		v = this.alarmLevelTimes[i];
+		if (v>60) {
+			s = "hours";
+			v = Math.floor(v/60);
+			if (v>=24) {
+				s = "days"
+				v = Math.floor(v/24)
+			}
+		}
+		if (i==0) s += " at green";
+		if (i==1) s += " at amber";
+		if (i==2) s += " at red";
+		$('#cTS'+(i+1)).html(s);
+
+		//Update text with number
+		$('#cTB'+(i+1)).html(v);
 		$('#cT'+(i+1)).css("opacity", 1);
 	}
 
+	resetCircleGraphs() {
+		for (var i=1; i<=3; i++) $('#cSVGC'+i).css("stroke-dasharray", '0, 100000');
+	}
+
 	animateCircleGraphs() {
+		this.resetCircleGraphs();
 		setTimeout(() => {this.updateCircleGraph(0)}, 200);
 		setTimeout(() => {this.updateCircleGraph(1)}, 400);
 		setTimeout(() => {this.updateCircleGraph(2)}, 600);

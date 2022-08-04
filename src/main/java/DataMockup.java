@@ -1,21 +1,27 @@
 package main.java;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class DataMockup {
 
 	final static char alph[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'};
 	
-	public static void makeRecords(long start) {
+	public static void makeRecords(long start, String unit, String name) {
 		long d = new Date().getTime()-start;
 		try {
-			FileWriter out = new FileWriter("data/windy32b1.log");
+			//Make files if don't already exist
+			new File("units/"+unit).mkdirs();
+			new File("units/"+unit+"/records.log").createNewFile();
+			new File("units/"+unit+"/status.log").createNewFile();
+			
+			//Write to files
+			FileWriter out = new FileWriter("units/"+unit+"/records.log");
 			for (int i=0; i<525600; i++) {
 				long record[] = new long[4];
 				record[0] = d; //Timestamp
@@ -28,15 +34,24 @@ public class DataMockup {
 				d -= DataManager.msInMinute*5;
 			}
 			out.close();
+			
+			out = new FileWriter("units/"+unit+"/status.log");
+			JSONObject jObj = new JSONObject();
+			jObj.put("name", name);
+			jObj.put("status", 1);
+			jObj.put("ip", "127.0.0.1");
+			jObj.put("power", 0);
+			out.write(jObj.toString(1));
+			out.close();
 			System.out.println("Successfully created records.");
-		} catch (IOException e) {System.out.println("An error occurred."+e.getStackTrace());}
+		} catch (IOException e) {e.printStackTrace();}
 	}
 
 	public static void makeAccountRecords() {
 		for (int i=1; i<3; i++) {
 			JSONObject jObj = new JSONObject();
-			String unit =  "windy"+(32*i)+alph[i]+i;
-			jObj.put("username", unit);
+			String username =  "windy"+(32*i)+alph[i]+i;
+			jObj.put("username", username);
 			jObj.put("password", "r");
 			jObj.put("AAL", DataManager.amberAlarm);
 			jObj.put("RAL", DataManager.redAlarm);
@@ -47,7 +62,7 @@ public class DataMockup {
 			jObj.put("ENF", "10");
 			
 			try {
-				FileWriter out = new FileWriter("accounts/"+unit+".info");
+				FileWriter out = new FileWriter("accounts/"+username+".info");
 				out.write(jObj.toString(1));
 				out.close();
 				System.out.println("Successfully created accounts.");
