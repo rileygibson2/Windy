@@ -10,6 +10,7 @@ var animatingIn;
 
 //Request stuff
 var unit;
+var unitName = "LAB Stage";
 var sessionKey;
 var responseRecieved; //Used for delayed fuse loading screens after requests
 var loadingWait = 500; //Time to delay a loading screen for
@@ -30,7 +31,7 @@ function load() {
 			responseRecieved = true;
 			removeLoading();
 			if (req.status==200) { //Key is still valid
-				setTimeout(switchSections, 0, 0);
+				setTimeout(switchSections, 0, 1);
 			}
 			else openLogin(); //Key is not still valid
 		}
@@ -59,25 +60,30 @@ function switchSections(i) {
 	//Load new section
 	var title;
 	var text;
+	var unitText;
 	switch (activeSection) {
 		case 0: 
-			title = "Dashboard";
+			if (unitName==undefined) title = "Dashboard";
+			else title = unitName;
 			text = "Real time data and stats";
 			page = new DashboardPage("dashboard");
 			break;
 		case 1:
 			title = "Devices";
 			text = "Check status and add/remove units";
+			unitText = "";
 			page = new UnitsPage("units");
 			break;
 		case 2:
 			title = "Records";
 			text = "See historical records";
+			unitText = "";
 			page = new HistoryPage("history");
 			break;
 		case 3:
 			title = "Reports";
 			text = "Formatted reports for different events";
+			unitText = "";
 			page = new DashboardPage("dashboard");
 			break;
 	}
@@ -87,13 +93,13 @@ function switchSections(i) {
 	setTimeout(function() {
 		$("#sITitle").html(title);
 		$("#sIText").html(text);
+		$("#sIUnit").html(unitText);
 		$("#sICont").css("animation", "sIMoveIn 0.5s ease-in forwards");
 	}, 100);
 
 	animateExit(0).then(function() {
 		$('#effCont').empty(); //Empty container
-		//insertLoading(screen.width/2, screen.height/2, true);
-			
+
 		//Make request for content
 		var req = new XMLHttpRequest();
 		req.open('GET', page.contentName+'.html', true);
@@ -102,7 +108,6 @@ function switchSections(i) {
 			$('#effCont').html(req.responseText); //Load new elements into container
 			page.updatePageData().then(result => page.animateEntrance(0));
 		}
-
 		req.send();
 	});
 }

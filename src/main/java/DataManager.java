@@ -1,7 +1,5 @@
 package main.java;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -10,13 +8,12 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DataManager {
 
 	final static int amberAlarm = 50;
-	final static int redAlarm = 85;
+	final static int redAlarm = 80;
 	final static double msInMinute = 60000;
 	final static double msInHour = 3.6e+6;
 	final static double msInDay = 8.64e+7;
@@ -55,7 +52,7 @@ public class DataManager {
 		List<List<Long>> records = new ArrayList<>();
 
 		//Get log scanner
-		Scanner s = getLogScanner(unit);
+		Scanner s = CoreServer.unitManager.getLogScanner(unit);
 		if (s==null) return null;
 
 		//Get records from period
@@ -99,7 +96,7 @@ public class DataManager {
 		long dE = (long) (dS+msInDay); //End time for count
 
 		//Get log scanner
-		Scanner s = getLogScanner(unit);
+		Scanner s = CoreServer.unitManager.getLogScanner(unit);
 		if (s==null) return null;
 
 		//Count records for each day
@@ -145,11 +142,9 @@ public class DataManager {
 		//Get status on all assigned units
 		JSONArray jArr = new JSONArray();
 		for (String unit : units) {
-			JSONObject uS = getUnitStatus(unit);
+			JSONObject uS = CoreServer.unitManager.getUnitInfo(unit);
 			if (uS==null) return null;
-			jObj = new JSONObject();
-			jObj.put("name", uS.get("name")).put("status", uS.get("status")).put("power", uS.get("power"));
-			jArr.put(jObj);
+			jArr.put(uS);
 		}
 		
 		return jArr.toString(1);
@@ -164,7 +159,7 @@ public class DataManager {
 		long record[] = new long[4];
 
 		//Get log scanner
-		Scanner s = getLogScanner(unit);
+		Scanner s = CoreServer.unitManager.getLogScanner(unit);
 		if (s==null) return null;
 
 
@@ -200,7 +195,7 @@ public class DataManager {
 		int[] mins = new int[3];
 		
 		//Get log scanner
-		Scanner s = getLogScanner(unit);
+		Scanner s = CoreServer.unitManager.getLogScanner(unit);
 		if (s==null) return null;
 		
 		//Search back through logs for last two hours
@@ -359,48 +354,4 @@ public class DataManager {
 		jObj.put("gData", recordsA.toString());
 		return jObj;
 	}
-
-	public static Scanner getLogScanner(String unit) {
-		try {
-			Scanner s = new Scanner(new File("units/"+unit+"/records.log"));
-			s.useDelimiter("\\[");
-			return s;
-		}
-		catch (FileNotFoundException e) {System.out.println("Invalid unit."); return null;}
-	}
-	
-	public static JSONObject getUnitStatus(String unit) {
-		//Read account file
-		JSONObject jObj = null;
-		try {
-			Scanner s = new Scanner(new File("units/"+unit+"/status.log"));
-			jObj = new JSONObject(s.useDelimiter("\\A").next());
-			s.close();
-		}
-		catch (FileNotFoundException e) {System.out.println("Invalid unit - "+unit); return null;}
-		catch (JSONException e) {System.out.println("Empty or invalid status file contents - JSON error."); return null;}
-		return jObj;
-	}
 }
-
-
-/*JSONArray units = new JSONArray();
-File path = new File("accounts/");
-File[] files = path.listFiles();
-for (int i=0; i<files.length; i++){
-	if (files[i].isFile()&&!files[i].getName().equals(".DS_Store")) {
-		JSONObject jObj = new JSONObject();
-		//Remove file extension from unit name
-		jObj.put("unit", files[i].getName().substring(0, files[i].getName().length()-5));
-		if (jObj.get("unit").equals("windy32b1")) {
-			jObj.put("status", "1");
-			jObj.put("battery", "1");
-		}
-		else {
-			jObj.put("status", "0");
-			jObj.put("battery", "0");
-		}
-		units.put(jObj);
-	}
-}
-return units.toString(1);*/

@@ -12,13 +12,13 @@ public class DataMockup {
 
 	final static char alph[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'};
 	
-	public static void makeRecords(long start, String unit, String name) {
+	public static void makeRecords(long start, String unit, String name, String ip) {
 		long d = new Date().getTime()-start;
 		try {
 			//Make files if don't already exist
 			new File("units/"+unit).mkdirs();
 			new File("units/"+unit+"/records.log").createNewFile();
-			new File("units/"+unit+"/status.log").createNewFile();
+			new File("units/"+unit+"/unit.info").createNewFile();
 			
 			//Write to files
 			FileWriter out = new FileWriter("units/"+unit+"/records.log");
@@ -35,12 +35,14 @@ public class DataMockup {
 			}
 			out.close();
 			
-			out = new FileWriter("units/"+unit+"/status.log");
+			out = new FileWriter("units/"+unit+"/unit.info");
 			JSONObject jObj = new JSONObject();
+			jObj.put("unit", unit);
 			jObj.put("name", name);
 			jObj.put("status", 1);
-			jObj.put("ip", "127.0.0.1");
+			jObj.put("ip", ip);
 			jObj.put("power", 0);
+			jObj.put("version", "1.0.0");
 			out.write(jObj.toString(1));
 			out.close();
 			System.out.println("Successfully created records.");

@@ -218,7 +218,7 @@ class DashboardPage extends Page {
 
 		this.gXMarkings.reverse();
 		this.animateGraph();
-		setTimeout(() => {this.animateCircleGraphs();}, 200);
+		setTimeout(() => {this.animateCircleGraphs();}, 500);
 	}
 
 	animateEntrance(start) {

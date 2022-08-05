@@ -194,6 +194,16 @@ body {background-color: var(--bg);}
 	font-family: open;
 	font-size: 0.9vw;
 }
+#sIUnit { /*Section unit description*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	margin-top: 2%;
+	color: rgb(255, 255, 255, 0.7);
+	text-align: right;
+	font-family: openSemiBold;
+	font-size: 1.2vw;
+}
 @keyframes sIMoveOut {
 	100% {opacity: 0;}
 }

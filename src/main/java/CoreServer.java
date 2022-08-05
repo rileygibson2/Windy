@@ -6,15 +6,16 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 
-
 public class CoreServer {
 	public static AccountManager accountManager;
+	public static UnitManager unitManager;
 	
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(80);
 		String webappPath = System.getProperty("user.dir")+"/src/main/webapp";
 		System.out.println(webappPath);
 		accountManager = new AccountManager();
+		unitManager = new UnitManager();
 
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setResourceBase(webappPath);
@@ -28,9 +29,9 @@ public class CoreServer {
         handlers.setHandlers(new Handler[] { resourceHandler, dataHandler});
         server.setHandler(handlers);
 
-        DataMockup.makeRecords(300000, "windy32b1", "LAB Stage");
-        DataMockup.makeRecords(300000, "windy64c2", "Rock Stage");
-        DataMockup.makeRecords(300000, "windy128d3", "Frank Kitts");
+        DataMockup.makeRecords(300000, "windy32b1", "LAB Stage", "8.8.8.8");
+        DataMockup.makeRecords(300000, "windy64c2", "Rock Stage", "125.99.3.1");
+        DataMockup.makeRecords(300000, "windy128d3", "Frank Kitts", "30.140.50.100");
       	//DataMockup.makeAccountRecords();
         
 		server.start();
