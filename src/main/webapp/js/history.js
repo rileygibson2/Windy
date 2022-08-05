@@ -49,10 +49,10 @@ class HistoryPage extends Page {
 			this.vHOnScroll(event);
 		});
 		document.getElementById('vHCont').addEventListener("mouseover", (event) => {
-			this.vHOnHover(event);
+			if (typeof page.vHOnHover != "undefined") this.vHOnHover(event);
 		});
 		document.getElementById('vHCont').addEventListener("mouseout", (event) => {
-			this.vHOnUnHover(event);
+			if (typeof page.vHOnUnHover != "undefined") this.vHOnUnHover(event);
 		});
 		document.getElementById('vHCont').addEventListener("mousedown", (event) => {
 			this.vHOnClick(event);
@@ -339,10 +339,5 @@ class HistoryPage extends Page {
 			$('#fRCont').css("display", "none");
 		}, 1000);
 	}
-
-
-
-
-
 
 }

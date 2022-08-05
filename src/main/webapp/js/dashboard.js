@@ -435,7 +435,10 @@ class DashboardPage extends Page {
 		//Animate points on graph sliding up
 		var self = this;
 		let slide = setInterval(function() {
-			if (self.graphSlideFinished()) clearInterval(slide);
+			if (self.graphSlideFinished()) {
+				clearInterval(slide);
+				self.buildGraph();
+			}
 			else {
 				for (i=0; i<self.gVisualData.length; i++) {
 					if (self.gVisualData[i]<self.gData[i]) self.gVisualData[i]++;

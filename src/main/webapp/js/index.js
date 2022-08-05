@@ -31,7 +31,7 @@ function load() {
 			responseRecieved = true;
 			removeLoading();
 			if (req.status==200) { //Key is still valid
-				setTimeout(switchSections, 0, 1);
+				setTimeout(switchSections, 0, 0);
 			}
 			else openLogin(); //Key is not still valid
 		}
@@ -353,11 +353,11 @@ function animateExit(start) {
 	redAlarmAniKill = true;
 	var c1 = $('#effCont').children();
 	for (i=0; i<c1.length; i++) {
-		var c2 = c1.eq(i).children();
-		for (z=c2.length; z>=0; z--) {
-			setTimeout(fadeOut, start, c2.eq(z));
+		//var c2 = c1.eq(i).children();
+		//for (z=c2.length; z>=0; z--) {
+			setTimeout(fadeOut, start, c1.eq(i));
 			start += 40;
-		}
+		//}
 	}
 
 	let promise = new Promise(function (resolve, reject) {
