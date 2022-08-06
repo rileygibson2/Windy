@@ -43,17 +43,18 @@
 	<div class="sPageCont" id="sPageCont1">
 		<div class="sCol" style="width: 66%;">
 			<div class="sTableTitle">Paired Units</div>
-			<div class="sTableButton" id="sTablePlus"></div>
-
-			<table class="sTableBox" id="sUnitsTable">
-				 <tr class="sTableHeader">
-				 	<td class="sTableHC">Unit ID</td>
-				 	<td class="sTableHC">Name</td>
-				 	<td class="sTableHC">IP</td>
-				 	<td class="sTableHC">Preset Direction</td>
-				 	<td class="sTableHC">Version</td>
-				 </tr>
-			</table>
+			<div class="sTableCont">
+				<table class="sTable" id="sUnitsTable">
+					 <tr class="sTableHeader">
+					 	<td class="sTableHC">Unit ID</td>
+					 	<td class="sTableHC">Name</td>
+					 	<td class="sTableHC">IP</td>
+					 	<td class="sTableHC">Preset Direction</td>
+					 	<td class="sTableHC">Version</td>
+					 </tr>
+				</table>
+			</div>
+			<div class="sTableButton" id="sTableRemove" style="margin-left: 90%;"></div>
 		</div>
 
 		<div class="sCol" style="left: 66%;">
@@ -69,23 +70,30 @@
 
 	<div class="sPageCont" id="sPageCont3">
 		<div class="sCol">
-			<div class="sETitle">Number</div>
-			<div class="sEBoxIcon" style="background-image: url('../assets/icons/phone.svg'); background-size: 58%;"></div>
-			<input type="text" id="sNumber" class="sEBox">
-		
-			<div class="sETitle">Email</div>
-			<div class="sEBoxIcon" style="background-image: url('../assets/icons/email.svg'); background-size: 67%;"></div>
-			<input type="text" id="sEmail" class="sEBox">
-
+			<div class="sETitle">Red Alarm Limit</div>
+			<input type="text" id="sRAL" class="sEBox">
+			<div class="sETitle">Amber Alarm Limit</div>
+			<input type="text" id="sAAL" class="sEBox">
 			<div class="sETitle">Emergency Notification Frequency</div>
 			<input type="text" id="sENF" class="sEBox">
 		</div>
 
 		<div class="sCol" style="left: 33%;">
-			<div class="sETitle">Red Alarm Limit</div>
-			<input type="text" id="sRAL" class="sEBox">
-			<div class="sETitle">Amber Alarm Limit</div>
-			<input type="text" id="sAAL" class="sEBox">
+			<div class="sETitle">Emergency Numbers</div>
+			<div class="sTableCont" style="height: 30%">
+				<table class="sTable" id="sNumbersTable">
+					 <tr class="sTableHeader">
+					 	<td class="sTableHC">Prefix</td>
+					 	<td class="sTableHC">Number</td>
+					 </tr>
+				</table>
+				<div class="sTableButton" id="sTableAddPhone" style="margin-left: 79.5%;" onmousedown="addEmergencyNumber()"></div>
+				<div class="sTableButton" id="sTableRemove" onmousedown="removeEmergencyNumber()"></div>
+			</div>
+		
+			<div class="sETitle">Email</div>
+			<div class="sEBoxIcon" style="background-image: url('../assets/icons/email.svg'); background-size: 67%;"></div>
+			<input type="text" id="sEmail" class="sEBox">
 		</div>
 	</div>
 

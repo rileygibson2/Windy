@@ -235,8 +235,8 @@ class UnitsPage extends Page {
 				$('#regCont').prepend(div);
 				x += (w*0.6)/2;
 			}
-			$('#progCircleIcon0').css('background-image', 'url("../assets/icons/ipfilled.svg');
-			$('#progCircleIcon1').css('background-image', 'url("../assets/icons/keyfilled.svg');
+			$('#progCircleIcon0').css('background-image', 'url("../assets/icons/ip.svg');
+			$('#progCircleIcon1').css('background-image', 'url("../assets/icons/key.svg');
 			$('#progCircleIcon2').css('background-image', 'url("../assets/icons/user.svg');
 
 			//Animate

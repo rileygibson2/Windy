@@ -48,16 +48,14 @@ function openSettings() {
 function implementSettingsData(jArr) {
 	//Load in account data
 	var jObj = jArr[0];
-	$('#sRAL').val(jObj.RAL+"km/h");
-	$('#sAAL').val(jObj.AAL+"km/h");
-	$('#sLF').val(jObj.LF+" mins");
-	$('#sPD').val(jObj.PD+"°");
 	$('#sNumber').val(jObj.number);
 	$('#sEmail').val(jObj.email);
 	$('#sENF').val(jObj.ENF+" mins");
 	$('#sUsername').val(jObj.username);
 
-	//Load in units data
+	//Load in units tab data
+	$('#sLF').val(jObj.LF+" mins");
+	$('#sPD').val(jObj.PD+"°");
 	for (var i=1; i<jArr.length; i++) {
 		jObj = jArr[i];
 		//Make row
@@ -72,9 +70,27 @@ function implementSettingsData(jArr) {
 
 		$('#sUnitsTable').append(tr);
 	}
+	$('#sUnitsTable').append("<tr></tr>"); //Append dummy row
 
-	//Append dummy row
-	$('#sUnitsTable').append("<tr></tr>");
+	//Load in alerts tab data
+	jObj = jArr[0];
+	$('#sRAL').val(jObj.RAL+"km/h");
+	$('#sAAL').val(jObj.AAL+"km/h");
+	$('#sENF').val(jObj.ENF+" mins");
+
+	var numbers = jObj.numbers.split(" ");
+	for (var i=0; i<numbers.length; i++) {
+		//Make row
+		var tr = document.createElement("tr");
+		tr.setAttribute("class", 'sTableRow');
+		tr.style.height = "4vh";
+		//Add cells
+		makeSettingsCell(false, "+64", tr);
+		makeSettingsCell(true, numbers[i], tr);
+
+		$('#sNumbersTable').append(tr);
+	}
+	$('#sNumbersTable').append("<tr></tr>"); //Append dummy row
 }
 
 function makeSettingsCell(isInput, value, parent) {
@@ -166,3 +182,32 @@ function postSettings() {
 	req.send(JSON.stringify(data));
 	this.closeSettings();
 }
+
+//Settings table add and remove actions
+
+function addEmergencyNumber() {
+	//Remove dummy row
+	$('#sNumbersTable tr:last').remove();
+
+	//Make new row and add cells
+	var tr = document.createElement("tr");
+	tr.setAttribute("class", 'sTableRow');
+	tr.style.height = "4vh";
+	makeSettingsCell(false, "+64", tr);
+	makeSettingsCell(true, "", tr);
+	$('#sNumbersTable').append(tr);
+	$('#sNumbersTable').append("<tr></tr>"); //Add dummy row back in
+}
+
+function removeEmergencyNumber() {
+	//Check to see if selected is a table cell
+	if (document.activeElement.tagName==='TD') {
+		//Remove the parent row
+		document.activeElement.parentElement.remove();
+	}
+}
+
+
+
+
+
