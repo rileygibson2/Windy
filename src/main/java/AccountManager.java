@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -144,6 +145,12 @@ public class AccountManager {
 		JSONObject jObj = getAccountInfo(user);
 		if (jObj==null) return null;
 		return jObj.get("defunit").toString();
+	}
+	
+	public String[] getAssignedUnits(String user) {
+		JSONObject jObj = getAccountInfo(user);
+		if (jObj==null) return null;
+		return jObj.get("units").toString().split(" ");
 	}
 	
 	public JSONObject getAccountInfo(String user) {

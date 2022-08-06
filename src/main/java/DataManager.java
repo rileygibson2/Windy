@@ -38,6 +38,28 @@ public class DataManager {
 		jArr.put(rTM);
 		return jArr.toString(1);
 	}
+	
+	public static String getSettingsData(String user) {
+		JSONArray jArr = new JSONArray();
+		JSONObject jObj;
+		
+		//Get account data
+		jObj = CoreServer.accountManager.getAccountInfo(user);
+		if (jObj==null) return null;
+		jObj.remove("password"); jObj.remove("salt");
+		jArr.put(jObj);
+		
+		//Get unit data
+		String[] units = CoreServer.accountManager.getAssignedUnits(user);
+		if (units==null) return null;
+		for (String unit: units) {
+			jObj = CoreServer.unitManager.getUnitInfo(unit);
+			if (jObj==null) return null;
+			jArr.put(jObj);
+		}
+		
+		return jArr.toString(1);
+	}
 
 
 	/**

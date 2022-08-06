@@ -1,4 +1,5 @@
 //Settings actions
+var settingsPage;
 
 function openSettings() {
 	//Add styles
@@ -6,6 +7,8 @@ function openSettings() {
 	link.setAttribute('rel', 'stylesheet');
 	link.setAttribute('href', '../styles/settings.css');
 	document.head.appendChild(link);
+
+	settingsPage = 0;
 
 	//Get settings raw html
 	var req = new XMLHttpRequest();
@@ -21,18 +24,9 @@ function openSettings() {
 		reqD.open('GET', 'data/?sK='+sessionKey+'&m=6&t='+Math.random(), true);
 		reqD.onreadystatechange = function() {
 			if (!checkResponse(reqD)) return;
-			var jObj = JSON.parse(reqD.responseText);
-
-			//Load in settings data
-			$('#sRAL').val(jObj.RAL+"km/h");
-			$('#sAAL').val(jObj.AAL+"km/h");
-			$('#sLF').val(jObj.LF+" mins");
-			$('#sPD').val(jObj.PD+"°");
-			$('#sNumber').val(jObj.number);
-			$('#sEmail').val(jObj.email);
-			$('#sENF').val(jObj.ENF+" mins");
-			$('#sUsername').val(jObj.username);
-			addKeyListenersSettings();
+			var jArr = JSON.parse(reqD.responseText);
+			implementSettingsData(jArr);
+			addSettingsKeyListeners();
 
 			//Animate entrance - Take stuff out
 			$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
@@ -51,13 +45,71 @@ function openSettings() {
 	req.send();
 }
 
-function addKeyListenersSettings() {
+function implementSettingsData(jArr) {
+	//Load in account data
+	var jObj = jArr[0];
+	$('#sRAL').val(jObj.RAL+"km/h");
+	$('#sAAL').val(jObj.AAL+"km/h");
+	$('#sLF').val(jObj.LF+" mins");
+	$('#sPD').val(jObj.PD+"°");
+	$('#sNumber').val(jObj.number);
+	$('#sEmail').val(jObj.email);
+	$('#sENF').val(jObj.ENF+" mins");
+	$('#sUsername').val(jObj.username);
+
+	//Load in units data
+	for (var i=1; i<jArr.length; i++) {
+		jObj = jArr[i];
+		//Make row
+		var tr = document.createElement("tr");
+		tr.setAttribute("class", 'sTableRow');
+		//Add cells
+		makeSettingsCell(false, jObj.unit, tr);
+		makeSettingsCell(true, jObj.name, tr);
+		makeSettingsCell(false, jObj.ip, tr);
+		makeSettingsCell(true, jObj.direction+"°", tr);
+		makeSettingsCell(false, jObj.version, tr);
+
+		$('#sUnitsTable').append(tr);
+	}
+
+	//Append dummy row
+	$('#sUnitsTable').append("<tr></tr>");
+}
+
+function makeSettingsCell(isInput, value, parent) {
+	var td = document.createElement("td");
+	td.setAttribute("class", 'sTableDC');
+	td.tabIndex = "0";
+	if (isInput) {
+		var input = document.createElement("input");
+		input.setAttribute("class", 'sTableDInput');
+		input.type = "text";
+		input.value = value;
+		td.append(input);
+	}
+	else td.innerHTML = value;
+	parent.append(td);
+}
+
+function addSettingsKeyListeners() {
 	$('#sRAL').on("focusout", function() {formatSettingsInput('sRAL', 'km/h');});
 	$('#sAAL').on("focusout", function() {formatSettingsInput('sAAL', 'km/h');});
 	$('#sLF').on("focusout", function() {formatSettingsInput('sLF', ' mins');});
 	$('#sPD').on("focusout", function() {formatSettingsInput('sPD', '°');});
 	$('#sENF').on("focusout", function() {formatSettingsInput('sENF', ' mins');});
 	$('#sNumber').on("focusout", function() {formatSettingsInput('sNumber', '');});
+}
+
+function switchSettingsPage(i) {
+	//Title bar
+	$("#sTBarN"+settingsPage).removeClass("sTBarNActive");
+	$("#sTBarN"+i).addClass("sTBarNActive");
+
+	//Content container
+	$("#sPageCont"+settingsPage).css("display", "none");
+	$("#sPageCont"+i).css("display", "block");
+	settingsPage = i;
 }
 
 function closeSettings() {

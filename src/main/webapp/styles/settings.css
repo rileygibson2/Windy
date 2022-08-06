@@ -9,8 +9,9 @@
 	border-radius: 15px;
 	z-index: 200;
 	background-color: rgb(20, 20, 20);
-	background-image: linear-gradient(to bottom right, rgb(40, 40, 40) 0%, rgb(20, 20, 20) 50%);
+	background-image: linear-gradient(to top right, rgb(40, 40, 40) 0%, rgb(20, 20, 20) 50%);
 	box-shadow: 5px 5px 20px rgba(0, 0, 0, .8);
+	overflow: hidden;
 }
 @keyframes openSettings {
 	0% {
@@ -32,28 +33,80 @@
 		margin-left: 100vw;
 	}
 }
+
+#sTBar { /*Settings title bar*/
+	position: relative;
+	height: 8%;
+	width: 100%;
+	padding-top: 0.5%;
+	border-radius: 15px 15px 0 0;
+	background-color: rgb(40, 40, 40);
+	
+}
+.sTBarN { /*Settings title bar node*/
+	position: relative;
+	display: inline-block;
+	height: 100%;
+	width: 15%;
+	border-radius: 15px 15px 0 0;
+	background-color: rgb(30, 30, 30, 0);
+	color: rgb(100, 100, 100);
+	cursor: pointer;
+	transition: all 0.2s;
+}
+.sTBarN:hover {
+	color: rgb(220, 220, 220);
+}
+.sTBarNActive { /*Active title bar node*/
+	background-color: rgb(20, 20, 20);
+	color: rgb(220, 220, 220);
+	border-bottom: none;
+}
+.sTBarNT { /*Inner text in title bar node*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	color: inherit;
+	font-family: openSemiBold;
+	font-size: 1.4vw;
+	text-align: center;
+	cursor: pointer;
+}
+#sCloseButton { /*Settings close button*/
+	position: absolute;
+	width: 4%;
+	height: 90%;
+	margin-left: 95%;
+	background-image: url("../assets/icons/cross.svg");
+	background-size: 45%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.1;
+	cursor: pointer;
+	transition: all 0.5s;
+}
+#sCloseButton:hover {
+	opacity: 1;
+}
+
+.sPageCont { /*Container with elements relating to one settings page*/
+	position: relative;
+	width: 100%;
+	height: 92%;
+	display: none;
+}
+#sPageCont0 {display: block;} /*Preset first page*/
+
 .sCol {
 	position: absolute;
 	width: 33%;
 	height: 100%;
 }
-
-.sColTitle { /*Settings collumn title*/
-	position: relative;
-	width: 60%;
-	height: 5%;
-	margin-top: 10%;
-	margin-left: 10%;
-	padding-left: 2%;
-	color: rgb(220, 220, 220);
-	font-family: openBold;
-	font-size: 1.4vw;
-	border-bottom: 2px solid rgb(220, 220, 220);
-}
 .sETitle { /*Settings element title*/
 	position: relative;
 	width: 90%;
-	margin-top: 9%;
+	margin-top: 4vh;
 	margin-left: 10%;
 	color: rgb(200, 200, 200);
 	font-family: openSemiBold;
@@ -93,11 +146,104 @@
 	opacity: 0.7;
 	z-index: 200;
 }
+.sTableTitle { /*Settings table title*/
+	position: relative;
+	width: 80%;
+	margin-top: 4vh;
+	margin-left: 2.5vw;
+	padding-bottom: 0.5%;
+	color: rgb(200, 200, 200);
+	font-family: openSemiBold;
+	font-size: 1.3vw;
+}
+.sTableBox { /*Multiple entry table container*/
+	position: relative;
+	width: 90%;
+	height: 75%;
+	top: 1%;
+	margin-left: 2.5vw;
+	border-radius: 10px;
+	background-color: rgb(37, 37, 37);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .2);
+	border: none;
+	overflow: hidden;
+	border-collapse: collapse;
+}
+.sTableHeader { /*Table header*/
+	height: 10%;
+	background-color: rgb(60, 60, 60);
+	border-radius: 10px 10px 0px 0px;
+	text-align: center;
+	color: rgb(140, 140, 140);
+	font-family: openMedium;
+	font-size: 0.85vw;
+}
+.sTableHC { /*Table header cell*/
+	border-right: 2px solid rgb(37, 37, 37);
+}
+.sTableHC:first-child {border-radius: 10px 0px 0px 0px;}
+.sTableHC:last-child {border-radius: 0px 10px 0px 0px;}
+.sTableRow { /*Table data row*/
+	height: 13%;
+	text-align: center;
+	color: rgb(200, 200, 200);
+	font-family: openMedium;
+	font-size: 0.85vw;
+	border-collapse: collapse;
+}
+.sTableDC { /*Table data cell*/
+	border-right: 2px solid rgb(45, 45, 45);
+	border-bottom: 2px solid rgb(45, 45, 45);
+	background-color: rgb(38, 38, 38);
+	cursor: pointer;
+}
+.sTableDC:focus {background-color: rgb(45, 45, 45);}
+.sTableDInput { /*Table data cell that is inputable*/
+	height: 100%;
+	width: 100%;
+	border: none;
+	background-color: inherit;
+	text-align: inherit;
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
+	user-select: text;
+	-webkit-touch-callout: text; /* iOS Safari */
+  	-webkit-user-select: text; /* Safari */
+  	outline: none;
+  	overflow: hidden;
+  	cursor: pointer;
+}
+.sTableDInput:focus {background-color: rgb(45, 45, 45);}
+
+.sTableButton { /*A button on the settings table*/
+	position: absolute;
+	width: 3vw;
+	height: 3vw;
+	top: 79%;
+	background-size: 75%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	background-color: rgb(60, 60, 60);
+	border-radius: 10px 0 10px 0;
+	z-index: 200;
+	opacity: 0.5;
+	cursor: pointer;
+	transition: all 0.5s;
+}
+.sTableButton:hover {
+	opacity: 1;
+}
+#sTablePlus {
+	left: 89%;
+	background-image: url("../assets/icons/trash.svg");
+}
+
 #sLogOut { /*Settings logout button*/
 	position: relative;
 	width: 40%;
 	height: 7%;
-	margin-top: 8%;
+	top: 5%;
 	margin-left: 10%;
 	background-color: rgb(100, 100, 100);
 }
@@ -105,7 +251,7 @@
 	position: absolute;
 	width: 9%;
 	height: 7%;
-	margin-top: 51%;
+	top: 88%;
 	border-radius: 10px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	cursor: pointer;

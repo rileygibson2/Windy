@@ -42,6 +42,7 @@ public class DataMockup {
 			jObj.put("status", 1);
 			jObj.put("ip", ip);
 			jObj.put("power", 0);
+			jObj.put("direction", "180");
 			jObj.put("version", "1.0.0");
 			out.write(jObj.toString(1));
 			out.close();

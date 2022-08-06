@@ -108,7 +108,8 @@ public class WebServlet extends HttpServlet {
 			
 		case accountData:
 			System.out.println(blue+" --- Recieving account info data request --- "+reset);
-			data = CoreServer.accountManager.getAccountInfo(session.getUser()).toString(1);
+			data = DataManager.getSettingsData(session.getUser());
+			System.out.println(data);
 			if (data==null) {failBadRequest(resp); return;}
 			break;
 			

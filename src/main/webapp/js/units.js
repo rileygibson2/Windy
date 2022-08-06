@@ -11,7 +11,6 @@ class UnitsPage extends Page {
 
 		//Class vars
 		this.units;
-		this.registerStage;
 		this.pairProgress;
 	}
 
@@ -135,7 +134,6 @@ class UnitsPage extends Page {
 	}
 
 	openRegisterDialog() {
-		this.registerStage = 0;
 		this.pairProgress = -1;
 		//Animate entrance - Take stuff out
 		$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
@@ -146,25 +144,6 @@ class UnitsPage extends Page {
 		//Add register container in
 		$('#regCont').css("display", "block");
 		$('#regCont').css("animation", "openRegister 0.3s ease-in-out forwards");
-	}
-
-	continueRegister() {
-		//Fade everything out
-		var c = $('#regCont').children();
-		for (var i=0; i<c.length; i++) c.eq(i).css("animation", "closeRegister 0.5s ease-in-out forwards");
-		
-		//Pull up next stage
-		self = this;
-		switch (this.registerStage) {
-		case 0: 
-			setTimeout(function() {
-				$('#regCont').empty();
-				self.buildProgressScreen();
-			}, 500);
-			break;
-		}
-
-		this.registerStage++;
 	}
 
 	closeRegisterDialog() {
@@ -182,73 +161,90 @@ class UnitsPage extends Page {
 	}
 
 	buildProgressScreen() {
-		//Decriptive text
-		var t = document.createElement("div");
-		t.setAttribute("id", "progText");
-		t.innerHTML = "Getting ready...";
-		$('#regCont').append(t);
-		setTimeout(function() {$('#progText').css("opacity", "1");}, 100);
+		//Validate input
+		var validIP = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/.test(new String($('#regIP').val()));
+		if ($('#regIP').val()==""||!validIP) $('#regIP').css("border", "1px solid red");
+		else $('#regIP').css("border", "none");
+		if ($('#regKey').val()=="") $('#regKey').css("border", "1px solid red");
+		else $('#regKey').css("border", "none");
+		if ($('#regIP').val()==""||$('#regKey').val()==""||!validIP) return;
 
-		//SVG container and gradient defs
-		var svg = document.createElementNS(nS, "svg");
-		svg.setAttribute("id", 'progSVG');
-		svg.innerHTML = '<defs><linearGradient id="progGrad" x1="0" x2="1" y1="0" y2="0"><stop id="stop1" offset="50%"/><stop id="stop2" offset="100%"/></linearGradient><linearGradient id="windPatternGrad" x1="0" x2="1" y1="0" y2="0"><stop id="stop3" offset="0%"/><stop id="stop4" offset="50%"/><stop id="stop3" offset="100%"/></linearGradient></defs>';
-		svg.innerHTML = svg.innerHTML+'</defs>';
-		$('#regCont').append(svg);
-
-		var w = parseFloat($('#progSVG').css("width"));
-		var h = parseFloat($('#progSVG').css("height"));
-		var x = w*0.2;
-
-		//Wind animation
-		for (var i=0; i<20; i++) {
-			var x1 = Math.random()*(w*0.9-w*0.1)+w*0.1;
-			var y1 = Math.random()*(h*0.9-h*0.1)+h*0.1; 
-			var path = document.createElementNS(nS, "path");
-			var d = "M "+x1+" "+y1+" L "+(x1+w*0.3)+" "+y1+" L" +(x1+w*0.3)+" "+(y1+1);
-			path.setAttribute("class", "progWindPattern");
-			path.setAttribute("d", d);
-			svg.append(path);
-			var delay = Math.random()*(2-0)+0; 
-			path.style.animation = "windPattern 3s ease-in-out "+delay+"s infinite forwards";
-		}
-
-		//Build line
-		var rect = document.createElementNS(nS, "rect");
-		rect.setAttribute("id", "progLine");
-		rect.setAttribute("x", x);
-		rect.setAttribute("y", h*0.42);
-		rect.setAttribute("width", 0);
-		rect.setAttribute("height", h*0.01);
-		rect.setAttribute("rx", 5);
-		svg.append(rect);
-
-		//Build circles and icons
-		for (var i=0; i<3; i++) {
-			var circle = document.createElementNS(nS, "circle");
-			circle.setAttribute("class", "progCircle");
-			circle.setAttribute("id", "progCircle"+i);
-			circle.setAttribute("cx", x);
-			circle.setAttribute("cy", h*0.42);
-			svg.append(circle);
-
-			var div = document.createElement("div");
-			div.setAttribute("class", "progCircleIcon");
-			div.setAttribute("id", "progCircleIcon"+i);
-			div.style.marginLeft = 18+(27*i)+"%";
-			$('#regCont').append(div);
-			x += (w*0.6)/2;
-		}
-		$('#progCircleIcon0').css('background-image', 'url("../assets/icons/device.svg');
-		$('#progCircleIcon1').css('background-image', 'url("../assets/icons/keyfilled.svg');
-		$('#progCircleIcon2').css('background-image', 'url("../assets/icons/user.svg');
-
-		//Animate
+		//Fade everything currently in register container
+		var c = $('#regCont').children();
+		for (var i=0; i<c.length; i++) c.eq(i).css("animation", "closeRegister 0.5s ease-in-out forwards");
 		var self = this;
-		setTimeout(function() {self.increaseProgressBar();}, 2000);
-		setTimeout(function() {self.increaseProgressBar();}, 5000);
-		setTimeout(function() {self.increaseProgressBar();}, 8000);
-		setTimeout(function() {self.increaseProgressBar();}, 11000);
+
+		//Build progress screen
+		setTimeout(function() {
+			$('#regCont').empty();
+
+			//Decriptive text
+			var t = document.createElement("div");
+			t.setAttribute("id", "progText");
+			t.innerHTML = "Getting ready...";
+			$('#regCont').append(t);
+			setTimeout(function() {$('#progText').css("opacity", "1");}, 100);
+
+			//SVG container and gradient defs
+			var svg = document.createElementNS(nS, "svg");
+			svg.setAttribute("id", 'progSVG');
+			svg.innerHTML = '<defs><linearGradient id="progGrad" x1="0" x2="1" y1="0" y2="0"><stop id="stop1" offset="50%"/><stop id="stop2" offset="100%"/></linearGradient><linearGradient id="windPatternGrad" x1="0" x2="1" y1="0" y2="0"><stop id="stop3" offset="0%"/><stop id="stop4" offset="50%"/><stop id="stop3" offset="100%"/></linearGradient></defs>';
+			svg.innerHTML = svg.innerHTML+'</defs>';
+			$('#regCont').append(svg);
+
+			var w = parseFloat($('#progSVG').css("width"));
+			var h = parseFloat($('#progSVG').css("height"));
+			var x = w*0.2;
+
+			//Wind animation
+			for (var i=0; i<20; i++) {
+				var x1 = Math.random()*(w*0.9-w*0.1)+w*0.1;
+				var y1 = Math.random()*(h*0.9-h*0.1)+h*0.1; 
+				var path = document.createElementNS(nS, "path");
+				var d = "M "+x1+" "+y1+" L "+(x1+w*0.3)+" "+y1+" L" +(x1+w*0.3)+" "+(y1+1);
+				path.setAttribute("class", "progWindPattern");
+				path.setAttribute("d", d);
+				svg.append(path);
+				var delay = Math.random()*(2-0)+0; 
+				path.style.animation = "windPattern 3s ease-in-out "+delay+"s infinite forwards";
+			}
+
+			//Build line
+			var rect = document.createElementNS(nS, "rect");
+			rect.setAttribute("id", "progLine");
+			rect.setAttribute("x", x);
+			rect.setAttribute("y", h*0.42);
+			rect.setAttribute("width", 0);
+			rect.setAttribute("height", h*0.01);
+			rect.setAttribute("rx", 5);
+			svg.append(rect);
+
+			//Build circles and icons
+			for (var i=0; i<3; i++) {
+				var circle = document.createElementNS(nS, "circle");
+				circle.setAttribute("class", "progCircle");
+				circle.setAttribute("id", "progCircle"+i);
+				circle.setAttribute("cx", x);
+				circle.setAttribute("cy", h*0.42);
+				svg.append(circle);
+
+				var div = document.createElement("div");
+				div.setAttribute("class", "progCircleIcon");
+				div.setAttribute("id", "progCircleIcon"+i);
+				div.style.marginLeft = 18+(27*i)+"%";
+				$('#regCont').prepend(div);
+				x += (w*0.6)/2;
+			}
+			$('#progCircleIcon0').css('background-image', 'url("../assets/icons/ipfilled.svg');
+			$('#progCircleIcon1').css('background-image', 'url("../assets/icons/keyfilled.svg');
+			$('#progCircleIcon2').css('background-image', 'url("../assets/icons/user.svg');
+
+			//Animate
+			setTimeout(function() {self.increaseProgressBar();}, 2000);
+			setTimeout(function() {self.increaseProgressBar();}, 5000);
+			setTimeout(function() {self.increaseProgressBar();}, 8000);
+			setTimeout(function() {self.increaseProgressBar();}, 11000);
+		}, 500);
 	}
 
 	increaseProgressBar() {
@@ -282,7 +278,7 @@ class UnitsPage extends Page {
 			case 1: $('#progText').html("Checking credentials..."); break;
 			case 2: $('#progText').html("Attaching to user..."); break;
 			case 3: 
-				$('#progText').html("Done.");
+				$('#progText').html("Finishing...");
 				//Close dialog
 				self = this;
 				setTimeout(function() {self.closeRegisterDialog();}, 1000);
@@ -295,6 +291,11 @@ class UnitsPage extends Page {
 			$("#progLine").css("width", this.pairProgress*(w*0.3));
 		}
 		this.pairProgress++;
+	}
+
+	openRegisterHelp() {
+		var message = "The new unit's ip address is located on the back of the SIM card.<br><br>The hardcoded pairing key can be found in the front of the setup guide or on a sticker inside the unit itself.";
+		openHelp($('#regInfo').offset().left+($('#regInfo').width()/2), $('#regInfo').offset().top, message);
 	}
 
 	/*makeWindPath(x, y, w, h) {

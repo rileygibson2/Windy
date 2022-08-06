@@ -111,11 +111,16 @@ class DashboardPage extends Page {
 		
 		if (days>=1) {
 			if (days==1) $('#rtSpeed4').html(days+" day ago");
-			else $('#rtSpeed4').html(days+" hours ago");
+			else $('#rtSpeed4').html(days+" days ago");
 		}
 		else if (hours>=1) {
-			if (hours==1) $('#rtSpeed4').html(hours+" hour ago");
-			else $('#rtSpeed4').html(hours+" hours ago");
+			mins = mins-(hours*60);
+			var h = " hours ";
+			var m = " mins ";
+			if (hours==1) h = " hour ";
+			if (mins==1) m = " min ";
+			if (mins==0) $('#rtSpeed4').html(hours+h+"ago");
+			else $('#rtSpeed4').html(hours+h+mins+m+"ago");
 		}
 		else {
 			if (mins==1) $('#rtSpeed4').html(mins+" min ago");
@@ -217,8 +222,7 @@ class DashboardPage extends Page {
 		}
 
 		this.gXMarkings.reverse();
-		this.animateGraph();
-		setTimeout(() => {this.animateCircleGraphs();}, 500);
+		this.animateGraph().then(result => page.animateCircleGraphs());
 	}
 
 	animateEntrance(start) {
@@ -432,20 +436,24 @@ class DashboardPage extends Page {
 			if (this.gVisualData[i]<0) this.gVisualData[i] = 0;
 		}
 
-		//Animate points on graph sliding up
 		var self = this;
-		let slide = setInterval(function() {
-			if (self.graphSlideFinished()) {
-				clearInterval(slide);
-				self.buildGraph();
-			}
-			else {
-				for (i=0; i<self.gVisualData.length; i++) {
-					if (self.gVisualData[i]<self.gData[i]) self.gVisualData[i]++;
+		let promise = new Promise(function (resolve, reject) {
+			//Animate points on graph sliding up
+			let slide = setInterval(function() {
+				if (self.graphSlideFinished()) {
+					clearInterval(slide);
+					self.buildGraph();
+					resolve();
 				}
-				self.buildGraph();
-			}
-		}, 8);
+				else {
+					for (i=0; i<self.gVisualData.length; i++) {
+						if (self.gVisualData[i]<self.gData[i]) self.gVisualData[i]++;
+					}
+					self.buildGraph();
+				}
+			}, 8);
+		});
+		return promise;
 	}
 
 	graphSlideFinished() {

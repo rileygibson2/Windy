@@ -1,43 +1,92 @@
 <div id="sCont">
-	<div class="sCol">
-		<div class="sColTitle">Unit Settings</div>
-		<div class="sETitle">Red Alarm Limit</div>
-		<input type="text" id="sRAL" class="sEBox">
-		<div class="sETitle">Amber Alarm Limit</div>
-		<input type="text" id="sAAL" class="sEBox">
-		<div class="sETitle">Logging Frequency</div>
-		<input type="text" id="sLF" class="sEBox">
-		<div class="sETitle">Preset Direction</div>
-		<input type="text" id="sPD" class="sEBox">
+
+	<div id="sTBar">
+		<div id="sCloseButton" onclick="closeSettings()"></div>
+		<div class="sTBarN sTBarNActive" id="sTBarN0" onclick="switchSettingsPage(0)">
+			<div class="sTBarNT">Account</div>
+		</div>
+		<div class="sTBarN" id="sTBarN1" onclick="switchSettingsPage(1)">
+			<div class="sTBarNT">Units</div>
+		</div>
+		<div class="sTBarN" id="sTBarN2" onclick="switchSettingsPage(2)">
+			<div class="sTBarNT">Users</div>
+		</div>
+		<div class="sTBarN" id="sTBarN3" onclick="switchSettingsPage(3)">
+			<div class="sTBarNT">Alerts</div>
+		</div>
 	</div>
 
-	<div class="sCol" style="left: 33%;">
-		<div class="sColTitle">Notification Settings</div>
-		<div class="sETitle">Number</div>
-		<div class="sEBoxIcon" style="background-image: url('../assets/icons/phone.svg'); background-size: 58%;"></div>
-		<input type="text" id="sNumber" class="sEBox">
-	
-		<div class="sETitle">Email</div>
-		<div class="sEBoxIcon" style="background-image: url('../assets/icons/email.svg'); background-size: 67%;"></div>
-		<input type="text" id="sEmail" class="sEBox">
+	<div class="sPageCont" id="sPageCont0">
+		<div class="sCol">
+			<div class="sETitle">Username</div>
+			<div class="sEBoxIcon" style="background-image: url('../assets/icons/user.svg'); background-size: 58%;"></div>
+			<input type="text" id="sUsername" class="sEBox">
 
-		<div class="sETitle">Emergency Notification Frequency</div>
-		<input type="text" id="sENF" class="sEBox">
+			<div class="sETitle">New Password</div>
+			<div class="sEBoxIcon" style="background-image: url('../assets/icons/lock.svg'); background-size: 85%;"></div>
+			<input type="text" id="sPassword" class="sEBox">
+
+			<div class="sButton" id="sLogOut" onclick="logout()">
+				<p class="sButtonT">Log Out</p>
+			</div>
+		</div>
+
+		<div class="sCol" style="left: 33%;">
+			<div class="sETitle">Organisation</div>
+			<input type="text" id="sCompName" class="sEBox">
+			<div class="sETitle">Contact Email</div>
+			<input type="text" id="sEmail" class="sEBox">
+		</div>
 	</div>
 
-	<div class="sCol" style="left: 66%;">
-		<div class="sColTitle">Account Settings</div>
-		<div class="sETitle">Username</div>
-		<div class="sEBoxIcon" style="background-image: url('../assets/icons/user.svg'); background-size: 58%;"></div>
-		<input type="text" id="sUsername" class="sEBox">
 
-		<div class="sETitle">New Password</div>
-		<div class="sEBoxIcon" style="background-image: url('../assets/icons/lock.svg'); background-size: 85%;"></div>
-		<input type="text" id="sPassword" class="sEBox">
+	<div class="sPageCont" id="sPageCont1">
+		<div class="sCol" style="width: 66%;">
+			<div class="sTableTitle">Paired Units</div>
+			<div class="sTableButton" id="sTablePlus"></div>
 
-		<div class="sButton" id="sLogOut" onclick="logout()">
-		<p class="sButtonT">Log Out</p>
+			<table class="sTableBox" id="sUnitsTable">
+				 <tr class="sTableHeader">
+				 	<td class="sTableHC">Unit ID</td>
+				 	<td class="sTableHC">Name</td>
+				 	<td class="sTableHC">IP</td>
+				 	<td class="sTableHC">Preset Direction</td>
+				 	<td class="sTableHC">Version</td>
+				 </tr>
+			</table>
+		</div>
+
+		<div class="sCol" style="left: 66%;">
+			<div class="sETitle">Logging Frequency</div>
+			<input type="text" id="sLF" class="sEBox">
+			<div class="sETitle">Preset Direction</div>
+			<input type="text" id="sPD" class="sEBox">
+		</div>
 	</div>
+
+	<div class="sPageCont" id="sPageCont2">
+	</div>
+
+	<div class="sPageCont" id="sPageCont3">
+		<div class="sCol">
+			<div class="sETitle">Number</div>
+			<div class="sEBoxIcon" style="background-image: url('../assets/icons/phone.svg'); background-size: 58%;"></div>
+			<input type="text" id="sNumber" class="sEBox">
+		
+			<div class="sETitle">Email</div>
+			<div class="sEBoxIcon" style="background-image: url('../assets/icons/email.svg'); background-size: 67%;"></div>
+			<input type="text" id="sEmail" class="sEBox">
+
+			<div class="sETitle">Emergency Notification Frequency</div>
+			<input type="text" id="sENF" class="sEBox">
+		</div>
+
+		<div class="sCol" style="left: 33%;">
+			<div class="sETitle">Red Alarm Limit</div>
+			<input type="text" id="sRAL" class="sEBox">
+			<div class="sETitle">Amber Alarm Limit</div>
+			<input type="text" id="sAAL" class="sEBox">
+		</div>
 	</div>
 
 	<div class="sButton" id="sCancel" onclick="closeSettings()">

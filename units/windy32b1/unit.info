@@ -4,5 +4,6 @@
  "name": "LAB Stage",
  "power": 0,
  "version": "1.0.0",
- "status": 1
+ "status": 1,
+ "direction": "180"
 }

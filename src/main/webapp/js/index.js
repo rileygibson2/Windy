@@ -31,7 +31,7 @@ function load() {
 			responseRecieved = true;
 			removeLoading();
 			if (req.status==200) { //Key is still valid
-				setTimeout(switchSections, 0, 0);
+				setTimeout(switchSections, 0, 1);
 			}
 			else openLogin(); //Key is not still valid
 		}
@@ -345,6 +345,18 @@ function getCookie(cname) {
 
 function deleteCookie() {
 	document.cookie = "wTXsK=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+function openHelp(x, y, message) {
+	$('#helpCont').html(message);
+	var l = x-($('#helpCont').outerWidth()/2);
+	var t = y-$('#helpCont').outerHeight();
+	$('#helpCont').css({'left':l+'px', 'top':t+'px', 'display':'block', 'opacity':'0.5'});
+}
+
+function closeHelp() {
+	$('#helpCont').css('opacity', '0');
+	setTimeout(function() {$('#helpCont').css('display', 'none');}, 100);
 }
 
 function animateExit(start) {

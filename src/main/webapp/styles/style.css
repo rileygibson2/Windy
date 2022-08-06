@@ -298,6 +298,22 @@ body {background-color: var(--bg);}
 	transition: all 0.5s;
 }
 
+#helpCont { /*Help popup*/
+	position: absolute;
+	padding: 1vw;
+	display: none;
+	width: 10vw;
+	background-color: rgb(50, 50, 50);
+	border-radius: 10px;
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: open;
+	font-size: 0.8vw;
+	z-index: 500;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
 @keyframes shake {
 	0% {margin-left: 39vw}
 	20% {margin-left: 41vw}

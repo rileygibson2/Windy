@@ -191,7 +191,7 @@
 	font-size: 2vw;
 	text-align: center;
 	padding-bottom: 1%;
-	border-bottom: 0.5px solid rgb(220, 220, 220, 0.4);
+	border-bottom: 0.5px solid rgb(220, 220, 220, 0.2);
 }
 .regEBox { /*Register entry box*/
 	position: relative;
@@ -212,6 +212,7 @@
   	-webkit-user-select: text; /* Safari */
   	overflow: hidden;
   	cursor: pointer;
+  	outline: none;
 }
 
 .regEBoxIcon { /*Icon in an entry box*/
@@ -307,33 +308,34 @@
 	font-size: 1.8vw;
 	text-align: center;
 	opacity: 0;
-	transition: all 1s;
+	transition: all 0.7s;
 }
 .progCircle { /*A progress circle in the svg*/
 	fill: rgb(50, 50, 50);
 	r: 4%;
 	opacity: 0;
-	transition: all 1s;
+	transition: all 0.7s;
 }
 .progCircleIcon { /*Icon in each progress circle*/
 	position: absolute;
 	height: 18%;
 	width: 10%;
 	margin-left: 18%;
-	margin-top: -35.5%;
+	top: 33%;
 	background-repeat: no-repeat;
 	background-size: 30%;
-	background-position: 50% 50%;
+	background-position: 50% 55%;
 	background-image: url("../assets/icons/key.svg");
 	opacity: 0;
 	filter: invert(20%);
-	transition: all 1s;
+	z-index: 200;
+	transition: all 0.7s;
 }
 #progLine { /*The gradient progress line in the svg*/
 	width: 0;
 	fill: url(#progGrad);
 	opacity: 0;
-	transition: all 1s;
+	transition: all 0.7s;
 }
 #stop1 {stop-color: rgb(50, 50, 50);}
 #stop2 {stop-color: rgb(255, 255, 255);}
