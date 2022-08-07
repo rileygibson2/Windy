@@ -17,7 +17,7 @@ public class WebServlet extends HttpServlet {
 	private static final int recordsOverview = 3;
 	private static final int recordsForPeriod = 4;
 	private static final int authenticationLogin = 5;
-	private static final int accountData = 6;
+	private static final int settingsData = 6;
 	private static final int checkSessionKey = 7;
 	private static final int authenticationSalts = 8;
 	
@@ -106,11 +106,14 @@ public class WebServlet extends HttpServlet {
 			data = records.toString();
 			break;
 			
-		case accountData:
-			System.out.println(blue+" --- Recieving account info data request --- "+reset);
+		case settingsData:
+			System.out.println(blue+" --- Recieving settings data request --- "+reset);
 			data = DataManager.getSettingsData(session.getUser());
-			System.out.println(data);
 			if (data==null) {failBadRequest(resp); return;}
+			
+			//Check for unauthorised tag from data manager
+			if (data.equals("unauthorised")) {failNotAuthorised(resp); return;}
+			System.out.println(data);
 			break;
 			
 		case checkSessionKey:

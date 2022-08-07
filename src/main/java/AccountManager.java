@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class AccountManager {
 	public String createAuthenticationSession(String user) {
 		JSONObject jObj = getAccountInfo(user);
 		if (jObj==null) return null;
-		
+
 		int id = authSessions.size()+1;
 		AuthenticationSession auth = null;
 
@@ -70,7 +69,7 @@ public class AccountManager {
 		sessions.removeAll(toRemove);
 		return valid;
 	}
-	
+
 	public Session getSession(String key) {
 		for (Session sK : sessions) {
 			if (sK.getKey().equals(key)&&!sK.isExpired()) return sK;
@@ -107,13 +106,24 @@ public class AccountManager {
 		System.out.println("Actual Pass: "+actualPass+"\nGiven Pass: "+pass);
 		authSessions.remove(authID); //Done with authentication session
 
-		if (actualPass.equals(pass)) { //Generate session key
+		if (actualPass.equals(pass)) { //Valid password
+			//Generate session key
 			Session sK = new Session(user, (long) 2.16e+7);
 			sessions.add(sK);
 			System.out.println("Valid authentication - issuing session key "+sK.getKey());
-			
+
+			//Get default unit from highest level account
+			String defunit;
+			jObj = getHighestLevelAccountInfo(user);
+			try {defunit = jObj.get("defunit").toString();}
+			catch (JSONException e) {
+				System.out.println("No default unit assigned to account.");
+				return null;
+			}
+
+			//Send
 			JSONObject toSend = new JSONObject();
-			toSend.put("sK", sK.getKey()).put("defunit", jObj.get("defunit"));
+			toSend.put("sK", sK.getKey()).put("defunit", defunit);
 			return toSend.toString(1);
 		}
 
@@ -124,7 +134,7 @@ public class AccountManager {
 	public boolean updateAccountInfo(String user, String jObjS) {
 		JSONObject jObj = new JSONObject(jObjS);
 		JSONObject oldObj = getAccountInfo(user); //Get old object
-		
+
 		//Go through all attributes and fill in gaps in data object
 		for (String s : infoAttrs) {
 			//If not provided then pull from old
@@ -140,19 +150,19 @@ public class AccountManager {
 
 		return true;
 	}
-	
+
 	public String getDefaultUnit(String user) {
 		JSONObject jObj = getAccountInfo(user);
 		if (jObj==null) return null;
 		return jObj.get("defunit").toString();
 	}
-	
+
 	public String[] getAssignedUnits(String user) {
-		JSONObject jObj = getAccountInfo(user);
+		JSONObject jObj = getHighestLevelAccountInfo(user);
 		if (jObj==null) return null;
 		return jObj.get("units").toString().split(" ");
 	}
-	
+
 	public JSONObject getAccountInfo(String user) {
 		//Read account file
 		JSONObject jObj = null;
@@ -167,7 +177,21 @@ public class AccountManager {
 		return jObj;
 	}
 
-	public String hash(String toHash, String salt) {
+	public JSONObject getHighestLevelAccountInfo(String user) {
+		//Look at account file
+		JSONObject jObj = CoreServer.accountManager.getAccountInfo(user);
+		if (jObj==null) return null;
+
+		//Get parent if has one
+		if (!jObj.get("parent").toString().equals("null")) {
+			System.out.println("Using parent: "+jObj.get("parent"));
+			jObj = getAccountInfo(jObj.get("parent").toString());
+		}
+		
+		return jObj;
+	}
+
+	public static String hash(String toHash, String salt) {
 		MessageDigest md = null;
 		try {md = MessageDigest.getInstance("SHA-256");} 
 		catch (NoSuchAlgorithmException e) {System.out.println("Hashing algorithim error: "+e.getStackTrace());}

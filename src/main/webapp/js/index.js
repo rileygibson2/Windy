@@ -245,7 +245,7 @@ function validateLogin() {
 		if (req.status==401) badLogin();
 		if (req.status==200) { //Successfully retrieved an authorisation session
 			var authSesh = JSON.parse(req.responseText);
-
+			
 			//Hash password with both auth salts
 			var p = hash(passwordField, authSesh.s1);
 			p = hash(p, authSesh.s2);

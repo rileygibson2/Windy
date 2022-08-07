@@ -33,6 +33,15 @@
 		margin-left: 100vw;
 	}
 }
+#sUnAuthorisedT { /*Settings unauthorised text*/
+	position: relative;
+	width: 100%;
+	margin-top: 20%;
+	color: rgb(200, 200, 200);
+	font-family: openSemiBold;
+	font-size: 2vw;
+	text-align: center;
+}
 
 #sTBar { /*Settings title bar*/
 	position: relative;
@@ -294,4 +303,21 @@
 	font-family: openSemiBold;
 	font-size: 1.1vw;
 	cursor: pointer;
+}
+
+#sLogoutSmall { /*Double styles for smaller button used on unauthorised screen*/
+	position: relative;
+	width: 12%;
+	height: 7%;
+	left: 44%;
+	margin-top: 5%;
+	border-radius: 10px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	background-color: rgb(100, 100, 100);
+	cursor: pointer;
+	opacity: 0.8;
+	transition: all 0.5s;
+}
+#sLogoutSmall:hover {
+	opacity: 1;
 }

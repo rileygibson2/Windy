@@ -11,7 +11,7 @@ import org.json.JSONObject;
 public class DataMockup {
 
 	final static char alph[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'};
-	
+
 	public static void makeRecords(long start, String unit, String name, String ip) {
 		long d = new Date().getTime()-start;
 		try {
@@ -19,7 +19,7 @@ public class DataMockup {
 			new File("units/"+unit).mkdirs();
 			new File("units/"+unit+"/records.log").createNewFile();
 			new File("units/"+unit+"/unit.info").createNewFile();
-			
+
 			//Write to files
 			FileWriter out = new FileWriter("units/"+unit+"/records.log");
 			for (int i=0; i<525600; i++) {
@@ -34,7 +34,7 @@ public class DataMockup {
 				d -= DataManager.msInMinute*5;
 			}
 			out.close();
-			
+
 			out = new FileWriter("units/"+unit+"/unit.info");
 			JSONObject jObj = new JSONObject();
 			jObj.put("unit", unit);
@@ -50,26 +50,31 @@ public class DataMockup {
 		} catch (IOException e) {e.printStackTrace();}
 	}
 
-	public static void makeAccountRecords() {
-		for (int i=1; i<3; i++) {
-			JSONObject jObj = new JSONObject();
-			String username =  "windy"+(32*i)+alph[i]+i;
-			jObj.put("username", username);
-			jObj.put("password", "r");
+	public static void makeAccount(String username, String access, String parent) {
+		JSONObject jObj = new JSONObject();
+		jObj.put("username", username);
+		jObj.put("password", AccountManager.hash("w1", "12345678910"));
+		jObj.put("salt", "12345678910");
+		jObj.put("access", access);
+		jObj.put("parent", parent);
+		
+		if (access.equals("admin")) {
 			jObj.put("AAL", DataManager.amberAlarm);
 			jObj.put("RAL", DataManager.redAlarm);
 			jObj.put("LF", "5");
 			jObj.put("PD", "180");
-			jObj.put("number", "021583723");
-			jObj.put("email", "example@example.com");
 			jObj.put("ENF", "10");
-			
-			try {
-				FileWriter out = new FileWriter("accounts/"+username+".info");
-				out.write(jObj.toString(1));
-				out.close();
-				System.out.println("Successfully created accounts.");
-			} catch (IOException e) {System.out.println("An error occurred."+e.getStackTrace());}
+			jObj.put("numbers", "021583723");
+			jObj.put("email", "example@example.com");
+			jObj.put("defunit", "windy32b1");
+			jObj.put("units", "windy32b1 windy64c2 windy128d3");
 		}
+
+		try {
+			FileWriter out = new FileWriter("accounts/"+username+".acc");
+			out.write(jObj.toString(1));
+			out.close();
+			System.out.println("Successfully created accounts.");
+		} catch (IOException e) {System.out.println("An error occurred."+e.getStackTrace());}
 	}
 }

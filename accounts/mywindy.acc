@@ -1,14 +1,16 @@
 {
- "password": "bd3db778bb035180d2e44cb804b44feaa180961874f6a6b49ec31cabc3695ec0",
- "salt": "15884157662233862117386",
+ "parent": "null",
+ "salt": "12345678910",
+ "access": "admin",
+ "numbers": "021583723",
+ "units": "windy32b1 windy64c2 windy128d3",
+ "AAL": 50,
+ "password": "0d8c44f2ea96dbc008a842db47651e429a3ccfe9661afabd2722c2b5725df851",
  "PD": "180",
+ "defunit": "windy32b1",
  "LF": "5",
- "RAL": "80",
- "AAL": "50",
+ "RAL": 80,
  "ENF": "10",
  "email": "example@example.com",
- "numbers": "021583723 026784567 4767635",
- "username": "mywindy",
- "defunit": "windy32b1",
- "units": "windy32b1 windy64c2 windy128d3"
+ "username": "mywindy"
 }

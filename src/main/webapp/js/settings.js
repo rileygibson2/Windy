@@ -23,19 +23,30 @@ function openSettings() {
 		var reqD = new XMLHttpRequest();
 		reqD.open('GET', 'data/?sK='+sessionKey+'&m=6&t='+Math.random(), true);
 		reqD.onreadystatechange = function() {
-			if (!checkResponse(reqD)) return;
-			var jArr = JSON.parse(reqD.responseText);
-			implementSettingsData(jArr);
-			addSettingsKeyListeners();
+			if (req.readyState!=4) return;
+			responseRecieved = true;
+			removeLoading();
 
-			//Animate entrance - Take stuff out
-			$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
-			$('#effCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
-			$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
-			$('#sICont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			if (reqD.status==500) serverErrorResp();
+			if (reqD.status==400) clientErrorResp();
+			if (reqD.status==401) unauthorisedSettingsResponse();
+			if (reqD.status==200) { //Authorised response
+				var jArr = JSON.parse(reqD.responseText);
+				implementSettingsData(jArr);
+				addSettingsKeyListeners();
+			}
 
-			//Add settings container in
-			$('#sCont').css("animation", "openSettings 0.8s ease-in-out forwards");
+			//Animate entrance in both cases
+			if (reqD.status==401||reqD.status==200) {
+				//Animate entrance - Take stuff out
+				$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
+				$('#effCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+				$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+				$('#sICont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+
+				//Add settings container in
+				$('#sCont').css("animation", "openSettings 0.8s ease-in-out forwards");
+			}
 		}
 		reqD.send();
 
@@ -46,8 +57,9 @@ function openSettings() {
 }
 
 function implementSettingsData(jArr) {
-	//Load in account data
 	var jObj = jArr[0];
+
+	//Load in account data
 	$('#sNumber').val(jObj.number);
 	$('#sEmail').val(jObj.email);
 	$('#sENF').val(jObj.ENF+" mins");
@@ -115,6 +127,33 @@ function addSettingsKeyListeners() {
 	$('#sPD').on("focusout", function() {formatSettingsInput('sPD', '°');});
 	$('#sENF').on("focusout", function() {formatSettingsInput('sENF', ' mins');});
 	$('#sNumber').on("focusout", function() {formatSettingsInput('sNumber', '');});
+}
+
+function unauthorisedSettingsResponse() {
+	//Empty settings
+	$('#sCont').empty();
+	//Add in close button
+	var b = document.createElement("div");
+	b.setAttribute("id", 'sCloseButton');
+	b.style.height = "10%";
+	b.addEventListener('click', function() {closeSettings();});
+	$('#sCont').append(b);
+
+	//Add in unauthorised text
+	var t = document.createElement("div");
+	t.setAttribute("id", 'sUnAuthorisedT');
+	t.innerHTML = "You are not authorised to access settings.";
+	$('#sCont').append(t);
+
+	//Add in logout button
+	var b = document.createElement("div");
+	b.setAttribute("id", 'sLogoutSmall');
+	b.addEventListener('click', function() {logout();});
+	t = document.createElement("div");
+	t.setAttribute("class", 'sButtonT');
+	t.innerHTML = "Logout";
+	b.append(t);
+	$('#sCont').append(b);
 }
 
 function switchSettingsPage(i) {

@@ -49,6 +49,9 @@ public class DataManager {
 		jObj.remove("password"); jObj.remove("salt");
 		jArr.put(jObj);
 		
+		//Just return the basic child account info if not admin
+		if (!jObj.get("access").equals("admin")) return "unauthorised";
+		
 		//Get unit data
 		String[] units = CoreServer.accountManager.getAssignedUnits(user);
 		if (units==null) return null;
@@ -155,11 +158,13 @@ public class DataManager {
 	}
 
 	public static String getUnitsData(String user) {
-		//Look at account file to get assigned unit names
-		JSONObject jObj = CoreServer.accountManager.getAccountInfo(user);
+		//Look at account file
+		JSONObject jObj = CoreServer.accountManager.getHighestLevelAccountInfo(user);
 		if (jObj==null) return null;
-		String[] units = jObj.get("units").toString().split(" ");
-		System.out.println("Units assigned to user: "+Arrays.toString(units));
+		
+		//Get assigned unit names
+		String[] units = CoreServer.accountManager.getAssignedUnits(user);
+		if (units==null) return null;
 		
 		//Get status on all assigned units
 		JSONArray jArr = new JSONArray();
