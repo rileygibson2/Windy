@@ -33,15 +33,6 @@
 		margin-left: 100vw;
 	}
 }
-#sUnAuthorisedT { /*Settings unauthorised text*/
-	position: relative;
-	width: 100%;
-	margin-top: 20%;
-	color: rgb(200, 200, 200);
-	font-family: openSemiBold;
-	font-size: 2vw;
-	text-align: center;
-}
 
 #sTBar { /*Settings title bar*/
 	position: relative;
@@ -240,19 +231,50 @@
   	overflow: hidden;
   	cursor: pointer;
 }
+.sTableDSelect { /*Table data cell that is selectable*/
+	height: 100%;
+	width: 90%;
+	padding-left: 10%;
+	transform: translateY(-52%);
+	border: none;
+	background-color: rgb(0, 0, 0, 0);
+	text-align: inherit;
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
+  	outline: none;
+  	appearance: none;
+  	-webkit-appearance: none;
+  	overflow: hidden;
+  	cursor: pointer;
+}
+.sTableDSelectArrow { /*Down arrow that sits next to a cell select*/
+	position: relative;
+	display: inline-block;
+	width: 20%;
+	height: 100%;
+	margin-left: 80%;
+	transform: translateY(52%);
+	background-image: url("../assets/icons/downarrow.svg");
+	background-size: 100%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.4;
+	cursor: pointer;
+}
 
 .sTableButton { /*A button on the settings table*/
 	position: -webkit-sticky;
   	position: sticky;
-	width: 2.5vw;
-	height: 2.5vw;
-	margin-top: -2.5vw;
-	margin-left: 90%;
+	width: 3vw;
+	height: 3vw;
+	margin-top: -3vw;
+	margin-left: 89%;
 	background-size: 75%;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	z-index: 200;
-	opacity: 0.3;
+	opacity: 0.4;
 	cursor: pointer;
 	transition: all 0.5s;
 }
@@ -308,12 +330,22 @@
 	cursor: pointer;
 }
 
-#sLogoutSmall { /*Double styles for smaller button used on unauthorised screen*/
+#sUnauthorisedT { /*Settings unauthorised text*/
 	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	color: rgb(200, 200, 200);
+	font-family: openSemiBold;
+	font-size: 2vw;
+	text-align: center;
+}
+#sLogoutUnauthorised { /*Double styles for button used on unauthorised screen*/
+	position: absolute;
 	width: 12%;
 	height: 7%;
-	left: 44%;
-	margin-top: 5%;
+	left: 85%;
+	top: 89%;
 	border-radius: 10px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	background-color: rgb(100, 100, 100);
@@ -321,6 +353,6 @@
 	opacity: 0.8;
 	transition: all 0.5s;
 }
-#sLogoutSmall:hover {
+#sLogoutUnauthorised:hover {
 	opacity: 1;
 }

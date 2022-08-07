@@ -99,8 +99,8 @@ function implementSettingsData(jArr) {
 		var tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
 		makeSettingsCell(true, jObj.username, tr);
-		makeSettingsCell(true, jObj.access, tr);
-		makeSettingsCell(true, "", tr);
+		makeSettingsCellDropdown(tr, "Admin", "User", "Observer");
+		makeSettingsCell(true, "", tr, "Enter new password");
 		$('#sUsersTable').append(tr);
 	}
 	$('#sUsersTable').append("<tr></tr>"); //Append dummy row
@@ -136,6 +136,11 @@ function implementSettingsData(jArr) {
 	}
 	$('#sEmailsTable').append("<tr></tr>"); //Append dummy row
 
+	//Add table click listeners
+	addSettingsTableListeners();
+}
+
+function addSettingsTableListeners() {
 	//Add listeners so that row color changes when cell is selected
 	$('.sTableDC').focus(function() {
     	$(this).parent().addClass('sTableRowFocus');
@@ -143,15 +148,23 @@ function implementSettingsData(jArr) {
 	$('.sTableDC').blur(function() {
     	$(this).parent().removeClass('sTableRowFocus')
 	});
+	//Same for input cells
 	$('.sTableDInput').focus(function() {
     	$(this).parent().parent().addClass('sTableRowFocus');
 	});
 	$('.sTableDInput').blur(function() {
     	$(this).parent().parent().removeClass('sTableRowFocus')
 	});
+	//Same for select cells
+	$('.sTableDSelect').focus(function() {
+    	$(this).parent().parent().addClass('sTableRowFocus');
+	});
+	$('.sTableDSelect').blur(function() {
+    	$(this).parent().parent().removeClass('sTableRowFocus')
+	});
 }
 
-function makeSettingsCell(isInput, value, parent) {
+function makeSettingsCell(isInput, value, parent, placeholder) {
 	var td = document.createElement("td");
 	td.setAttribute("class", 'sTableDC');
 	td.tabIndex = "0";
@@ -160,10 +173,34 @@ function makeSettingsCell(isInput, value, parent) {
 		input.setAttribute("class", 'sTableDInput');
 		input.type = "text";
 		input.value = value;
+		input.placeholder = placeholder;
 		td.append(input);
 	}
 	else td.innerHTML = value;
 	parent.append(td);
+}
+
+function makeSettingsCellDropdown(parent, ...options) {
+	//Cell
+	var td = document.createElement("td");
+	td.setAttribute("class", 'sTableDC');
+	//Select
+	var s = document.createElement("select");
+	s.setAttribute("class", 'sTableDSelect');
+	//Down arrow
+	var a = document.createElement("div");
+	a.setAttribute("class", 'sTableDSelectArrow');
+
+	//Add options
+	for (const option of options) {
+    	var o = document.createElement("option");
+    	o.value = option;
+    	o.innerHTML = option;
+    	s.append(o);
+  	}
+  	td.append(a);
+  	td.append(s);
+  	parent.append(td);
 }
 
 function addSettingsKeyListeners() {
@@ -176,8 +213,8 @@ function addSettingsKeyListeners() {
 }
 
 function unauthorisedSettingsResponse() {
-	//Empty settings
-	$('#sCont').empty();
+	$('#sCont').empty(); //Empty settings
+
 	//Add in close button
 	var b = document.createElement("div");
 	b.setAttribute("id", 'sCloseButton');
@@ -187,13 +224,13 @@ function unauthorisedSettingsResponse() {
 
 	//Add in unauthorised text
 	var t = document.createElement("div");
-	t.setAttribute("id", 'sUnAuthorisedT');
-	t.innerHTML = "You are not authorised to access settings.";
+	t.setAttribute("id", 'sUnauthorisedT');
+	t.innerHTML = "You are not authorised to access settings";
 	$('#sCont').append(t);
 
 	//Add in logout button
 	var b = document.createElement("div");
-	b.setAttribute("id", 'sLogoutSmall');
+	b.setAttribute("id", 'sLogoutUnauthorised');
 	b.addEventListener('click', function() {logout();});
 	t = document.createElement("div");
 	t.setAttribute("class", 'sButtonT');
@@ -281,28 +318,29 @@ function addTableRow(i) {
 		tr.setAttribute("class", 'sTableRow');
 		tr.style.height = "4vh";
 		makeSettingsCell(false, "+64", tr);
-		makeSettingsCell(true, "", tr);
+		makeSettingsCell(true, "", tr, "Enter phone number");
 		break;
 	case 2:
 		elem = '#sEmailsTable';
 		tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
 		tr.style.height = "4vh";
-		makeSettingsCell(true, "", tr);
+		makeSettingsCell(true, "", tr, "Enter email address");
 		break;
 	case 3:
 		elem = '#sUsersTable';
 		tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
-		makeSettingsCell(true, "", tr);
-		makeSettingsCell(true, "", tr);
-		makeSettingsCell(false, "", tr);
+		makeSettingsCell(true, "", tr, "Enter new username");
+		makeSettingsCellDropdown(tr, "Admin", "User", "Observer");
+		makeSettingsCell(true, "", tr, "Enter new password");
 		break;
 	}
 
 	$(elem+' tr:last').remove(); //Remove dummy row
 	$(elem).append(tr); //Add new row
 	$(elem).append("<tr></tr>"); //Add dummy row back in
+	addSettingsTableListeners();
 }
 
 function checkTableRow(tableID) {
@@ -327,7 +365,7 @@ function checkTableRow(tableID) {
 
 	//Add in correct dialog message
 	if (tableID=="sUnitsTable") {
-		insertDialog('Are you sure?', 'Removing this unit will mean having to re-pair it with the original pairing key. All logs associated with this unit will be deleted.', removeTableRow, tableRow);
+		insertDialog('Are you sure?', 'Removing this unit will mean having to re-pair it using the original pairing key. All logs associated with this unit will be deleted.', removeTableRow, tableRow);
 		return;
 	}
 	if (tableID=="sUsersTable") {

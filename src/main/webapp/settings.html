@@ -25,7 +25,7 @@
 
 			<div class="sETitle">New Password</div>
 			<div class="sEBoxIcon" style="background-image: url('../assets/icons/lock.svg'); background-size: 85%;"></div>
-			<input type="text" id="sPassword" class="sEBox">
+			<input type="text" id="sPassword" class="sEBox" placeholder="Enter new password">
 
 			<div class="sButton" id="sLogOut" onclick="logout()">
 				<p class="sButtonT">Log Out</p>
@@ -79,7 +79,7 @@
 					 </tr>
 				</table>
 			</div>
-			<div class="sTableButton" id="sTableAdd" style="margin-left: 86.5%;" onmousedown="addTableRow(3)"></div>
+			<div class="sTableButton" id="sTableAdd" style="margin-left: 85.5%;" onmousedown="addTableRow(3)"></div>
 			<div class="sTableButton" id="sTableRemove" onmousedown="checkTableRow('sUsersTable')"></div>
 		</div>
 	</div>
@@ -96,7 +96,7 @@
 		</div>
 
 		<div class="sCol" style="left: 33%;">
-			<div class="sETitle">Alert Numbers</div>
+			<div class="sETitle">Emergency Alert Numbers</div>
 			<div class="sTableCont" style="height: 30%">
 				<table class="sTable" id="sNumbersTable">
 					 <tr class="sTableHeader">
@@ -104,18 +104,18 @@
 					 	<td class="sTableHC">Number</td>
 					 </tr>
 				</table>
-				<div class="sTableButton" id="sTableAdd" style="margin-left: 81%;" onmousedown="addTableRow(1)"></div>
+				<div class="sTableButton" id="sTableAdd" style="margin-left: 80%;" onmousedown="addTableRow(1)"></div>
 				<div class="sTableButton" id="sTableRemove" onmousedown="checkTableRow('sNumbersTable')"></div>
 			</div>
 		
-			<div class="sETitle">Alert Emails</div>
+			<div class="sETitle">Emergency Alert Emails</div>
 			<div class="sTableCont" style="height: 30%">
 				<table class="sTable" id="sEmailsTable">
 					 <tr class="sTableHeader">
 					 	<td class="sTableHC">Email</td>
 					 </tr>
 				</table>
-				<div class="sTableButton" id="sTableAdd" style="margin-left: 81%;" onmousedown="addTableRow(2)"></div>
+				<div class="sTableButton" id="sTableAdd" style="margin-left: 80%;" onmousedown="addTableRow(2)"></div>
 				<div class="sTableButton" id="sTableRemove" onmousedown="checkTableRow('sEmailsTable')"></div>
 			</div>
 		</div>
