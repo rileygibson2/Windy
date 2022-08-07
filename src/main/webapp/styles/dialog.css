@@ -1,0 +1,106 @@
+#dialogBlocker {
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	background-color: black;
+	z-index: 100;
+	opacity: 0;
+	z-index: 500;
+	transition: all 0.2s;
+}
+#dialog {
+	position: absolute;
+	width: 30vw;
+	height: 30vh;
+	margin-left: 35vw;
+	margin-top: 35vh;
+	border-radius: 15px;
+	background-color: rgb(20, 20, 20);
+	background-image: linear-gradient(to bottom right, rgb(40, 40, 40) 0%, rgb(20, 20, 20) 50%);
+	box-shadow: 5px 5px 20px rgba(0, 0, 0, .8);
+	z-index: 500;
+	opacity: 0;
+	overflow: hidden;
+	transition: all 0.2s;
+}
+#dialogIcon {
+	position: relative;
+	width: 20%;
+	height: 20%;
+	margin-top: 5%;
+	left: 40%;
+	background-image: url("../assets/icons/warning.svg");
+	background-repeat: no-repeat;
+	background-size: 55%;
+	background-position: 50% 50%;
+	opacity: 0.4;
+}
+#dialogTitle {
+	position: relative;
+	width: 100%;
+	margin-top: 0%;
+	color: rgb(255, 255, 255, 0.8);
+	text-align: center;
+	font-family: openSemiBold;
+	font-size: 1.5vw;
+}
+#dialogText {
+	position: relative;
+	width: 80%;
+	margin-top: 2%;
+	margin-left: 10%;
+	color: rgb(255, 255, 255, 0.6);
+	text-align: center;
+	font-family: open;
+	font-size: 0.8vw;
+}
+#dialogCloseIcon { /*Sidebar node*/
+	position: absolute;
+	width: 10%;
+	height: 10%;
+	left: 88%;
+	top: 5%;
+	background-repeat: no-repeat;
+	background-size: 40%;
+	background-position: 50% 60%;
+	background-image: url("../assets/icons/cross.svg");
+	cursor: pointer;
+	opacity: 0.4;
+	transition: all 0.4s;
+}
+#dialogCloseIcon:hover {
+	opacity: 1;
+}
+.dialogButton {
+	position: absolute;
+	width: 20%;
+	height: 15%;
+	top: 72%;
+	border-radius: 10px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	cursor: pointer;
+	opacity: 0.8;
+	transition: all 0.5s;
+}
+.dialogButton:hover {
+	opacity: 1;
+}
+#dialogYes { /*Settings cancel button*/
+	margin-left: 25%;
+	background-color: rgb(100, 100, 100);
+}
+#dialogNo { /*Settings cancel button*/
+	margin-left: 55%;
+	background-color: var(--focus);
+}
+.dialogButtonT { /*Settings button text*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: openSemiBold;
+	font-size: 1.1vw;
+	cursor: pointer;
+}

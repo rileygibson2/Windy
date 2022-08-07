@@ -47,6 +47,7 @@ public class DataManager {
 		jObj = CoreServer.accountManager.getAccountInfo(user);
 		if (jObj==null) return null;
 		jObj.remove("password"); jObj.remove("salt");
+		jObj.put("desc", "account"); //Add convience tag
 		jArr.put(jObj);
 		
 		//Just return the basic child account info if not admin
@@ -55,9 +56,20 @@ public class DataManager {
 		//Get unit data
 		String[] units = CoreServer.accountManager.getAssignedUnits(user);
 		if (units==null) return null;
-		for (String unit: units) {
+		for (String unit : units) {
 			jObj = CoreServer.unitManager.getUnitInfo(unit);
 			if (jObj==null) return null;
+			jObj.put("desc", "unit"); //Add convience tag
+			jArr.put(jObj);
+		}
+		
+		//Get children accounts data
+		String[] children = CoreServer.accountManager.getChildrenAccounts(user);
+		if (children==null) return null;
+		for (String child : children) {
+			jObj = CoreServer.accountManager.getAccountInfo(child);
+			if (jObj==null) return null;
+			jObj.put("desc", "childuser"); //Add convience tag
 			jArr.put(jObj);
 		}
 		

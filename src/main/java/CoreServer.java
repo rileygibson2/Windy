@@ -31,6 +31,7 @@ public class CoreServer {
 
         DataMockup.makeAccount("mywindy", "admin", "null");
         DataMockup.makeAccount("child", "user", "mywindy");
+        DataMockup.makeAccount("otherchild", "user", "mywindy");
         DataMockup.makeRecords(0, "windy32b1", "LAB Stage", "8.8.8.8");
         DataMockup.makeRecords(0, "windy64c2", "Rock Stage", "125.99.3.1");
         DataMockup.makeRecords(0, "windy128d3", "Frank Kitts", "30.140.50.100");

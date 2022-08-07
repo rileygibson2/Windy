@@ -1,6 +1,4 @@
 function insertMessage(message, mode) {
-	addMessageStyles();
-
 	//Block screen
 	var blocker = document.createElement("div");
 	blocker.id = "messageBlocker";
@@ -18,7 +16,7 @@ function insertMessage(message, mode) {
 	close = document.createElement("div");
 	close.id = 'messageCloseIcon';
 	div.append(close);
-	//Icon =
+	//Icon
 	icon = document.createElement("div");
 	icon.id = 'messageIcon';
 	if (mode==0) { //Bad message
@@ -36,6 +34,7 @@ function insertMessage(message, mode) {
 		//Animate message in
 		$('#message').css('top', '4vh');
 		$('#messageBlocker').css('opacity', '0.6');
+		
 		//Blur stuff out
 		$('#sc').css('filter', 'blur(10px)');
 		$('#effCont').css('filter', 'blur(10px)');
@@ -59,11 +58,4 @@ function removeMessage() {
 	$('#effCont').css('filter', 'none');
 	$('#sbCont').css('filter', 'none');
 	$('#sICont').css('filter', 'none');
-}
-
-function addMessageStyles() {
-	var link = document.createElement('link');
-	link.setAttribute('rel', 'stylesheet');
-	link.setAttribute('href', '../styles/message.css');
-	document.head.appendChild(link);
 }

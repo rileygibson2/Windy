@@ -59,13 +59,14 @@ public class DataMockup {
 		jObj.put("parent", parent);
 		
 		if (access.equals("admin")) {
+			jObj.put("children", "child otherchild");
 			jObj.put("AAL", DataManager.amberAlarm);
 			jObj.put("RAL", DataManager.redAlarm);
 			jObj.put("LF", "5");
 			jObj.put("PD", "180");
 			jObj.put("ENF", "10");
 			jObj.put("numbers", "021583723");
-			jObj.put("email", "example@example.com");
+			jObj.put("emails", "example@example.com riley2.gibson2@gmail.com");
 			jObj.put("defunit", "windy32b1");
 			jObj.put("units", "windy32b1 windy64c2 windy128d3");
 		}

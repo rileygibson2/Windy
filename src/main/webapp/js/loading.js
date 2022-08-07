@@ -1,4 +1,3 @@
-var nS = "http://www.w3.org/2000/svg";
 var lW = 100;
 var r1 = lW/2;
 var r2 = lW/3;
@@ -58,7 +57,6 @@ function insertLoading(x, y, fullscreen) {
 
 	//Finish
 	$('body').append(svg);
-	//refreshParent('body');
 }
 
 function removeLoading() {

@@ -2,21 +2,22 @@
 
 	<div id="sTBar">
 		<div id="sCloseButton" onclick="closeSettings()"></div>
-		<div class="sTBarN sTBarNActive" id="sTBarN0" onclick="switchSettingsPage(0)">
+		<div class="sTBarN sTBarNActive" id="sTBarN0" onclick="switchSettingsTab(0)">
 			<div class="sTBarNT">Account</div>
 		</div>
-		<div class="sTBarN" id="sTBarN1" onclick="switchSettingsPage(1)">
+		<div class="sTBarN" id="sTBarN1" onclick="switchSettingsTab(1)">
 			<div class="sTBarNT">Units</div>
 		</div>
-		<div class="sTBarN" id="sTBarN2" onclick="switchSettingsPage(2)">
-			<div class="sTBarNT">Users</div>
+		<div class="sTBarN" id="sTBarN2" onclick="switchSettingsTab(2)">
+			<div class="sTBarNT">Manage Users</div>
 		</div>
-		<div class="sTBarN" id="sTBarN3" onclick="switchSettingsPage(3)">
-			<div class="sTBarNT">Alerts</div>
+		<div class="sTBarN" id="sTBarN3" onclick="switchSettingsTab(3)">
+			<div class="sTBarNT">Alerts & Notifications</div>
 		</div>
 	</div>
 
-	<div class="sPageCont" id="sPageCont0">
+	<!--Account tab-->
+	<div class="sTabCont" id="sTabCont0">
 		<div class="sCol">
 			<div class="sETitle">Username</div>
 			<div class="sEBoxIcon" style="background-image: url('../assets/icons/user.svg'); background-size: 58%;"></div>
@@ -39,8 +40,8 @@
 		</div>
 	</div>
 
-
-	<div class="sPageCont" id="sPageCont1">
+	<!--Units tab-->
+	<div class="sTabCont" id="sTabCont1">
 		<div class="sCol" style="width: 66%;">
 			<div class="sTableTitle">Paired Units</div>
 			<div class="sTableCont">
@@ -54,7 +55,7 @@
 					 </tr>
 				</table>
 			</div>
-			<div class="sTableButton" id="sTableRemove" style="margin-left: 90%;"></div>
+			<div class="sTableButton" id="sTableRemove" onmousedown="checkTableRow('sUnitsTable')"></div>
 		</div>
 
 		<div class="sCol" style="left: 66%;">
@@ -65,21 +66,37 @@
 		</div>
 	</div>
 
-	<div class="sPageCont" id="sPageCont2">
+	<!--Users tab-->
+	<div class="sTabCont" id="sTabCont2">
+		<div class="sCol" style="width: 75%;">
+			<div class="sTableTitle">Additional Users</div>
+			<div class="sTableCont">
+				<table class="sTable" id="sUsersTable">
+					 <tr class="sTableHeader">
+					 	<td class="sTableHC">Username</td>
+					 	<td class="sTableHC">Access Level</td>
+					 	<td class="sTableHC">New Password</td>
+					 </tr>
+				</table>
+			</div>
+			<div class="sTableButton" id="sTableAdd" style="margin-left: 86.5%;" onmousedown="addTableRow(3)"></div>
+			<div class="sTableButton" id="sTableRemove" onmousedown="checkTableRow('sUsersTable')"></div>
+		</div>
 	</div>
 
-	<div class="sPageCont" id="sPageCont3">
+	<!--Alerts tab-->
+	<div class="sTabCont" id="sTabCont3">
 		<div class="sCol">
-			<div class="sETitle">Red Alarm Limit</div>
+			<div class="sETitle">Red Alert Limit</div>
 			<input type="text" id="sRAL" class="sEBox">
-			<div class="sETitle">Amber Alarm Limit</div>
+			<div class="sETitle">Amber Alert Limit</div>
 			<input type="text" id="sAAL" class="sEBox">
 			<div class="sETitle">Emergency Notification Frequency</div>
 			<input type="text" id="sENF" class="sEBox">
 		</div>
 
 		<div class="sCol" style="left: 33%;">
-			<div class="sETitle">Emergency Numbers</div>
+			<div class="sETitle">Alert Numbers</div>
 			<div class="sTableCont" style="height: 30%">
 				<table class="sTable" id="sNumbersTable">
 					 <tr class="sTableHeader">
@@ -87,13 +104,20 @@
 					 	<td class="sTableHC">Number</td>
 					 </tr>
 				</table>
-				<div class="sTableButton" id="sTableAddPhone" style="margin-left: 79.5%;" onmousedown="addEmergencyNumber()"></div>
-				<div class="sTableButton" id="sTableRemove" onmousedown="removeEmergencyNumber()"></div>
+				<div class="sTableButton" id="sTableAdd" style="margin-left: 81%;" onmousedown="addTableRow(1)"></div>
+				<div class="sTableButton" id="sTableRemove" onmousedown="checkTableRow('sNumbersTable')"></div>
 			</div>
 		
-			<div class="sETitle">Email</div>
-			<div class="sEBoxIcon" style="background-image: url('../assets/icons/email.svg'); background-size: 67%;"></div>
-			<input type="text" id="sEmail" class="sEBox">
+			<div class="sETitle">Alert Emails</div>
+			<div class="sTableCont" style="height: 30%">
+				<table class="sTable" id="sEmailsTable">
+					 <tr class="sTableHeader">
+					 	<td class="sTableHC">Email</td>
+					 </tr>
+				</table>
+				<div class="sTableButton" id="sTableAdd" style="margin-left: 81%;" onmousedown="addTableRow(2)"></div>
+				<div class="sTableButton" id="sTableRemove" onmousedown="checkTableRow('sEmailsTable')"></div>
+			</div>
 		</div>
 	</div>
 

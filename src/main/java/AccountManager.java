@@ -162,6 +162,13 @@ public class AccountManager {
 		if (jObj==null) return null;
 		return jObj.get("units").toString().split(" ");
 	}
+	
+	public String[] getChildrenAccounts(String user) {
+		JSONObject jObj = getAccountInfo(user);
+		if (jObj==null) return null;
+		try {return jObj.get("children").toString().split(" ");}
+		catch (JSONException e) {System.out.println("User "+user+" does not have children accounts"); return null;}
+	}
 
 	public JSONObject getAccountInfo(String user) {
 		//Read account file
