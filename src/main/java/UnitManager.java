@@ -18,7 +18,7 @@ public class UnitManager {
 		catch (FileNotFoundException e) {System.out.println("Invalid unit."); return null;}
 	}
 	
-	public JSONObject getUnitInfo(String unit) {
+	public JSONObject getUnitObject(String unit) {
 		//Read account file
 		JSONObject jObj = null;
 		try {

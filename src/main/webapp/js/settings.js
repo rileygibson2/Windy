@@ -108,7 +108,7 @@ function implementSettingsData(jArr) {
 		td.id = jObj.id;
 
 		//Add other cells
-		makeSettingsCellDropdown(tr, "Admin", "User", "Observer");
+		makeSettingsCellDropdown(tr, "employee", "observer");
 		makeSettingsCell(true, "", tr, "Enter new password");
 		$('#sUsersTable').append(tr);
 	}
@@ -308,9 +308,8 @@ function postSettings() {
 	for (var i=1; i<rows.length-1; i++) {
 		var cells = rows[i].cells;
 		var id = cells[0].innerHTML; //Get id of unit from first cell
-
-		//Get relevant jObj from setObj array
-		var jObj = getObjectFromID(id);
+		var jObj = getObjectFromID(id); //Get relevant jObj from setObj array
+		
 		if (jObj!=null) {
 			//Remove unessacary values
 			delete jObj['version'];
@@ -327,7 +326,7 @@ function postSettings() {
 	for (var z=0; z<setObj.length; z++) {
 		if (setObj[z].desc=="unit") {
 			if (setObj[z].parsed==undefined) {
-				setObj[z].clienttag = "removed";
+				setObj[z].clienttag = "remove";
 			}
 		}
 		delete setObj[z].parsed;
@@ -338,22 +337,22 @@ function postSettings() {
 	for (var i=1; i<rows.length-1; i++) {
 		var cells = rows[i].cells;
 		var id = cells[0].id; //Get id of user from first cell
-		//Get relevant jObj from setObj array
-		var jObj = getObjectFromID(id);
+		var jObj = getObjectFromID(id); //Get relevant jObj from setObj array
+
 		if (jObj!=null) {
-			jObj.username = setObj[0].username; //Update parent incase changed in settings
+			jObj.parent = setObj[0].username; //Update parent incase changed in settings
 			jObj.username = cells[0].firstChild.value;
-			jObj.access = cells[1].firstChild.value;
+			jObj.access = cells[1].children[1].value;
 			jObj.parsed = "1"; //Functional tag that will be removed before sending
 		}
 		else { //New user, need to add new jObj
 			var jObj = {
 				parent:setObj[0].username, 
 				username:cells[0].firstChild.value,
-				access:cells[1].firstChild.value,
+				access:cells[1].children[1].value,
 				password:cells[2].firstChild.value,
 				desc:"childuser",
-				clienttag:"new", //Tag so server knows what action to take
+				clienttag:"add", //Tag so server knows what action to take
 				parsed:"1" //Functional tag that will be removed before sending
 			}
 			setObj.push(jObj);
@@ -364,7 +363,7 @@ function postSettings() {
 	for (var z=0; z<setObj.length; z++) {
 		if (setObj[z].desc=="childuser") {
 			if (setObj[z].parsed==undefined) {
-				setObj[z].clienttag = "removed";
+				setObj[z].clienttag = "remove";
 			}
 		}
 		delete setObj[z].parsed;
@@ -395,11 +394,10 @@ function postSettings() {
 	}	
 	setObj[0].alertEmails = alertEmails;
 
-	alert(JSON.stringify(setObj));
-
 	//Post data and close settings
+	var user = setObj[0].username;
 	var req = new XMLHttpRequest();
-	req.open('POST', 'data/?sK='+sessionKey+'&m=1&t='+Math.random(), true);
+	req.open('POST', 'data/?sK='+sessionKey+'&m=1&user='+user+'&t='+Math.random(), true);
 	req.setRequestHeader("Content-type", "application/json");
 	req.onreadystatechange = function() {
 		if (req.readyState!=4) return;
@@ -445,7 +443,7 @@ function addTableRow(i) {
 		tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
 		makeSettingsCell(true, "", tr, "Enter new username");
-		makeSettingsCellDropdown(tr, "Admin", "User", "Observer");
+		makeSettingsCellDropdown(tr, "employee", "observer");
 		makeSettingsCell(true, "", tr, "Enter new password");
 		break;
 	}

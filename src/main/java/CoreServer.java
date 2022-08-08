@@ -40,14 +40,15 @@ public class CoreServer {
 
 	public static void makeMockupData() {
 		Utils.deleteFolder(new File("units"), false);
+		Utils.deleteFolder(new File("accounts"), false);
 		
 		String def1 = "windy"+Utils.makeID();
 		String def2 = "windy"+Utils.makeID();
 		String def3 = "windy"+Utils.makeID();
 		
 		DataMockup.makeAccount("mywindy", "admin", "null", def1, def1+" "+def2+" "+def3);
-		DataMockup.makeAccount("child", "user", "mywindy", "", "");
-		DataMockup.makeAccount("otherchild", "user", "mywindy", "", "");
+		DataMockup.makeAccount("child", "employee", "mywindy", "", "");
+		DataMockup.makeAccount("otherchild", "employee", "mywindy", "", "");
 		DataMockup.makeRecords(0, def1, "LAB Stage", "8.8.8.8");
 		DataMockup.makeRecords(0, def2, "Rock Stage", "125.99.3.1");
 		DataMockup.makeRecords(0, def3, "Frank Kitts", "30.140.50.100");

@@ -5,6 +5,7 @@
 	background-color: black;
 	z-index: 500;
 	opacity: 0;
+	cursor: pointer;
 	transition: all 0.2s;
 }
 #message {

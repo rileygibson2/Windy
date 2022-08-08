@@ -128,7 +128,7 @@ class UnitsPage extends Page {
 	}
 
 	changeUnit(i) {
-		unit = this.units[i].unit;
+		unit = this.units[i].id;
 		unitName = this.units[i].name;
 		switchSections(0);
 	}

@@ -163,18 +163,20 @@ public class WebServlet extends HttpServlet {
 			failNotAuthorised(resp);
 			return;
 		}
-		Session session = CoreServer.accountManager.getSession(sK);
-
+		//Get user
+		String user = req.getParameter("user");
+		if (user==null) failBadRequest(resp);
+		
 		//Get data
 		System.out.println(blue+" --- Recieving data --- "+reset);
 		String data = "";
 		if ("POST".equalsIgnoreCase(req.getMethod())) {
 			data = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		}
-		System.out.println("Data: "+data);
+		//System.out.println("Data: "+data);
 
 		//Update user records
-		boolean success = CoreServer.accountManager.updateSettings(data);
+		boolean success = CoreServer.accountManager.updateSettings(user, data);
 		if (success) resp.setStatus(HttpServletResponse.SC_OK);
 		else failBadRequest(resp);
 		//resp.setStatus(HttpServletResponse.SC_OK);

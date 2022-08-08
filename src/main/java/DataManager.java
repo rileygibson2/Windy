@@ -44,7 +44,7 @@ public class DataManager {
 		JSONObject jObj;
 		
 		//Get account data
-		jObj = CoreServer.accountManager.getAccountInfo(user);
+		jObj = CoreServer.accountManager.getAccountObject(user);
 		if (jObj==null) return null;
 		jObj.remove("password"); jObj.remove("salt");
 		jObj.put("desc", "account"); //Add convience tag
@@ -57,7 +57,7 @@ public class DataManager {
 		String[] units = CoreServer.accountManager.getAssignedUnits(user);
 		if (units==null) return null;
 		for (String unit : units) {
-			jObj = CoreServer.unitManager.getUnitInfo(unit);
+			jObj = CoreServer.unitManager.getUnitObject(unit);
 			if (jObj==null) return null;
 			jObj.put("desc", "unit"); //Add convience tag
 			jArr.put(jObj);
@@ -67,7 +67,8 @@ public class DataManager {
 		String[] children = CoreServer.accountManager.getChildrenAccounts(user);
 		if (children==null) return null;
 		for (String child : children) {
-			jObj = CoreServer.accountManager.getAccountInfo(child);
+			if (child.isBlank()) continue;
+			jObj = CoreServer.accountManager.getAccountObject(child);
 			if (jObj==null) return null;
 			jObj.put("desc", "childuser"); //Add convience tag
 			jArr.put(jObj);
@@ -181,7 +182,7 @@ public class DataManager {
 		//Get status on all assigned units
 		JSONArray jArr = new JSONArray();
 		for (String unit : units) {
-			JSONObject uS = CoreServer.unitManager.getUnitInfo(unit);
+			JSONObject uS = CoreServer.unitManager.getUnitObject(unit);
 			if (uS==null) return null;
 			jArr.put(uS);
 		}

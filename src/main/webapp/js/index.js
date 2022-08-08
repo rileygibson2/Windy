@@ -10,7 +10,7 @@ var animatingIn;
 
 //Request stuff
 var unit;
-var unitName = "LAB Stage";
+var unitName;
 var sessionKey;
 var responseRecieved; //Used for delayed fuse loading screens after requests
 var loadingWait = 500; //Time to delay a loading screen for
