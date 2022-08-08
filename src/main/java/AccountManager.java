@@ -2,19 +2,13 @@ package main.java;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,8 +17,11 @@ public class AccountManager {
 	private final Map<Integer, AuthenticationSession> authSessions;
 	private final Set<Session> sessions;
 
-	private static final String[] infoAttrs = {"number","password","salt","PD","LF","RAL","AAL", "ENF","email","username","defunit","units"};
-
+	//Attributes present in different types of data files
+	private static final String[] adminAccAttrs = {"id","alertNumbers","password","salt","PD","LF","RAL","AAL", "ENF","alertEmails","username","defunit","units","organisation","contactemail","children","desc","access","parent"};
+	private static final String[] childAccAttrs = {"id","access","parent","username","salt","password"};
+	private static final String[] unitInfoAttrs = {"ip","id","name","status","power","version","direction"};
+	
 	public AccountManager() {
 		sessions = new HashSet<Session>();
 		authSessions = new HashMap<Integer, AuthenticationSession>();
@@ -102,7 +99,7 @@ public class AccountManager {
 		if (jObj==null) return null;
 
 		//Hash stored pass with authentication session salt
-		String actualPass = hash(jObj.get("password").toString(), auth.getS2());
+		String actualPass = Utils.hash(jObj.get("password").toString(), auth.getS2());
 		System.out.println("Actual Pass: "+actualPass+"\nGiven Pass: "+pass);
 		authSessions.remove(authID); //Done with authentication session
 
@@ -121,7 +118,7 @@ public class AccountManager {
 				return null;
 			}
 
-			//Send
+			//Send session key and default unit
 			JSONObject toSend = new JSONObject();
 			toSend.put("sK", sK.getKey()).put("defunit", defunit);
 			return toSend.toString(1);
@@ -129,26 +126,6 @@ public class AccountManager {
 
 		System.out.println("Invalid.");
 		return null;
-	}
-
-	public boolean updateAccountInfo(String user, String jObjS) {
-		JSONObject jObj = new JSONObject(jObjS);
-		JSONObject oldObj = getAccountInfo(user); //Get old object
-
-		//Go through all attributes and fill in gaps in data object
-		for (String s : infoAttrs) {
-			//If not provided then pull from old
-			if (!jObj.has(s)) jObj.put(s, oldObj.get(s));
-		}
-
-		try { //Update account file
-			FileWriter out = new FileWriter("accounts/"+user+".acc");
-			out.write(jObj.toString(1));
-			out.close();
-			System.out.println("Successfully updated accounts.");
-		} catch (IOException e) {System.out.println("IO Error."); return false;}	
-
-		return true;
 	}
 
 	public String getDefaultUnit(String user) {
@@ -197,23 +174,78 @@ public class AccountManager {
 		
 		return jObj;
 	}
-
-	public static String hash(String toHash, String salt) {
-		MessageDigest md = null;
-		try {md = MessageDigest.getInstance("SHA-256");} 
-		catch (NoSuchAlgorithmException e) {System.out.println("Hashing algorithim error: "+e.getStackTrace());}
-
-		md.update(salt.getBytes(StandardCharsets.UTF_8)); // Change this to UTF-16 if needed
-		md.update(toHash.getBytes(StandardCharsets.UTF_8)); // Change this to UTF-16 if needed
-		byte[] digest = md.digest();
-		String hex = String.format("%064x", new BigInteger(1, digest));
-		return hex;
+	
+	public boolean updateSettings(String data) {
+		JSONArray jArr = new JSONArray(data);
+		
+		for (int i=0; i<jArr.length(); i++) {
+			JSONObject jObj = new JSONObject(jArr.get(i));
+			
+			//Object is an account
+			if (jObj.get("desc").equals("account")) {
+				String username = jObj.getString("username");
+				JSONObject accObj = getAccountInfo(username);
+				if (accObj==null) return false;
+				
+				for (String k : adminAccAttrs) { //Go through all account attributes and fill in gaps in data object
+					if (!jObj.has(k)) jObj.put(k, accObj.get(k)); //If not provided then pull from old
+				}
+				Utils.writeToFile("accounts/"+username+".acc", jObj.toString(1));
+			}
+			
+			//Object is a child user
+			if (jObj.get("desc").equals("childuser")) {
+				String clienttag = null;
+				try {clienttag = jObj.getString("clienttag");}
+				catch (JSONException e) {} //Swallow
+				
+				if (clienttag==null) { //No special action, just update info
+					String username = jObj.getString("username");
+					JSONObject accObj = getAccountInfo(username);
+					if (accObj==null) return false;
+					
+					for (String k : childAccAttrs) { //Go through all account attributes and fill in gaps in data object
+						if (!jObj.has(k)) jObj.put(k, accObj.get(k)); //If not provided then pull from old
+					}
+					Utils.writeToFile("accounts/"+username+".acc", jObj.toString(1));
+				}
+				if (clienttag=="add") { //New account
+					makeChildAccount(jObj.getString("username"), jObj.getString("access"), jObj.getString("parent"));
+				}
+				if (clienttag=="remove") { //Remove account
+					removeAccount(jObj.getString("username"));
+				}
+			}
+			
+			//If object is a unit
+			if (jObj.get("desc").equals("unit")) {
+				String id = jObj.getString("id");
+				JSONObject unitObj = CoreServer.unitManager.getUnitInfo(id);
+				if (unitObj==null) return false;
+				
+				for (String k : unitInfoAttrs) { //Go through all account attributes and fill in gaps in data object
+					if (!jObj.has(k)) jObj.put(k, unitObj.get(k)); //If not provided then pull from old
+				}
+				Utils.writeToFile("units/"+id+"/unit.info", jObj.toString(1));
+			}
+		}
+		
+		return true;
 	}
+	
+	public static void makeChildAccount(String username, String access, String parent) {
+		JSONObject jObj = new JSONObject();
 
-	public String getSalt() {
-		SecureRandom sr = new SecureRandom();
-		String salt = "";
-		for (int i=0; i<8; i++) salt += sr.nextInt(100);
-		return salt;
+		jObj.put("id", Utils.makeID());
+		jObj.put("username", username);
+		jObj.put("password", Utils.hash("w1", "12345678910"));
+		jObj.put("salt", "12345678910");
+		jObj.put("access", access);
+		jObj.put("parent", parent);
+		Utils.writeToFile("accounts/"+username+".acc", jObj.toString(1));
+	}
+	
+	public static void removeAccount(String username) {
+		Utils.deleteFolder(new File("units/"+username), true);
 	}
 }

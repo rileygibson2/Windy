@@ -1,5 +1,7 @@
+var settingsTab; //Active settings tab
+var setObj; //Loaded settings object
+
 //Settings actions
-var settingsTab;
 
 function openSettings() {
 	//Add styles
@@ -62,8 +64,9 @@ function implementSettingsData(jArr) {
 	//Account tab data
 	$('#sNumber').val(jObj.number);
 	$('#sEmail').val(jObj.email);
-	$('#sENF').val(jObj.ENF+" mins");
 	$('#sUsername').val(jObj.username);
+	$('#sOrganisation').val(jObj.organisation);
+	$('#sContactEmail').val(jObj.contactemail);
 
 	//Units tab data
 	$('#sLF').val(jObj.LF+" mins");
@@ -78,8 +81,9 @@ function implementSettingsData(jArr) {
 		//Make row
 		var tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
-		//Add cells
-		makeSettingsCell(false, jObj.unit, tr);
+
+		makeSettingsCell(false, jObj.id, tr);
+		//Add other cells
 		makeSettingsCell(true, jObj.name, tr);
 		makeSettingsCell(false, jObj.ip, tr);
 		makeSettingsCell(true, jObj.direction+"°", tr);
@@ -95,10 +99,15 @@ function implementSettingsData(jArr) {
 		jObj = jArr[i];
 		if (jObj.desc!="childuser") break;
 
-		//Make row and add cells
+		//Make row
 		var tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
-		makeSettingsCell(true, jObj.username, tr);
+
+		//Add account id and onto cell that has username for tying row back to account later
+		var td = makeSettingsCell(true, jObj.username, tr);
+		td.id = jObj.id;
+
+		//Add other cells
 		makeSettingsCellDropdown(tr, "Admin", "User", "Observer");
 		makeSettingsCell(true, "", tr, "Enter new password");
 		$('#sUsersTable').append(tr);
@@ -112,32 +121,33 @@ function implementSettingsData(jArr) {
 	$('#sENF').val(jObj.ENF+" mins");
 
 	//Numbers table
-	var numbers = jObj.numbers.split(" ");
-	for (var i=0; i<numbers.length; i++) {
+	var alertNumbers = jObj.alertNumbers.split(" ");
+	for (var i=0; i<alertNumbers.length; i++) {
 		//Make row and add cells
 		var tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
 		tr.style.height = "4vh";
 		makeSettingsCell(false, "+64", tr);
-		makeSettingsCell(true, numbers[i], tr);
+		makeSettingsCell(true, alertNumbers[i], tr);
 		$('#sNumbersTable').append(tr);
 	}
 	$('#sNumbersTable').append("<tr></tr>"); //Append dummy row
 
 	//Emails table
-	var emails = jObj.emails.split(" ");
-	for (var i=0; i<emails.length; i++) {
+	var alertEmails = jObj.alertEmails.split(" ");
+	for (var i=0; i<alertEmails.length; i++) {
 		//Make row and add cells
 		var tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
 		tr.style.height = "4vh";
-		makeSettingsCell(true, emails[i], tr);
+		makeSettingsCell(true, alertEmails[i], tr);
 		$('#sEmailsTable').append(tr);
 	}
 	$('#sEmailsTable').append("<tr></tr>"); //Append dummy row
 
 	//Add table click listeners
 	addSettingsTableListeners();
+	setObj = jArr;
 }
 
 function addSettingsTableListeners() {
@@ -178,6 +188,8 @@ function makeSettingsCell(isInput, value, parent, placeholder) {
 	}
 	else td.innerHTML = value;
 	parent.append(td);
+
+	return td;
 }
 
 function makeSettingsCellDropdown(parent, ...options) {
@@ -201,6 +213,8 @@ function makeSettingsCellDropdown(parent, ...options) {
   	td.append(a);
   	td.append(s);
   	parent.append(td);
+
+  	return td;
 }
 
 function addSettingsKeyListeners() {
@@ -273,27 +287,118 @@ function formatSettingsInput(id, add) {
 }
 
 function postSettings() {
-	//Format data in JSON
-	var data = {
-		RAL:$('#sRAL').val().replace(/\D/g,''),
-		AAL:$('#sAAL').val().replace(/\D/g,''),
-		LF:$('#sLF').val().replace(/\D/g,''),
-		PD:$('#sPD').val().replace(/\D/g,''),
-		number:$('#sNumber').val().replace(/\D/g,''),
-		email:$('#sEmail').val(),
-		ENF:$('#sENF').val().replace(/\D/g,''),
-		username:$('#sUsername').val(),
-	}
+	//Update settings object with all data
+
+	//Account data
+	setObj[0].username = $('#sUsername').val();
+	setObj[0].LF = $('#sLF').val().replace(/\D/g,'');
+	setObj[0].organisation = $('#sOrganisation').val();
+	setObj[0].contactemail = $('#sContactEmail').val();
 
 	if ($('#sPassword').val()!="") { //Only if a new password has been entered
 		//Generate salt
 		var salt = "";
 		for (var i=0; i<10; i++) salt += new String(Math.floor(Math.random()*(200-0)+0));
-		data.password = hash($('#sPassword').val(), salt);
-		data.salt = salt;
+		setObj[0].password = hash($('#sPassword').val(), salt);
+		setObj[0].salt = salt;
 	}
 
-	var req = new XMLHttpRequest(); //Post data
+	//Units data
+	var rows = document.getElementById("sUnitsTable").rows;
+	for (var i=1; i<rows.length-1; i++) {
+		var cells = rows[i].cells;
+		var id = cells[0].innerHTML; //Get id of unit from first cell
+
+		//Get relevant jObj from setObj array
+		var jObj = getObjectFromID(id);
+		if (jObj!=null) {
+			//Remove unessacary values
+			delete jObj['version'];
+			delete jObj['ip'];
+			delete jObj['power'];
+			delete jObj['status'];
+			jObj.name = cells[1].firstChild.value;
+			jObj.direction = cells[3].firstChild.value.substring(0, cells[3].firstChild.value.length-1);
+			jObj.parsed = "1"; //Functional tag that will be removed before sending
+		}
+	}
+
+	//Check for and tag removed units
+	for (var z=0; z<setObj.length; z++) {
+		if (setObj[z].desc=="unit") {
+			if (setObj[z].parsed==undefined) {
+				setObj[z].clienttag = "removed";
+			}
+		}
+		delete setObj[z].parsed;
+	}
+
+	//Users data
+	var rows = document.getElementById("sUsersTable").rows;
+	for (var i=1; i<rows.length-1; i++) {
+		var cells = rows[i].cells;
+		var id = cells[0].id; //Get id of user from first cell
+		//Get relevant jObj from setObj array
+		var jObj = getObjectFromID(id);
+		if (jObj!=null) {
+			jObj.username = setObj[0].username; //Update parent incase changed in settings
+			jObj.username = cells[0].firstChild.value;
+			jObj.access = cells[1].firstChild.value;
+			jObj.parsed = "1"; //Functional tag that will be removed before sending
+		}
+		else { //New user, need to add new jObj
+			var jObj = {
+				parent:setObj[0].username, 
+				username:cells[0].firstChild.value,
+				access:cells[1].firstChild.value,
+				password:cells[2].firstChild.value,
+				desc:"childuser",
+				clienttag:"new", //Tag so server knows what action to take
+				parsed:"1" //Functional tag that will be removed before sending
+			}
+			setObj.push(jObj);
+		}
+	}
+
+	//Check for and tag removed user
+	for (var z=0; z<setObj.length; z++) {
+		if (setObj[z].desc=="childuser") {
+			if (setObj[z].parsed==undefined) {
+				setObj[z].clienttag = "removed";
+			}
+		}
+		delete setObj[z].parsed;
+	}
+
+	//Alert data
+	setObj[0].RAL = $('#sRAL').val().replace(/\D/g,'');
+	setObj[0].AAL = $('#sAAL').val().replace(/\D/g,'');
+	setObj[0].ENF = $('#sENF').val().replace(/\D/g,'');
+
+	var alertNumbers = "";
+	var rows = document.getElementById("sNumbersTable").rows;
+	for (var i=1; i<rows.length-1; i++) {
+		var cells = rows[i].cells;
+		//Make sure correct spacing so can be array parsed
+		if (i>1) alertNumbers += " "+cells[1].firstChild.value;
+		else alertNumbers += cells[1].firstChild.value;
+	}	
+	setObj[0].alertNumbers = alertNumbers;
+
+	var alertEmails = "";
+	var rows = document.getElementById("sEmailsTable").rows;
+	for (var i=1; i<rows.length-1; i++) {
+		var cells = rows[i].cells;
+		//Make sure correct spacing so can be array parsed
+		if (i>1) alertEmails += " "+cells[0].firstChild.value;
+		else alertEmails += cells[0].firstChild.value;
+	}	
+	setObj[0].alertEmails = alertEmails;
+
+	alert(JSON.stringify(setObj));
+
+	//Post data and close settings
+	var req = new XMLHttpRequest();
 	req.open('POST', 'data/?sK='+sessionKey+'&m=1&t='+Math.random(), true);
 	req.setRequestHeader("Content-type", "application/json");
 	req.onreadystatechange = function() {
@@ -301,8 +406,16 @@ function postSettings() {
 		if (req.status==200) insertMessage("Settings updated succesfully", 1);
 		else insertMessage("There was an error updating settings", 0);
 	}
-	req.send(JSON.stringify(data));
+	req.send(JSON.stringify(setObj));
 	this.closeSettings();
+}
+
+//Gets the relevant object from the settings array
+function getObjectFromID(id) {
+	for (i=0; i<setObj.length; i++) {
+		if (setObj[i].id==id) return setObj[i];
+	}
+	return null;
 }
 
 //Settings table add and remove actions

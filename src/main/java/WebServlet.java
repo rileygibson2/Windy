@@ -113,7 +113,6 @@ public class WebServlet extends HttpServlet {
 			
 			//Check for unauthorised tag from data manager
 			if (data.equals("unauthorised")) {failNotAuthorised(resp); return;}
-			System.out.println(data);
 			break;
 			
 		case checkSessionKey:
@@ -149,7 +148,7 @@ public class WebServlet extends HttpServlet {
 		default: failBadRequest(resp); return;
 		}
 		System.out.println("sessionKey: "+sK+"\n"+blue+" --- End GET  --- "+reset+"\n");
-
+		
 		//Send response
 		resp.setStatus(HttpServletResponse.SC_OK);
 		resp.getWriter().println(data);
@@ -175,9 +174,10 @@ public class WebServlet extends HttpServlet {
 		System.out.println("Data: "+data);
 
 		//Update user records
-		boolean success = CoreServer.accountManager.updateAccountInfo(session.getUser(), data);
+		boolean success = CoreServer.accountManager.updateSettings(data);
 		if (success) resp.setStatus(HttpServletResponse.SC_OK);
 		else failBadRequest(resp);
+		//resp.setStatus(HttpServletResponse.SC_OK);
 		System.out.println("sessionKey: "+sK+"\n"+blue+" --- End Post --- "+reset+"\n");
 	}
 
