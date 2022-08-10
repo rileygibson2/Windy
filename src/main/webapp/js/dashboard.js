@@ -78,10 +78,11 @@ class DashboardPage extends Page {
 		this.gData.reverse();
 		this.gVisualData = [];
 		for (i=0; i<this.gData.length; i++) this.gVisualData[i] = 0; //Copy incase no animation is run
-		this.implementData();
 
 		//Load alert level circle data
 		this.alarmLevelTimes = [jArr[2].level1, jArr[2].level2, jArr[2].level3];
+
+		this.implementData();
 	}
 
 

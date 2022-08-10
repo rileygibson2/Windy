@@ -1,15 +1,19 @@
 <div id="fMCont1">
 	<div class="fM" id="fTempM">
+		<div class="fMIcon" style="background-image: url('../assets/icons/wind.svg');"></div>
+		<div class="fMTitleCont" style="width: 88%;">
+			<div class="fMTitle">Wind Speed</div>
+			<div class="fMText">8km/h</div>
+		</div>
+		<svg class="fMSVGWide" id="fMSVG1"></svg>
+	</div>
+	<div class="fM" id="fWindM">
 		<div class="fMIcon" style="background-image: url('../assets/icons/cloudsfilled.svg');"></div>
 		<div class="fMTitleCont">
 			<div class="fMTitle">Temperature</div>
+			<div class="fMText">25°</div>
 		</div>
-	</div>
-	<div class="fM" id="fWindM">
-		<div class="fMIcon" style="background-image: url('../assets/icons/wind.svg');"></div>
-		<div class="fMTitleCont">
-			<div class="fMTitle">Wind Speed</div>
-		</div>
+		<svg class="fMSVG" id="fMSVG2"></svg>
 	</div>
 </div>
 
@@ -18,18 +22,79 @@
 		<div class="fMIcon" style="background-image: url('../assets/icons/rain.svg'); background-size: 70%;"></div>
 		<div class="fMTitleCont">
 			<div class="fMTitle">Rain</div>
+			<div class="fMText">3mm</div>
 		</div>
+		<svg class="fMSVG" id="fMSVG3"></svg>
 	</div>
 	<div class="fM" id="fSnowM">
 		<div class="fMIcon" class="fMIcon" style="background-image: url('../assets/icons/snow.svg'); background-size: 80%;"></div>
 		<div class="fMTitleCont">
 			<div class="fMTitle">Snow</div>
+			<div class="fMText">1mm</div>
 		</div>
+		<svg class="fMSVG" id="fMSVG4"></svg>
 	</div>
 	<div class="fM" id="fPrecipM">
 		<div class="fMIcon" style="background-image: url('../assets/icons/dropper.svg'); background-size: 70%;"></div>
 		<div class="fMTitleCont">
 			<div class="fMTitle">Precipitation</div>
+		</div>
+		<svg class="fMSVG" id="fMSVG5"></svg>
+
+		<!--<div class='fMcT'>
+	        <div class='cTB' id='cTB1'>-</div>
+	        <div class='cTS' id='cTS1'>mins at green</div>
+	    </div>-->
+        <svg id='fMcSVG'>
+      	    <defs>
+      			<filter id="fMShadow" ><feDropShadow id="fMcDS" dx="-3" dy="3" stdDeviation="8"/></filter>
+      		</defs>
+      		<circle class='fMcSVGC fMcSVGF' id="fMcSVGF3"></circle>
+      		<circle class='fMcSVGC' id="fMcSVGC3"></circle>
+
+      		<circle class='fMcSVGC fMcSVGF' id="fMcSVGF2"></circle>
+      		<circle class='fMcSVGC' id="fMcSVGC2"></circle>
+
+      		<circle class='fMcSVGC fMcSVGF' id="fMcSVGF1"></circle>
+      		<circle class='fMcSVGC' id="fMcSVGC1"></circle>
+        </svg>
+	</div>
+</div>
+
+<div id="fMCont3">
+	<div class="fDN">
+		<div class="fDNIcon" style="background-image: url('../assets/icons/rain.svg');"></div>
+		<div class="fDNTitle">MON</div>
+		<div class="fDNTempCont">
+			<div class="fDNTemp">18°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" style="background-image: url('../assets/icons/cloudsfilled.svg');"></div>
+		<div class="fDNTitle">TUES</div>
+		<div class="fDNTempCont">
+			<div class="fDNTemp">10°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" style="background-image: url('../assets/icons/cloudsfilled.svg');"></div>
+		<div class="fDNTitle">WED</div>
+		<div class="fDNTempCont">
+			<div class="fDNTemp">6°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" style="background-image: url('../assets/icons/wind.svg');"></div>
+		<div class="fDNTitle">THUR</div>
+		<div class="fDNTempCont">
+			<div class="fDNTemp">17°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" style="background-image: url('../assets/icons/cloudsfilled.svg');"></div>
+		<div class="fDNTitle">FRI</div>
+		<div class="fDNTempCont">
+			<div class="fDNTemp">20°</div>
 		</div>
 	</div>
 </div>
