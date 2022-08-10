@@ -1,0 +1,62 @@
+#fMCont1 { /*Top row module container*/
+	width: 80vw;
+	height: 16vw;
+	margin-left: 11vw;
+	margin-top: 6vh;
+}
+#fMCont2 { /*Top row module container*/
+	width: 80vw;
+	height: 16vw;
+	margin-left: 11vw;
+	margin-top: 3.5vh;
+}
+
+.fM { /*A forecast element module*/
+	position: relative;
+	display: inline-block;
+	width: 22vw;
+	height: 100%;
+	margin-left: 2vw;
+	background-color: var(--fg);
+	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	opacity: 0;
+}
+.fM:first-child {
+	margin-left: 0;
+}
+#fTempM { /*Temperature module*/
+	width: 35vw;
+}
+.fMIcon {
+	position: absolute;
+	height: 3vw;
+	width: 3vw;
+	margin-left: 0.7vw;
+	margin-top: 1vh;
+	background-repeat: no-repeat;
+	background-size: 95%;
+	background-position: 50% 50%;
+}
+.fMTitleCont { /*Module title container to allow text inside to be in line with icon*/
+	position: absolute;
+	height: 3vw;
+	margin-left: 4vw;
+	margin-top: 1vh;
+}
+.fMTitle { /*Module title*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	color: rgb(255, 255, 255);
+	font-family: openBold;
+	font-size: 1vw;
+}
+
+
+
+
+
+

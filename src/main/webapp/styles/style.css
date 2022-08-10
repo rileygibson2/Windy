@@ -96,6 +96,9 @@ body {background-color: var(--bg);}
 #sbIcon4 {
 	background-image: url("../assets/icons/report.svg");
 }
+#sbIcon5 {
+	background-image: url("../assets/icons/clouds.svg");
+}
 .sbLabel { /*Text in a sidebar node*/
 	position: relative;
 	width: 100%;

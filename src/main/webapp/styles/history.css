@@ -53,12 +53,14 @@
 .vHNodeCInnerL { /*Small inner node circle*/
 	fill: rgb(255, 255, 255);
 	r: 15px;
+	cursor: pointer;
 }
 .vHNodeCOuterL{ /*Small outer node circle*/
 	stroke: rgb(255, 255, 255, 0.5);
 	stroke-width: 2px;
 	fill: none;
 	r: 25px;
+	cursor: pointer;
 }
 .vHNodeTextL { /*Small node text*/
 	fill: rgb(255, 255, 255, 0.9);

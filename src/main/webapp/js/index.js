@@ -31,7 +31,7 @@ function load() {
 			responseRecieved = true;
 			removeLoading();
 			if (req.status==200) { //Key is still valid
-				setTimeout(switchSections, 0, 1);
+				setTimeout(switchSections, 0, 4);
 			}
 			else openLogin(); //Key is not still valid
 		}
@@ -86,6 +86,12 @@ function switchSections(i) {
 			unitText = "";
 			page = new DashboardPage("dashboard");
 			break;
+		case 4:
+			title = "Forecast";
+			text = "Predicted wind and weather data";
+			unitText = "";
+			page = new ForecastPage("forecast");
+			break;
 	}
 
 	//Swap section indicator elements
@@ -117,7 +123,7 @@ function switchSections(i) {
 function hoverSB(i) {
 	//Dim all others and set this to full
 	$('.sbN').eq(i).css('opacity', '1');
-	for (z=0; z<4; z++) {
+	for (z=0; z<5; z++) {
 		if (i!=z) {
 			$('.sbN').eq(z).css('opacity', '0.4');
 		}
@@ -130,7 +136,7 @@ function hoverSB(i) {
 
 function unhoverSB() {
 	//Reset all
-	for (i=0; i<4; i++) {
+	for (i=0; i<5; i++) {
 		$('.sbN').eq(i).css('opacity', '1');
 		$('#sbIcon'+(i+1)).css({'margin-top':'0%', 'background-size':'60%'});
 		$('#sbLabel'+(i+1)).css('opacity', '0');

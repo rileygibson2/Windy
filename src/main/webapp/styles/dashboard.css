@@ -20,7 +20,7 @@
 	opacity: 0;
 }
 
-#rtSpeedIcon { /*Direction icon*/
+#rtSpeedIcon { /*Wind icon*/
 	position: absolute;
 	width: 20%;
 	height: 20%;
@@ -74,7 +74,7 @@
 	margin-left: 3vw;
 	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
 }
-#rtDirIcon { /*Wind icon*/
+#rtDirIcon { /*Direction icon*/
 	position: absolute;
 	width: 20%;
 	height: 20%;
