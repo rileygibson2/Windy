@@ -1,12 +1,12 @@
 #fMCont1 { /*Top row module container*/
 	width: 80vw;
-	height: 20vw;
+	height: 21vw;
 	margin-left: 11vw;
 	margin-top: 6vh;
 }
 #fMCont2 { /*Second row module container*/
-	width: 80vw;
-	height: 16vw;
+	width: 90vw;
+	height: 18vw;
 	margin-left: 11vw;
 	margin-top: 5vh;
 }
@@ -14,11 +14,11 @@
 .fM { /*A forecast element module*/
 	position: relative;
 	display: inline-block;
-	width: 22vw;
+	width: 20vw;
 	height: 100%;
 	margin-left: 2.5vw;
 	background-color: var(--fg);
-	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
+	background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(60, 60, 60) 50%);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	opacity: 0;
@@ -26,31 +26,48 @@
 .fM:first-child {
 	margin-left: 0;
 }
-#fTempM { /*Temperature module*/
+#fTempM { /*Wind module*/
 	width: 35vw;
 	background-image: linear-gradient(to bottom right, rgb(80, 80, 80) 0%, rgb(30, 30, 30) 50%);
 }
 #fWindM { /*Temperature module*/
+	width: 22vw;
 	background-image: linear-gradient(130deg, rgb(255, 180, 0) 0%, rgb(255, 100, 50) 50%);
 }
-#fRainM { /*Temperature module*/
+#fRainM { /*Rain module*/
 	background-image: linear-gradient(130deg, rgb(98, 172, 254) 0%, rgb(11, 107, 225) 60%);
 	background-image: linear-gradient(130deg, #9400F9 0%, #12217F 50%);
 }
-#fSnowM { /*Temperature module*/
-	background-image: linear-gradient(130deg, rgb(100, 100, 100) 0%, rgb(230, 230, 230) 60%);
+#fSnowM { /*Snow module*/
+	background-image: linear-gradient(130deg, rgb(110, 110, 110) 0%, rgb(230, 230, 230) 60%);
 }
-#fPrecipM { /*Temperature module*/
+#fPrecipM { /*Precipitation module*/
+	
 }
-.fMIcon {
+#fSunsetM { /*Sunrise/Sunset module*/
+	width: 14vw;
+	background-image: linear-gradient(to bottom right, rgb(80, 80, 80) 0%, rgb(30, 30, 30) 50%);
+}
+.fMHeaderBar { /*The header for a forecast node*/
+	width: 100%;
+	height: 20%;
+	margin-top: 4%;
+}
+.fMHeaderBar:first-child {
+	margin-top: 0;
+}
+.fMIcon { /*Forecast module icon*/
 	position: absolute;
 	height: 3vw;
 	width: 3vw;
 	margin-left: 0.7vw;
 	margin-top: 1vh;
 	background-repeat: no-repeat;
-	background-size: 95%;
+	background-size: 80%;
 	background-position: 50% 50%;
+}
+.fMIconInline { /*Used for the modules which are just lots of headers*/
+	margin-left: 0.5%;
 }
 .fMTitleCont { /*Module title container to allow text inside to be in line with icon*/
 	position: absolute;
@@ -59,9 +76,11 @@
 	margin-left: 4vw;
 	margin-top: 1vh;
 }
+.fMTitleContInline { /*Used for the modules which are just lots of headers*/
+	margin-left: 16%;
+}
 .fMTitle { /*Module title*/
 	position: relative;
-	width: 50%;
 	top: 50%;
 	transform: translateY(-50%);
 	color: rgb(255, 255, 255);
@@ -85,20 +104,20 @@
 	position: absolute;
 	width: 100%;
 	height: 86%;
-	margin-top: 10%;
+	margin-top: -5%;
 }
-#fMSVG5 {
+.fMSVGSmall {
 	position: absolute;
-	width: 40%;
-	height: 20%;
-	margin-top: 1%;
-	margin-left: 52%;
+	width: 48%;
+	height: 18%;
+	margin-top: 2%;
+	margin-left: 44%;
 }
 .fMSVGWide {
 	position: absolute;
 	width: 100%;
 	height: 89%;
-	margin-top: 5%;
+	margin-top: -6%;
 	border-radius: 20px;
 }
 .fMGAxisLine { /*Graph axis lines paths*/
@@ -140,6 +159,34 @@
 	z-index: 100;
 }
 
+.fMSunsetN { /*Helps with centering sunset text and icons*/
+	position: absolute;
+	width: 100%;
+	height: 30%;
+	margin-top: 4%;
+}
+.fMSunriseIcon { /*Icon used in sunset node*/
+	position: absolute;
+	width: 40%;
+	height: 100%;
+	margin-left: 8%;
+	background-image: url('../assets/icons/sunrise.svg');
+	background-repeat: no-repeat;
+	background-size: 60%;
+	background-position: 50% 50%;
+	opacity: 0.9;
+}
+.fMTextSunset { /*Text used in sunset node*/
+	position: relative;
+	width: 80%;
+	top: 50%;
+	transform: translateY(-50%);
+	color: rgb(255, 255, 255, 0.7);
+	text-align: right;
+	font-family: open;
+	font-size: 1.3vw;
+}
+
 #fMcSVG { /*Circles SVG*/
 	position: absolute;
 	width: 45%;
@@ -153,7 +200,7 @@
 	cx: 50%;
 	stroke: rgb(150, 150, 150);
 	fill: none;
-	stroke-width: 12px;
+	stroke-width: 0.6vw;
 	stroke-linecap: round;
 	stroke-dasharray: 1, 10000;
 	transform-origin: center;

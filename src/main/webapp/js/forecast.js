@@ -20,7 +20,9 @@ class ForecastPage extends Page {
 		this.gVisualDataTemp = [];
 		this.gVisualDataRain = [];
 		this.gVisualDataSnow = [];
-		this.gVisualDataPercip= [];
+		this.gVisualDataPercip = [];
+		this.gVisualDataHumidity = [];
+		this.gVisualDataUV = [];
 		this.precipCircleData = [];
 	}
 
@@ -66,6 +68,8 @@ class ForecastPage extends Page {
 		this.gVisualDataRain = [80, 40, 2, 55, 74, 93, 22, 52];
 		this.gVisualDataSnow = [5, 10, 20, 25, 45, 60, 75, 90];
 		this.gVisualDataPercip = [73, 32, 49, 68, 12, 1, 12, 30];
+		this.gVisualDataHumidity = [5, 10, 20, 25, 45, 60, 75, 90];
+		this.gVisualDataUV = [5, 10, 20, 25, 45, 60, 75, 90];
 
 		this.precipCircleData = [50, 30, 40];
 		this.buildGraph(1, true, false);
@@ -73,12 +77,14 @@ class ForecastPage extends Page {
 		this.buildGraph(3, false, false);
 		this.buildGraph(4, false, false);
 		this.buildGraph(5, false, true);
+		this.buildGraph(6, false, true);
+		this.buildGraph(7, false, true);
 		this.updateCircleGraph(1);
 		this.updateCircleGraph(2);
 		this.updateCircleGraph(3);
 	}
 
-	buildGraph(id, wide, little) {
+	buildGraph(id, wide, small) {
 		var gVisualData = [];
 		switch (id) {
 			case 1: gVisualData = this.gVisualDataWind; break;
@@ -86,16 +92,18 @@ class ForecastPage extends Page {
 			case 3: gVisualData = this.gVisualDataRain; break;
 			case 4: gVisualData = this.gVisualDataSnow; break;
 			case 5: gVisualData = this.gVisualDataPercip; break;
+			case 6: gVisualData = this.gVisualDataHumidity; break;
+			case 7: gVisualData = this.gVisualDataUV; break;
 		}
+
 
 		var svg = $("#fMSVG"+id);
 		svg.empty();
 		
 		//Primary color
 		var col = "rgb(255, 255, 255)";
-		//if (id==2) col = "rgb(50, 255, 50)";
-		if (id==4) col = "rgb(11, 107, 225)";
 		if (id==4) col = "rgb(20, 20, 20)";
+		if (id>=5) col = "rgb(100, 200, 255)";
 		//No opacity version for gradient
 		var colN1 = col.substring(0, col.length-1)+", 0.8)";
 		var colN2 = col.substring(0, col.length-1)+", 0)";
@@ -142,7 +150,7 @@ class ForecastPage extends Page {
 		gLeft = w*0.05;
 		gRight = w;
 
-		if (!little) {
+		if (!small) {
 			//X Axis Markings
 			var split = (gRight-gLeft)/this.gXMarkings.length;
 			for (i=0; i<this.gXMarkings.length; i++) {
@@ -216,7 +224,7 @@ class ForecastPage extends Page {
 				d += " T"+x1+","+y1;
 			}
 
-			if (!little) {
+			if (!small) {
 				//Add circle
 				var circle = document.createElementNS(nS, "circle");
 				var cName = "fMGDataCircle";
@@ -288,6 +296,7 @@ class ForecastPage extends Page {
 		setTimeout(fadeIn, start+100, $("#fRainM"));
 		setTimeout(fadeIn, start+100, $("#fSnowM"));
 		setTimeout(fadeIn, start+100, $("#fPrecipM"));
+		setTimeout(fadeIn, start+100, $("#fSunsetM"));
 	}
 
 }

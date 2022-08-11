@@ -1,17 +1,21 @@
 <div id="fMCont1">
 	<div class="fM" id="fTempM">
-		<div class="fMIcon" style="background-image: url('../assets/icons/wind.svg');"></div>
-		<div class="fMTitleCont" style="width: 88%;">
-			<div class="fMTitle">Wind Speed</div>
-			<div class="fMText">8km/h</div>
+		<div class="fMHeaderBar">
+			<div class="fMIcon" style="background-image: url('../assets/icons/wind.svg');"></div>
+			<div class="fMTitleCont" style="width: 88%;">
+				<div class="fMTitle">Wind Speed</div>
+				<div class="fMText">8km/h</div>
+			</div>
 		</div>
 		<svg class="fMSVGWide" id="fMSVG1"></svg>
 	</div>
 	<div class="fM" id="fWindM">
-		<div class="fMIcon" style="background-image: url('../assets/icons/cloudsfilled.svg');"></div>
-		<div class="fMTitleCont">
-			<div class="fMTitle">Temperature</div>
-			<div class="fMText">25°</div>
+		<div class="fMHeaderBar">
+			<div class="fMIcon" style="background-image: url('../assets/icons/temperature.svg'); background-size: 80%; background-position: 45% 80%;"></div>
+			<div class="fMTitleCont">
+				<div class="fMTitle">Temperature</div>
+				<div class="fMText">25°</div>
+			</div>
 		</div>
 		<svg class="fMSVG" id="fMSVG2"></svg>
 	</div>
@@ -19,33 +23,51 @@
 
 <div id="fMCont2">
 	<div class="fM" id="fRainM">
-		<div class="fMIcon" style="background-image: url('../assets/icons/rain.svg'); background-size: 70%;"></div>
-		<div class="fMTitleCont">
-			<div class="fMTitle">Rain</div>
-			<div class="fMText">3mm</div>
+		<div class="fMHeaderBar">
+			<div class="fMIcon" style="background-image: url('../assets/icons/cloudsfilled.svg'); background-size: 80%;"></div>
+			<div class="fMTitleCont">
+				<div class="fMTitle">Rain</div>
+				<div class="fMText">3mm</div>
+			</div>
 		</div>
 		<svg class="fMSVG" id="fMSVG3"></svg>
 	</div>
 	<div class="fM" id="fSnowM">
-		<div class="fMIcon" class="fMIcon" style="background-image: url('../assets/icons/snow.svg'); background-size: 80%;"></div>
-		<div class="fMTitleCont">
-			<div class="fMTitle">Snow</div>
-			<div class="fMText">1mm</div>
+		<div class="fMHeaderBar">
+			<div class="fMIcon" class="fMIcon" style="background-image: url('../assets/icons/snow.svg'); background-size: 75%;"></div>
+			<div class="fMTitleCont">
+				<div class="fMTitle">Snow</div>
+				<div class="fMText">1mm</div>
+			</div>
 		</div>
 		<svg class="fMSVG" id="fMSVG4"></svg>
 	</div>
 	<div class="fM" id="fPrecipM">
-		<div class="fMIcon" style="background-image: url('../assets/icons/dropper.svg'); background-size: 70%;"></div>
-		<div class="fMTitleCont">
-			<div class="fMTitle">Precipitation</div>
+		<div class="fMHeaderBar">
+			<div class="fMIcon fMIconInline" style="background-image: url('../assets/icons/dropper.svg'); background-size: 60%;"></div>
+			<div class="fMTitleCont fMTitleContInline">
+				<div class="fMTitle">Precip</div>
+			</div>
+			<svg class="fMSVG fMSVGSmall" id="fMSVG5"></svg>
 		</div>
-		<svg class="fMSVG" id="fMSVG5"></svg>
 
-		<!--<div class='fMcT'>
-	        <div class='cTB' id='cTB1'>-</div>
-	        <div class='cTS' id='cTS1'>mins at green</div>
-	    </div>-->
-        <svg id='fMcSVG'>
+		<div class="fMHeaderBar">
+			<div class="fMIcon fMIconInline" style="background-image: url('../assets/icons/rain.svg'); background-size: 65%;"></div>
+			<div class="fMTitleCont fMTitleContInline">
+				<div class="fMTitle">Humidity</div>
+			</div>
+			<svg class="fMSVG fMSVGSmall" id="fMSVG6"></svg>
+		</div>
+
+		<div class="fMHeaderBar">
+			<div class="fMIcon fMIconInline" style="background-image: url('../assets/icons/sun.svg'); background-size: 90%;"></div>
+			<div class="fMTitleCont fMTitleContInline">
+				<div class="fMTitle">UV</div>
+			</div>
+			<svg class="fMSVG fMSVGSmall" id="fMSVG7"></svg>
+		</div>
+
+        <!--<svg id='fMcSVG'>
       	    <defs>
       			<filter id="fMShadow" ><feDropShadow id="fMcDS" dx="-3" dy="3" stdDeviation="8"/></filter>
       		</defs>
@@ -57,7 +79,24 @@
 
       		<circle class='fMcSVGC fMcSVGF' id="fMcSVGF1"></circle>
       		<circle class='fMcSVGC' id="fMcSVGC1"></circle>
-        </svg>
+        </svg>-->
+	</div>
+
+	<div class="fM" id="fSunsetM">
+		<div class="fMHeaderBar">
+			<div class="fMIcon" style="background-image: url('../assets/icons/moon.svg'); background-size: 80%;"></div>
+			<div class="fMTitleCont">
+				<div class="fMTitle">Sunrise & Sunset</div>
+			</div>
+		</div>
+		<div class="fMSunsetN">
+			<div class="fMSunriseIcon"></div>
+			<div class="fMTextSunset">6:45 am</div>
+		</div>
+		<div class="fMSunsetN" style="margin-top: 45%;">
+			<div class="fMSunriseIcon" style="background-image: url('../assets/icons/sunset.svg');"></div>
+			<div class="fMTextSunset">7:12 pm</div>
+		</div>
 	</div>
 </div>
 
