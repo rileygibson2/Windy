@@ -23,7 +23,12 @@ class ForecastPage extends Page {
 		this.gVisualDataPercip = [];
 		this.gVisualDataHumidity = [];
 		this.gVisualDataUV = [];
+		this.gVisualDataVis= [];
 		this.precipCircleData = [];
+
+		this.lat = -41.29308669049167;
+		this.lon = 174.77142509064475;
+		this.apiKey = 'a75f5e9f41e254fc40ed3651792e58bc';
 	}
 
 	//Required actions
@@ -32,8 +37,9 @@ class ForecastPage extends Page {
 		responseRecieved = false;
 
 		let promise = new Promise(function (resolve, reject) {
-			/*var req = new XMLHttpRequest(); //Fetch data
-			req.open('GET', 'data/?sK='+sessionKey+'&m=3&u='+unit+'&t='+Math.random(), true);
+			var req = new XMLHttpRequest(); //Fetch data
+			//req.open('GET', 'https://api.openweathermap.org/data/3.0/onecall?lat='+self.lat+'&lon='+self.lon+'&exclude=minutely&appid='+self.apiKey, true);
+			req.open('GET', 'https://api.openweathermap.org/data/2.5/forecast?lat='+self.lat+'&lon='+self.lon+'&appid='+self.apiKey, true);
 			req.onreadystatechange = function() {
 				if (checkResponse(req)) {
 					self.recieveData(req);
@@ -44,7 +50,7 @@ class ForecastPage extends Page {
 
 			//Initiate loading
 			setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
-			*/
+
 			self.recieveData();
 			resolve();
 		});
@@ -52,6 +58,10 @@ class ForecastPage extends Page {
 	}
 
 	recieveData(req) {
+		//Get weather data
+		alert(req.responseText);
+
+
 		//Reset graph axis
 		this.gYTopVal = 100;
 		this.gYBotVal = 0;
@@ -69,7 +79,8 @@ class ForecastPage extends Page {
 		this.gVisualDataSnow = [5, 10, 20, 25, 45, 60, 75, 90];
 		this.gVisualDataPercip = [73, 32, 49, 68, 12, 1, 12, 30];
 		this.gVisualDataHumidity = [5, 10, 20, 25, 45, 60, 75, 90];
-		this.gVisualDataUV = [5, 10, 20, 25, 45, 60, 75, 90];
+		this.gVisualDataUV = [56, 45, 32, 20, 12, 2, 88, 53];
+		this.gVisualDataVis = [32, 8, 64, 55, 87, 24, 95, 100];
 
 		this.precipCircleData = [50, 30, 40];
 		this.buildGraph(1, true, false);
@@ -79,6 +90,7 @@ class ForecastPage extends Page {
 		this.buildGraph(5, false, true);
 		this.buildGraph(6, false, true);
 		this.buildGraph(7, false, true);
+		this.buildGraph(8, false, true);
 		this.updateCircleGraph(1);
 		this.updateCircleGraph(2);
 		this.updateCircleGraph(3);
@@ -94,8 +106,8 @@ class ForecastPage extends Page {
 			case 5: gVisualData = this.gVisualDataPercip; break;
 			case 6: gVisualData = this.gVisualDataHumidity; break;
 			case 7: gVisualData = this.gVisualDataUV; break;
+			case 8: gVisualData = this.gVisualDataVis; break;
 		}
-
 
 		var svg = $("#fMSVG"+id);
 		svg.empty();
@@ -103,7 +115,6 @@ class ForecastPage extends Page {
 		//Primary color
 		var col = "rgb(255, 255, 255)";
 		if (id==4) col = "rgb(20, 20, 20)";
-		if (id>=5) col = "rgb(100, 200, 255)";
 		//No opacity version for gradient
 		var colN1 = col.substring(0, col.length-1)+", 0.8)";
 		var colN2 = col.substring(0, col.length-1)+", 0)";
@@ -243,7 +254,8 @@ class ForecastPage extends Page {
 		if (xStart!=null) { //Add elements to svg
 			//Data line
 			path = document.createElementNS(nS, "path");
-			path.setAttribute("class", 'fMGDataLine');
+			if (small) path.setAttribute("class", 'fMGDataLine fMGDataLineSmall');
+			else path.setAttribute("class", 'fMGDataLine');
 			path.style.stroke = col;
 			path.setAttribute("d", d);
 			svg.append(path);
@@ -297,6 +309,7 @@ class ForecastPage extends Page {
 		setTimeout(fadeIn, start+100, $("#fSnowM"));
 		setTimeout(fadeIn, start+100, $("#fPrecipM"));
 		setTimeout(fadeIn, start+100, $("#fSunsetM"));
+		setTimeout(fadeIn, start+100, $("#fDailyM"));
 	}
 
 }
