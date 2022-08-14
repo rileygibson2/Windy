@@ -37,7 +37,7 @@ class ForecastPage extends Page {
 		responseRecieved = false;
 
 		let promise = new Promise(function (resolve, reject) {
-			var req = new XMLHttpRequest(); //Fetch data
+			/*var req = new XMLHttpRequest(); //Fetch data
 			//req.open('GET', 'https://api.openweathermap.org/data/3.0/onecall?lat='+self.lat+'&lon='+self.lon+'&exclude=minutely&appid='+self.apiKey, true);
 			req.open('GET', 'https://api.openweathermap.org/data/2.5/forecast?lat='+self.lat+'&lon='+self.lon+'&appid='+self.apiKey, true);
 			req.onreadystatechange = function() {
@@ -51,7 +51,7 @@ class ForecastPage extends Page {
 			//Initiate loading
 			setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
 
-			self.recieveData();
+			self.recieveData();*/
 			resolve();
 		});
 		return promise;
