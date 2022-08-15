@@ -1,5 +1,7 @@
 package main.java;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DataManager {
@@ -32,27 +35,27 @@ public class DataManager {
 		JSONObject rTDG = getRealTimeGraphData(unit, graphMode);
 		JSONObject rTM = getMinutesAtAlertLevels(unit, graphMode);
 		if (rTD==null||rTD==null||rTM==null) return null;
-		
+
 		jArr.put(rTD);
 		jArr.put(rTDG);
 		jArr.put(rTM);
 		return jArr.toString(1);
 	}
-	
+
 	public static String getSettingsData(String user) {
 		JSONArray jArr = new JSONArray();
 		JSONObject jObj;
-		
+
 		//Get account data
 		jObj = CoreServer.accountManager.getAccountObject(user);
 		if (jObj==null) return null;
 		jObj.remove("password"); jObj.remove("salt");
 		jObj.put("desc", "account"); //Add convience tag
 		jArr.put(jObj);
-		
+
 		//Just return the basic child account info if not admin
 		if (!jObj.get("access").equals("admin")) return "unauthorised";
-		
+
 		//Get unit data
 		String[] units = CoreServer.accountManager.getAssignedUnits(user);
 		if (units==null) return null;
@@ -62,7 +65,7 @@ public class DataManager {
 			jObj.put("desc", "unit"); //Add convience tag
 			jArr.put(jObj);
 		}
-		
+
 		//Get children accounts data
 		String[] children = CoreServer.accountManager.getChildrenAccounts(user);
 		if (children==null) return null;
@@ -73,7 +76,7 @@ public class DataManager {
 			jObj.put("desc", "childuser"); //Add convience tag
 			jArr.put(jObj);
 		}
-		
+
 		return jArr.toString(1);
 	}
 
@@ -174,11 +177,11 @@ public class DataManager {
 		//Look at account file
 		JSONObject jObj = CoreServer.accountManager.getHighestLevelAccountInfo(user);
 		if (jObj==null) return null;
-		
+
 		//Get assigned unit names
 		String[] units = CoreServer.accountManager.getAssignedUnits(user);
 		if (units==null) return null;
-		
+
 		//Get status on all assigned units
 		JSONArray jArr = new JSONArray();
 		for (String unit : units) {
@@ -186,7 +189,7 @@ public class DataManager {
 			if (uS==null) return null;
 			jArr.put(uS);
 		}
-		
+
 		return jArr.toString(1);
 	}
 
@@ -231,13 +234,13 @@ public class DataManager {
 		case 3 : limit -= msInDay*7; break;
 		case 4 : limit -= msInDay*30; break;
 		}
-		
+
 		int[] mins = new int[3];
-		
+
 		//Get log scanner
 		Scanner s = CoreServer.unitManager.getLogScanner(unit);
 		if (s==null) return null;
-		
+
 		//Search back through logs for last two hours
 		while (s.hasNext()) {
 			if (s.hasNext()) {
@@ -252,7 +255,7 @@ public class DataManager {
 			}
 		}
 		s.close();
-		
+
 		JSONObject jObj = new JSONObject();
 		jObj.put("level1", mins[0]).put("level2", mins[1]).put("level3", mins[2]);
 		return jObj;
@@ -393,5 +396,18 @@ public class DataManager {
 		JSONObject jObj = new JSONObject();
 		jObj.put("gData", recordsA.toString());
 		return jObj;
+	}
+
+	public static String getForecastData() {
+		String data = null;
+		
+		//Read forecast file
+		try {
+			Scanner s = new Scanner(new File("forecasts/history.data"));
+			data = s.useDelimiter("\\A").next();
+			s.close();
+		}
+		catch (FileNotFoundException e) {System.out.println("IO Error"); return null;}
+		return data;
 	}
 }

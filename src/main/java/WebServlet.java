@@ -20,6 +20,7 @@ public class WebServlet extends HttpServlet {
 	private static final int settingsData = 6;
 	private static final int checkSessionKey = 7;
 	private static final int authenticationSalts = 8;
+	private static final int forecastData = 9;
 	
 	private static final String blue = "\033[36m";
 	private static final String red = "\033[31m";
@@ -140,9 +141,15 @@ public class WebServlet extends HttpServlet {
 			data = CoreServer.accountManager.createAuthenticationSession(user);
 			
 			/* Need to fail not authorised here instead of bad request, because
-			 * the primary way this goes bad is a wrong username, which should trigger
+			 * the primary way this goes bad is an invalid username, which should trigger
 			 * the not authorised client response, not the bad request one. */
 			if (data==null) {failNotAuthorised(resp); return;}
+			break;
+			
+		case forecastData:
+			System.out.println(blue+" --- Recieving forecast data request --- "+reset);
+			data = DataManager.getForecastData();
+			if (data==null) {failBadRequest(resp); return;}
 			break;
 
 		default: failBadRequest(resp); return;

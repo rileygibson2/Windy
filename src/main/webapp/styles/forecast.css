@@ -31,7 +31,7 @@
 }
 #fWindM { /*Temperature module*/
 	width: 22vw;
-	background-image: linear-gradient(130deg, rgb(255, 180, 0) 0%, rgb(255, 100, 50) 50%);
+	background-image: linear-gradient(130deg, rgb(255, 180, 0) 0%, rgb(255, 100, 50) 60%);
 }
 #fRainM { /*Rain module*/
 	margin-left: 0;
@@ -157,12 +157,12 @@
 }
 .fMGDataCircle { /*Data point circle*/
 	opacity: 1;
-	r: 4px;
+	r: 3.5px;
 	z-index: 101;
 }
 .fMGDataCircleWide { /*Wider data point circle*/
 	opacity: 1;
-	r: 6px;
+	r: 5px;
 	z-index: 101;
 }
 /*Linear gradient under data line path*/
@@ -290,7 +290,7 @@
 	display: inline-block;
 	width: 19%;
 	height: 100%;
-	border-right: 2px solid rgb(50, 50, 50);
+	border-right: 2px solid rgb(20, 20, 20);
 	opacity: 1;
 }
 .fDN:last-child {
@@ -306,7 +306,6 @@
 	height: 50%;
 	margin-top: 4%;
 	margin-left: 5%;
-	background-image: url('../assets/icons/cloudsfilled.svg');
 	background-repeat: no-repeat;
 	background-size: 40%;
 	background-position: 50% 50%;
@@ -326,17 +325,24 @@
 	height: 100%;
 	width: 50%;
 	margin-left: 50%;
-	color: rgb(255, 255, 255, 0.2);
 }
-.fDNTemp { /*Daily forecast node temperature*/
+.fDNTempHi { /*Daily forecast node temperature*/
 	position: relative;
 	width: 100%;
-	top: 50%;
-	transform: translateY(-50%);
+	margin-top: 10%;
 	color: rgb(255, 255, 255);
 	text-align: center;
 	font-family: openMedium;
-	font-size: 1.4vw;
+	font-size: 1.2vw;
+}
+.fDNTempLo { /*Daily forecast node temperature*/
+	position: relative;
+	width: 100%;
+	margin-top: 5%;
+	color: rgb(255, 255, 255, 0.5);
+	text-align: center;
+	font-family: openMedium;
+	font-size: 1.2vw;
 }
 
 
