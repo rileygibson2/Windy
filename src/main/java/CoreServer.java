@@ -1,6 +1,7 @@
 package main.java;
 
 import java.io.File;
+import java.lang.reflect.Array;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -42,16 +43,22 @@ public class CoreServer {
 		Utils.deleteFolder(new File("units"), false);
 		Utils.deleteFolder(new File("accounts"), false);
 		
-		String def1 = "windy"+Utils.makeID();
-		String def2 = "windy"+Utils.makeID();
-		String def3 = "windy"+Utils.makeID();
+		int count = 3;
+		String id[] = new String[count];
+		String ids = "";
+		for (int i=0; i<count; i++) {
+			id[i] = "windy"+Utils.makeID();
+			if (i>0) ids += " ";
+			ids += id[i];
+		}
 		
-		DataMockup.makeAccount("mywindy", "admin", "null", def1, def1+" "+def2+" "+def3);
+		DataMockup.makeAccount("mywindy", "admin", "null", id[0], ids);
 		DataMockup.makeAccount("child", "employee", "mywindy", "", "");
 		DataMockup.makeAccount("otherchild", "employee", "mywindy", "", "");
-		DataMockup.makeRecords(0, def1, "LAB Stage", "8.8.8.8", "10");
-		DataMockup.makeRecords(0, def2, "Rock Stage", "125.99.3.1", "38");
-		DataMockup.makeRecords(0, def3, "Frank Kitts", "30.140.50.100", "100");
+		DataMockup.makeRecords(0, id[0], "LAB Stage", "10");
+		DataMockup.makeRecords(0, id[1], "Rock Stage", "38");
+		DataMockup.makeRecords(0, id[2], "Frank Kitts", "100");
+		//DataMockup.makeRecords(0, id[3], "Pukeahu", "24");
 		//DataMockup.makeAccountRecords();
 	}
 }

@@ -43,9 +43,26 @@ class UnitsPage extends Page {
 
 	implementData() {
 		self = this;
+		var row1 = document.getElementById('uRow1');
+		var row = row1;
+		
+		//Figure out rows
+		if (this.units.length>3) { //Will need two rows
+			//Shift up old row and make new row
+			row.style.marginTop = "13%";
+			row = document.createElement("div");
+			row.setAttribute("class", 'uRow');
+			row.setAttribute("id", 'uRow2');
+			$('#uCont').append(row);
+			$("#uAdd").detach().appendTo('#uRow2') //Move plus button
+		}
 
 		//Add units
 		for (i=this.units.length-1; i>=0; i--) {
+			if ((i+1)/3<=1) {
+				row = row1; //Check if this unit needs to go in new containers
+			}
+
 			//Get ip location info
 			var req = new XMLHttpRequest(); //Fetch data
 			req.i = i;
@@ -129,7 +146,7 @@ class UnitsPage extends Page {
 			//Add click listener and add to DOM
 			var addListener = function(i) {n.onmousedown = function() {self.changeUnit(i);};}
 			addListener(i);
-			$('#uCont').prepend(n);
+			row.prepend(n);
 
 			//Build battery svg
 			this.buildBatterySVG(this.units[i].battery, d);
@@ -379,9 +396,13 @@ class UnitsPage extends Page {
 	animateEntrance(start) {
 		setTimeout(removeLoading, start);
 		var c = $('#uCont').children();
-		for (var i=c.length; i>=0; i--) {
-			setTimeout(fadeIn, start, c.eq(i));
-			start += 40;
+
+		for (var i=0; i<c.length; i++) {
+			var c1 = c.eq(i).children();
+			for (var z=0; z<c1.length; z++) {
+				setTimeout(fadeIn, start, c1.eq(z));
+				start += 50;
+			}
 		}
 	}
 }

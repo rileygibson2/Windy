@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 public class DataMockup {
 
-	public static void makeRecords(long start, String id, String name, String ip, String battery) {
+	public static void makeRecords(long start, String id, String name, String battery) {
 		long d = new Date().getTime()-start;
 		try {
 			//Make files if don't already exist
@@ -34,6 +34,12 @@ public class DataMockup {
 			}
 			out.close();
 
+			String ip = "";
+			for (int i=0; i<4; i++) {
+				if (i>0) ip += ".";
+				ip += (int) (Math.random()*254);
+			}
+			
 			out = new FileWriter("units/"+id+"/unit.info");
 			JSONObject jObj = new JSONObject();
 			jObj.put("id", id);
