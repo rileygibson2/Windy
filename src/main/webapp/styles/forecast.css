@@ -1,3 +1,14 @@
+#fPoweredBy { /*Attribution text*/
+	position: absolute;
+	width: 97%;
+	margin-top: 95vh;
+	text-align: right;
+	color: rgb(180, 180, 180);
+	font-family: open;
+	font-size: 1vw;
+	opacity: 0;
+}
+
 #fMCont1 { /*Top row module container*/
 	width: 80vw;
 	height: 22vw;
@@ -278,7 +289,7 @@
 	width: 59%;
 	height: 8%;
 	margin-left: 28%;
-	top: 86%;
+	top: 84%;
 	background-image: linear-gradient(180deg, rgb(50, 50, 50) 0%, rgb(30, 30, 30) 80%);
 	border-radius: 15px;
 	/*box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);*/

@@ -94,9 +94,13 @@ class ForecastPage extends Page {
 	implementData() {
 		//Update DOM text elements for different modules
 		var d = new Date(this.sunTimes[0]);
-		$('#fMSunriseText').html(d.getHours()+":"+d.getMinutes()+" am");
+		var mins = d.getMinutes();
+		if (mins<10) mins = "0"+mins;
+		$('#fMSunriseText').html(d.getHours()+":"+mins+" am");
 		d = new Date(this.sunTimes[1]);
-		$('#fMSunsetText').html((d.getHours()-12)+":"+d.getMinutes()+" pm");
+		mins = d.getMinutes();
+		if (mins<10) mins = "0"+mins;
+		$('#fMSunsetText').html((d.getHours()-12)+":"+mins+" pm");
 
 		$('#fMWindText').html(this.gVisualDataWind[0]+"km/h");
 		$('#fMTempText').html(this.gVisualDataTemp[0]+"°");
@@ -110,13 +114,14 @@ class ForecastPage extends Page {
 			$('#fDNTempLo'+(i+1)).html(this.weekModuleData[i][2]+"°");
 
 			var wCode = this.weekModuleData[i][3];
-			if (wCode<3) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/sun.svg')")
-			if (wCode>=3&&wCode<20) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/cloudsfilled.svg')")
-			if (wCode>20&&wCode<40) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/sleet.svg')")
-			if (wCode>40&&wCode<50) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/fog.svg')")
-			if (wCode>50&&wCode<70) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/rain.svg')")
-			if (wCode>70&&wCode<80) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/snow.svg')")
-			if (wCode>80) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/storm.svg')")
+			if (wCode<3) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/sun.svg')");
+			if (wCode>=3&&wCode<20) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/cloudsfilled.svg')");
+			if (wCode>=20&&wCode<40) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/sleet.svg')");
+			if (wCode>=40&&wCode<50) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/fog.svg')");
+			if (wCode>=50&&wCode<70) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/rain.svg')");
+			if (wCode>=70&&wCode<80) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/snow.svg')");
+			if (wCode>=80&&wCode<95) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/rain.svg')");
+			if (wCode>=95||wCode==29) $('#fDNIcon'+(i+1)).css("background-image", "url('../assets/icons/storm.svg')");
 		}
 
 		//Build graphs
@@ -147,7 +152,7 @@ class ForecastPage extends Page {
 			case 2: 
 				gVisualData = this.gVisualDataTemp;
 				gYTopVal = 30;
-				gYMarkings = [10, 15, 20, 25, ""];
+				gYMarkings = [5, 10, 15, 20, 25, ""];
 				break;
 			case 3: 
 				gVisualData = this.gVisualDataRain;
@@ -161,8 +166,8 @@ class ForecastPage extends Page {
 				break;
 			case 5: 
 				gVisualData = this.gVisualDataPercip;
-				gYTopVal = 3;
-				gYMarkings = [0.5, 1, 1.5, 2];
+				gYTopVal = 6;
+				gYMarkings = [1, 2, 3, 4];
 				break;
 			case 6: 
 				gVisualData = this.gVisualDataHumidity;
@@ -400,6 +405,7 @@ class ForecastPage extends Page {
 		setTimeout(fadeIn, start+100, $("#fPrecipM"));
 		setTimeout(fadeIn, start+100, $("#fSunsetM"));
 		setTimeout(fadeIn, start+100, $("#fDailyM"));
+		setTimeout(fadeIn, start+100, $("#fPoweredBy"));
 	}
 
 }

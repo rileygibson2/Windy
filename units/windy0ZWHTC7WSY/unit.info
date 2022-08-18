@@ -1,0 +1,10 @@
+{
+ "ip": "8.8.8.8",
+ "name": "LAB Stage",
+ "id": "windy0ZWHTC7WSY",
+ "power": 1,
+ "battery": "10",
+ "version": "1.0.0",
+ "status": 1,
+ "direction": "180"
+}

@@ -506,9 +506,9 @@ class DashboardPage extends Page {
 
 	animateCircleGraphs() {
 		this.resetCircleGraphs();
-		setTimeout(() => {this.updateCircleGraph(0)}, 200);
-		setTimeout(() => {this.updateCircleGraph(1)}, 400);
-		setTimeout(() => {this.updateCircleGraph(2)}, 600);
+		this.updateCircleGraph(0);
+		setTimeout(() => {this.updateCircleGraph(1)}, 200);
+		setTimeout(() => {this.updateCircleGraph(2)}, 400);
 	}
 
 	//General functions

@@ -28,7 +28,7 @@
 .uNIcon { /*Unit node icon*/
 	width: 30%;
 	height: 25%;
-	margin-top: 12%;
+	margin-top: 8%;
 	margin-left: 35%;
 	background-image: url("../assets/icons/device.svg");
 	background-size: 90%;
@@ -47,45 +47,10 @@
 	font-size: 2vw;
 	cursor: inherit;
 }
-.uNText { /* Unit node version text*/
-	position: absolute;
-	width: 100%;
-	margin-top: 28%;
-	margin-left: 32%;
-	text-align: center;
-	font-family: openMedium;
-	color: rgb(255, 255, 255, 0.5);
-	font-size: 1vw;
-	cursor: inherit;
-}
-.uNStatusIcon { /*Blob which shows status*/
-	position: absolute;
-	width: 1.7vw;
-	height: 1.7vw;
-	margin-top: 65%;
-	margin-left: 31%;
-	border-radius: 25px;
-	background-image: url("../assets/icons/status.svg");
-	background-size: 90%;
-	background-position: 48.5% 45%;
-	background-repeat: no-repeat;
-	box-shadow: 3px 3px 12px rgba(0, 0, 0, .3);
-	cursor: inherit;
-}
-.uNStatusText { /*Status text*/
-	position: absolute;
-	width: 1.5vw;
-	margin-top: 66%;
-	margin-left: 43%;
-	font-family: openBold;
-	color: white;
-	font-size: 1.05vw;
-	cursor: inherit;
-}
 .uNLocationText { /*Location indicator*/
-	position: absolute;
+	position: relative;
 	width: 100%;
-	margin-top: 52%;
+	margin-top: 0%;
 	margin-left: 0%;
 	text-align: center;
 	font-family: openMedium;
@@ -95,14 +60,59 @@
 	opacity: 0;
 	transition: all 0.2s;
 }
-.uNBatteryIcon { /*Blob which shows status*/
+.uNText { /* Unit node version text*/
+	position: absolute;
+	width: 100%;
+	top: 81%;
+	margin-left: 32%;
+	text-align: center;
+	font-family: openMedium;
+	color: rgb(255, 255, 255, 0.5);
+	font-size: 1vw;
+	cursor: inherit;
+}
+.uNStatusCont { /*Status icon and text container*/
+	position: relative;
+	width: 32%;
+	height: 1.7vw;
+	margin-top: 4%;
+	margin-left: 34%;	
+}
+.uNStatusIcon { /*Blob which shows status*/
 	position: absolute;
 	width: 1.7vw;
-	height: 1.7vw;
-	margin-top: 83%;
-	margin-left: 6%;
+	height: 100%;
 	border-radius: 25px;
-	background-image: url("../assets/icons/power.svg");
+	background-image: url("../assets/icons/wifi.svg");
+	background-size: 80%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .3);
+	cursor: inherit;
+}
+.uNStatusText { /*Status text*/
+	position: absolute;
+	top: 50%;
+	margin-left: 2.3vw;
+	transform: translateY(-50%);
+	text-align: right;
+	font-family: openBold;
+	color: white;
+	font-size: 1.05vw;
+	cursor: inherit;
+}
+.uNBatteryCont { /*Battery icon and text container*/
+	position: absolute;
+	width: 50%;
+	height: 2.5vw;
+	top: 81%;
+	margin-left: 6%;	
+}
+.uNBatteryIcon { /*Blob which shows battery*/
+	position: absolute;
+	width: 2.5vw;
+	height: 100%;
+	border-radius: 25px;
 	background-size: 90%;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -110,14 +120,30 @@
 	box-shadow: 3px 3px 12px rgba(0, 0, 0, .3);
 	cursor: inherit;
 }
-.uNBatteryText { /*Status text*/
+.uNBatteryText { /*Battery text*/
 	position: absolute;
-	margin-top: 84%;
-	margin-left: 18%;
+	top: 50%;
+	margin-left: 3.2vw;
+	transform: translateY(-50%);
+	text-align: left;
 	font-family: openBold;
 	color: white;
 	font-size: 1.05vw;
 	cursor: inherit;
+}
+.uBatSVG { /*Battery SVG*/
+	width: 80%;
+	height: 80%;
+	margin-top: 10%;
+	margin-left: 10%;
+}
+.uBatSVGRect { /*Battery SVG*/
+	fill: none;
+	stroke: rgb(255, 255, 255);
+	stroke-width: 1;
+}
+.uBatSVGPRect { /*Battery SVG*/
+	fill: rgb(255, 255, 255);
 }
 #uAdd { /*Add new unit button*/
 	width: 10vh;

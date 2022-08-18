@@ -70,7 +70,29 @@ class UnitsPage extends Page {
 			/*if (unitData[i][0]==1) n.style.borderBottom = "3px solid rgb(3, 220, 15)";
 			else n.style.borderBottom = "3px solid rgb(220, 0, 0)";*/
 			
+			//Main Icon
+			var d = document.createElement("div");
+			d.setAttribute("class", 'uNIcon');
+			n.append(d);
+			//Title
+			d = document.createElement("div");
+			d.setAttribute("class", 'uNTitle');
+			d.innerHTML = this.units[i].name;
+			n.append(d);
+			//Location text
+			d = document.createElement("div");
+			d.setAttribute("class", 'uNLocationText');
+			d.setAttribute("id", 'uNLocationText'+i);
+			n.append(d);
+			//Version
+			d = document.createElement("div");
+			d.setAttribute("class", 'uNText');
+			d.innerHTML = "Version<br>1.0.5";
+			n.append(d);
+
 			//Status icon and text
+			var c = document.createElement("div");
+			c.setAttribute("class", 'uNStatusCont');
 			d = document.createElement("div");
 			d.setAttribute("class", 'uNStatusIcon');
 			var t = document.createElement("div");
@@ -83,48 +105,81 @@ class UnitsPage extends Page {
 				d.style.backgroundColor = 'rgb(255, 50, 50)';
 				t.innerHTML = "Offline";
 			}
-			n.append(d);
-			n.append(t);
-
-			//Location text
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNLocationText');
-			d.setAttribute("id", 'uNLocationText'+i);
-			n.append(d);
+			c.append(d);
+			c.append(t);
+			n.append(c);
 
 			//Battery icon and text
+			c = document.createElement("div");
+			c.setAttribute("class", 'uNBatteryCont');
 			d = document.createElement("div");
 			d.setAttribute("class", 'uNBatteryIcon');
 			t = document.createElement("div");
 			t.setAttribute("class", 'uNBatteryText');
-			if (this.units[i].battery==1) t.innerHTML = "Healthy";
-			else {
+			if (this.units[i].power==0) {
 				d.style.backgroundColor = 'rgb(255, 153, 0)';
+				d.style.backgroundImage = 'url("../assets/icons/power.svg")';
 				t.innerHTML = "Check power";
 			}
-			n.append(d);
-			n.append(t);
-
-			//Main Icon
-			var d = document.createElement("div");
-			d.setAttribute("class", 'uNIcon');
-			n.append(d);
-			//Title
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNTitle');
-			d.innerHTML = this.units[i].name;
-			n.append(d);
-			//Version
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNText');
-			d.innerHTML = "Version<br>1.0.5";
-			n.append(d);
+			else t.innerHTML = this.units[i].battery+"%";
+			c.append(d);
+			c.append(t);
+			n.append(c);
 
 			//Add click listener and add to DOM
 			var addListener = function(i) {n.onmousedown = function() {self.changeUnit(i);};}
 			addListener(i);
 			$('#uCont').prepend(n);
+
+			//Build battery svg
+			this.buildBatterySVG(this.units[i].battery, d);
 		}
+	}
+
+	buildBatterySVG(level, parent) {
+		var svg = document.createElementNS(nS, "svg");
+		svg.setAttribute("class", 'uBatSVG');
+
+		//SVG dimensions
+		var w = parent.offsetWidth;
+		var h = parent.offsetHeight;
+		
+		//Percent rect
+		var pH = 70*(level/100);
+		var rect = document.createElementNS(nS, "rect");
+		rect.setAttribute("class", "uBatSVGPRect");
+		rect.setAttribute("x", '30%');
+		rect.setAttribute("y", (90-pH)+"%");
+		rect.setAttribute("width", '40%');
+		rect.setAttribute("height", pH+"%");
+		rect.setAttribute("rx", 2);
+		if (level<20) rect.style.fill = "rgb(255, 0, 0)";
+		else if (level<40) rect.style.fill = "rgb(255, 153, 0)";
+		else rect.style.fill = "rgb(3, 220, 15)";
+		svg.append(rect);
+
+		//Main rect
+		var rect = document.createElementNS(nS, "rect");
+		rect.setAttribute("class", "uBatSVGRect");
+		rect.setAttribute("x", '30%');
+		rect.setAttribute("y", '20%');
+		rect.setAttribute("width", '40%');
+		rect.setAttribute("height", '70%');
+		rect.setAttribute("rx", 2);
+		svg.append(rect);
+
+		//Tip rect
+		var rect = document.createElementNS(nS, "rect");
+		rect.setAttribute("class", "uBatSVGRect");
+		rect.setAttribute("x", '40%');
+		rect.setAttribute("y", '10%');
+		rect.setAttribute("width", '20%');
+		rect.setAttribute("height", '10%');
+		rect.setAttribute("rx", 0.5);
+		if (level==100) rect.style.fill = "rgb(255, 255, 255)";
+		svg.append(rect);
+
+		parent.append(svg);
 	}
 
 	changeUnit(i) {

@@ -256,7 +256,7 @@
 	cx: 50%;
 	stroke: rgb(150, 150, 150);
 	fill: none;
-	stroke-width: 12px;
+	stroke-width: 0.9vw;
 	stroke-linecap: round;
 	stroke-dasharray: 1, 10000;
 	transform-origin: center;
