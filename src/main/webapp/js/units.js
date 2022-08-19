@@ -70,12 +70,15 @@ class UnitsPage extends Page {
 			req.onreadystatechange = function() {
 				if (this.readyState!=4) return; 
 
+				var jObj = undefined;
 				if (this.status==200) { //Success, show location
-					var jObj = JSON.parse(this.responseText);
+					jObj = JSON.parse(this.responseText);
 					$('#uNLocationText'+this.i).html(jObj.city+", "+jObj.country_name);
 				}
 				//Faliure, show ip instead
-				else $('#uNLocationText'+this.i).html(self.units[this.i].ip);
+				if (this.status!=200||jObj.city==undefined||jObj.country_name==undefined) {
+					$('#uNLocationText'+this.i).html(self.units[this.i].ip);
+				}
 				$('#uNLocationText'+this.i).css('opacity', '1');
 			}
 			req.send();
