@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 public class DataMockup {
 
-	public static void makeRecords(long start, String id, String name, String battery) {
+	public static void makeRecords(long start, String id, String name, String battery, String lat, String lon) {
 		long d = new Date().getTime()-start;
 		try {
 			//Make files if don't already exist
@@ -50,6 +50,8 @@ public class DataMockup {
 			jObj.put("battery", battery);
 			jObj.put("direction", "180");
 			jObj.put("version", "1.0.0");
+			jObj.put("lat", lat);
+			jObj.put("lon", lon);
 			out.write(jObj.toString(1));
 			out.close();
 			System.out.println("Successfully created records.");

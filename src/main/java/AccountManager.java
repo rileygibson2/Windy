@@ -20,7 +20,7 @@ public class AccountManager {
 	//Attributes present in different types of data files
 	private static final String[] adminAccAttrs = {"id","alertNumbers","password","salt","PD","LF","RAL","AAL", "ENF","alertEmails","username","defunit","units","organisation","contactemail","children","access","parent"};
 	private static final String[] childAccAttrs = {"id","access","parent","username","salt","password"};
-	private static final String[] unitInfoAttrs = {"ip","id","name","status","power","battery","version","direction"};
+	private static final String[] unitInfoAttrs = {"ip","id","name","status","power","battery","version","direction", "lat", "lon"};
 
 	public AccountManager() {
 		sessions = new HashSet<Session>();

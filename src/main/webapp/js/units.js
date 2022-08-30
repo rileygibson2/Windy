@@ -12,6 +12,7 @@ class UnitsPage extends Page {
 		//Class vars
 		this.units;
 		this.pairProgress;
+		this.mapLoaded = false;
 	}
 
 	//Required actions
@@ -53,7 +54,7 @@ class UnitsPage extends Page {
 			row = document.createElement("div");
 			row.setAttribute("class", 'uRow');
 			row.setAttribute("id", 'uRow2');
-			$('#uCont').append(row);
+			$('#unitsCont').append(row);
 			$("#uAdd").detach().appendTo('#uRow2') //Move plus button
 		}
 
@@ -212,7 +213,7 @@ class UnitsPage extends Page {
 		this.pairProgress = -1;
 		//Animate entrance - Take stuff out
 		$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
-		$('#uCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+		$('#unitsCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
 		$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
 		$('#sICont').css({'filter':'blur(10px)', 'opacity':'0.2'});
 		
@@ -230,7 +231,7 @@ class UnitsPage extends Page {
 
 		//Bring stuff in
 		$('#sc').css({'filter':'none', 'opacity':'1'});
-		$('#uCont').css({'filter':'none', 'opacity':'1'});
+		$('#unitsCont').css({'filter':'none', 'opacity':'1'});
 		$('#sbCont').css({'filter':'none', 'opacity':'1'});
 		$('#sICont').css({'filter':'none', 'opacity':'1'});
 	}
@@ -396,9 +397,132 @@ class UnitsPage extends Page {
 		return d;
 	}*/
 
+	lastObj;
+
+	moveUnitsSlider(obj) {
+		var a = document.getElementById("uSlider").getBoundingClientRect().left;
+		$('#uSliderS').css("left", obj.getBoundingClientRect().left-a);
+		this.lastObj = obj;
+
+		if (obj.innerHTML=="Map") this.loadMapView();
+		else if (obj.innerHTML=="Units") {
+			$('#unitsCont').css('display', 'block');
+			$('#mapCont').css('display', 'none');
+			$('#sICont').css('display', 'block');
+			$('.uSliderN').css({'color':'rgb(255, 255, 255)', 'opacity':'0.6'});
+		}
+	}
+
+	loadMapView() {
+		//Do some formatting
+		$('#unitsCont').css('display', 'none');
+		$('#mapCont').css('display', 'block');
+		$('#sICont').css('display', 'none');
+		$('.uSliderN').css({'color':'rgb(50, 50, 50)', 'opacity':'1'});
+
+		if (!this.mapLoaded) {
+			//Load map
+			mapboxgl.accessToken = 'pk.eyJ1Ijoid2luZHR4cmlsZXkiLCJhIjoiY2w3NWwzNmc4MXN1dDNvbGMzeXNhMGhzMyJ9.4HFmQWIdq2BdV-yPYlRkFQ';
+			var map = new mapboxgl.Map({
+			  container: 'mapCont', // HTML container id
+			  style: 'mapbox://styles/mapbox/streets-v9', // style URL
+			  center: [174.77882472143114, -41.28960720764422], // starting position as [lng, lat]
+			  zoom: 13
+			});
+			this.mapLoaded = true;
+
+			for (var i=0; i<this.units.length; i++) {
+				this.addMarker(map, this.units[i]);
+			}
+		}
+	}
+
+	addMarker(map, jObj) {
+		var mHTML = "";
+
+		//Header
+		var d = document.createElement('div');
+		d.className = "mpHeader";
+		d.innerHTML = jObj.name;
+		mHTML += d.outerHTML;
+		d = document.createElement('div');
+		d.className = "mpSubHeader";
+		d.innerHTML = jObj.id;
+		mHTML += d.outerHTML;
+		d = document.createElement('div');
+		d.className = "mpDivider";
+		mHTML += d.outerHTML;
+
+		//Windspeed
+		d = document.createElement('div');
+		d.className = "mpIcon";
+		d.style.marginTop = '10%';
+		d.style.backgroundImage = 'url("../assets/icons/wind.svg")';
+		mHTML += d.outerHTML;
+		var fC = document.createElement('div');
+		fC.className = "mpFeatureCol";
+		fC.style.marginTop = '10%';
+		d = document.createElement('div');
+		d.className = "mpTitle";
+		d.innerHTML = "Speed";
+		fC.append(d);
+		d = document.createElement('div');
+		d.className = "mpText";
+		d.innerHTML = "10km/h";
+		fC.append(d);
+		mHTML += fC.outerHTML;
+
+		//Direction
+		d = document.createElement('div');
+		d.className = "mpIcon";
+		d.style.backgroundImage = 'url("../assets/icons/direction.svg")';
+		mHTML += d.outerHTML;
+		var fC = document.createElement('div');
+		fC.className = "mpFeatureCol";
+		d = document.createElement('div');
+		d.className = "mpTitle";
+		d.innerHTML = "Direction";
+		fC.append(d);
+		d = document.createElement('div');
+		d.className = "mpText";
+		d.innerHTML = "180°";
+		fC.append(d);
+		mHTML += fC.outerHTML;
+
+		//Battery
+		d = document.createElement('div');
+		d.className = "mpIcon";
+		d.style.backgroundImage = 'url("../assets/icons/power.svg")';
+		mHTML += d.outerHTML;
+		var fC = document.createElement('div');
+		fC.className = "mpFeatureCol";
+		d = document.createElement('div');
+		d.className = "mpTitle";
+		d.innerHTML = "Battery";
+		fC.append(d);
+		d = document.createElement('div');
+		d.className = "mpText";
+		d.innerHTML = jObj.battery+"%";
+		fC.append(d);
+		mHTML += fC.outerHTML;
+
+		var popup = new mapboxgl.Popup()
+		.setHTML(mHTML);
+
+		const m = document.createElement('div');
+			m.className = 'mMarker';
+
+		var marker = new mapboxgl.Marker(m)
+		.setLngLat([jObj.lon, jObj.lat])
+		.setPopup(popup)
+		.addTo(map);
+
+		console.log(jObj.lon+", "+jObj.lat);
+	}
+
 	animateEntrance(start) {
 		setTimeout(removeLoading, start);
-		var c = $('#uCont').children();
+		var c = $('#unitsCont').children();
 
 		for (var i=0; i<c.length; i++) {
 			var c1 = c.eq(i).children();

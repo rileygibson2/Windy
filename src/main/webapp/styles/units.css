@@ -1,6 +1,46 @@
 /*Units page*/
+#uSlider {
+	position: absolute;
+	width: 11%;
+	height: 6%;
+	margin-top: 88vh;
+	margin-left: 12vw;
+	z-index: 100;
+	cursor: pointer;
+}
+.uSliderN { /*A slider node*/
+	position: relative;
+	display: inline-block;
+	top: 50%;
+	width: 50%;
+	margin-left: 0%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: openSemiBold;
+	font-size: 2.4vh;
+	opacity: 0.6;
+	transition: all 0.5s;
+	cursor: pointer;
+	text-shadow: 3px 3px 12px rgba(0, 0, 0, .5);
+}
+.uSliderN:hover {
+	opacity: 1;
+}
+#uSliderS { /*The sliding element*/
+	position: absolute;
+	left: 0;
+	top: 90%;
+	width: 50%;
+	height: 8%;
+	background-color: var(--focus);
+  	border-radius: 10px;
+  	box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
+  	transition: all 1s;
+}
 
-#uCont { /*Units container*/
+
+#unitsCont { /*Units container*/
 	position: absolute;
 	width: 80vw;
 	height: 100%;
@@ -393,4 +433,81 @@
 	100% {stroke-dashoffset: 250;}
 }
 
+
+#mapCont { /*Map container*/
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	margin-left: 0vw;
+	margin-top: 0vh;
+	background-color: white;
+	display: none;
+	transition: all 1s;
+}
+.mMarker { /*Unit marker on map*/
+	width: 2vw;
+	height: 2vw;
+	background-color: var(--focus);
+	border-radius: 50px;
+	background-repeat: no-repeat;
+	background-size: 80%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/device.svg");
+	cursor: pointer;
+}
+.mapboxgl-popup-content {
+	background-color: var(--bg);
+	width: 120%;
+}
+.mapboxgl-popup-tip {
+	border-top-color: green;
+}
+.mpHeader {
+	color: rgb(255, 255, 255);
+	font-family: openBold;
+	font-size: 1.1vw;
+	text-align: center;
+}
+.mpSubHeader {
+	color: rgb(180, 180, 180);
+	font-family: open;
+	font-size: 0.8vw;
+	text-align: center;
+	margin-top: 1%;
+}
+.mpIcon {
+	position: absolute;
+	width: 20%;
+	height: 5vh;
+	margin-top: 5%;
+	margin-left: 0%;
+	background-repeat: no-repeat;
+	background-size: 90%;
+	background-position: 50% 50%;
+	border-radius: 50px ;
+}
+.mpFeatureCol {
+	width: 65%;
+	height: 5vh;
+	margin-left: 35%;
+}
+.mpTitle {
+	color: rgb(180, 180, 180);
+	font-family: openMedium;
+	font-size: 0.9vw;
+	margin-top: 10%;
+}
+.mpText {
+	color: white;
+	font-family: openMedium;
+	font-size: 1.1vw;
+	margin-top: 1%;
+}
+.mpDivider {
+	width: 100%;
+	height: 0.1vh;
+	margin-top: 0.5vh;
+	background-color: rgb(255, 255, 255, 0.5);
+	border-radius: 5px;
+}
 

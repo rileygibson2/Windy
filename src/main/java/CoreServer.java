@@ -55,9 +55,9 @@ public class CoreServer {
 		DataMockup.makeAccount("mywindy", "admin", "null", id[0], ids);
 		DataMockup.makeAccount("child", "employee", "mywindy", "", "");
 		DataMockup.makeAccount("otherchild", "employee", "mywindy", "", "");
-		DataMockup.makeRecords(0, id[0], "LAB Stage", "10");
-		DataMockup.makeRecords(0, id[1], "Rock Stage", "38");
-		DataMockup.makeRecords(0, id[2], "Frank Kitts", "100");
+		DataMockup.makeRecords(0, id[0], "LAB Stage", "10", "-41.29158", "174.78594");
+		DataMockup.makeRecords(0, id[1], "Rock Stage", "38", "-41.28952", "174.77992");
+		DataMockup.makeRecords(0, id[2], "Frank Kitts", "100", "-41.28720", "174.77863");
 		//DataMockup.makeRecords(0, id[3], "Pukeahu", "24");
 		//DataMockup.makeAccountRecords();
 	}
