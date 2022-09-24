@@ -22,7 +22,6 @@
 	opacity: 0.6;
 	transition: all 0.5s;
 	cursor: pointer;
-	text-shadow: 3px 3px 12px rgba(0, 0, 0, .5);
 }
 .uSliderN:hover {
 	opacity: 1;
@@ -458,6 +457,8 @@
 .mapboxgl-popup-content {
 	background-color: var(--bg);
 	width: 120%;
+	border-radius: 15px;
+	opacity: 0.9;
 }
 .mapboxgl-popup-tip {
 	border-top-color: green;
@@ -485,6 +486,29 @@
 	background-size: 90%;
 	background-position: 50% 50%;
 	border-radius: 50px ;
+}
+.mpStatusIcon {
+	position: absolute;
+	width: 1.6vw;
+	height: 1.6vw;
+	margin-left: 20%;
+	margin-top: 6%;
+	background-color: rgb(3, 220, 15);
+	background-repeat: no-repeat;
+	background-size: 75%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/wifi.svg");
+	border-radius: 50px;
+}
+.mpStatusText {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	color: white;
+	text-align: center;
+	font-family: openBold;
+	font-size: 0.8vw;
+	text-align: left;
 }
 .mpFeatureCol {
 	width: 65%;

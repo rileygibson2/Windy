@@ -85,11 +85,11 @@
 .dialogButton:hover {
 	opacity: 1;
 }
-#dialogYes { /*Settings cancel button*/
+#dialogNo { /*Settings cancel button*/
 	margin-left: 25%;
 	background-color: rgb(100, 100, 100);
 }
-#dialogNo { /*Settings cancel button*/
+#dialogYes { /*Settings cancel button*/
 	margin-left: 55%;
 	background-color: var(--focus);
 }

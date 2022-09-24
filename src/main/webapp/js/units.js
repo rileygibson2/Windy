@@ -211,15 +211,26 @@ class UnitsPage extends Page {
 
 	openRegisterDialog() {
 		this.pairProgress = -1;
-		//Animate entrance - Take stuff out
-		$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
-		$('#unitsCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
-		$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
-		$('#sICont').css({'filter':'blur(10px)', 'opacity':'0.2'});
-		
-		//Add register container in
-		$('#regCont').css("display", "block");
-		$('#regCont').css("animation", "openRegister 0.3s ease-in-out forwards");
+
+		//Make request for register content
+		var req = new XMLHttpRequest();
+		req.open('GET', 'deviceregister.html', true);
+		req.onreadystatechange = function() {
+			if (!checkResponse(req)) return;
+			$('#effCont').html($('#effCont').html()+req.responseText); //Load new elements into container
+
+			//Animate entrance - Take stuff out
+			$('#sc').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			$('#unitsCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			$('#sbCont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			$('#sICont').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			$('#uSlider').css({'filter':'blur(10px)', 'opacity':'0.2'});
+			
+			//Add register container in
+			$('#regCont').css("display", "block");
+			$('#regCont').css("animation", "openRegister 0.3s ease-in-out forwards");
+			}
+		req.send();
 	}
 
 	closeRegisterDialog() {
@@ -234,6 +245,7 @@ class UnitsPage extends Page {
 		$('#unitsCont').css({'filter':'none', 'opacity':'1'});
 		$('#sbCont').css({'filter':'none', 'opacity':'1'});
 		$('#sICont').css({'filter':'none', 'opacity':'1'});
+		$('#uSlider').css({'filter':'none', 'opacity':'1'});
 	}
 
 	buildProgressScreen() {
@@ -404,22 +416,24 @@ class UnitsPage extends Page {
 		$('#uSliderS').css("left", obj.getBoundingClientRect().left-a);
 		this.lastObj = obj;
 
-		if (obj.innerHTML=="Map") this.loadMapView();
+		if (obj.innerHTML=="Map") {
+			$('#unitsCont').css('display', 'none');
+			$('#mapCont').css('display', 'block');
+			$('#sICont').css('display', 'none');
+			$('.uSliderN').css({'color':'var(--focus)', 'opacity':'1'});
+			$('#uSliderS').css('background-color', 'white');
+			this.buildMap();
+		}
 		else if (obj.innerHTML=="Units") {
 			$('#unitsCont').css('display', 'block');
 			$('#mapCont').css('display', 'none');
 			$('#sICont').css('display', 'block');
 			$('.uSliderN').css({'color':'rgb(255, 255, 255)', 'opacity':'0.6'});
+			$('#uSliderS').css('background-color', 'var(--focus)');
 		}
 	}
 
-	loadMapView() {
-		//Do some formatting
-		$('#unitsCont').css('display', 'none');
-		$('#mapCont').css('display', 'block');
-		$('#sICont').css('display', 'none');
-		$('.uSliderN').css({'color':'rgb(50, 50, 50)', 'opacity':'1'});
-
+	buildMap() {
 		if (!this.mapLoaded) {
 			//Load map
 			mapboxgl.accessToken = 'pk.eyJ1Ijoid2luZHR4cmlsZXkiLCJhIjoiY2w3NWwzNmc4MXN1dDNvbGMzeXNhMGhzMyJ9.4HFmQWIdq2BdV-yPYlRkFQ';
@@ -453,15 +467,28 @@ class UnitsPage extends Page {
 		d.className = "mpDivider";
 		mHTML += d.outerHTML;
 
+		//Status
+		d = document.createElement('div');
+		d.className = "mpStatusIcon";
+		mHTML += d.outerHTML;
+		var fC = document.createElement('div');
+		fC.className = "mpFeatureCol";
+		fC.style.width = '50%';
+		fC.style.marginLeft = '45%';
+		
+		var d = document.createElement('div');
+		d.className = "mpStatusText";
+		d.innerHTML = "Online";
+		fC.append(d);
+		mHTML += fC.outerHTML;
+
 		//Windspeed
 		d = document.createElement('div');
 		d.className = "mpIcon";
-		d.style.marginTop = '10%';
 		d.style.backgroundImage = 'url("../assets/icons/wind.svg")';
 		mHTML += d.outerHTML;
 		var fC = document.createElement('div');
 		fC.className = "mpFeatureCol";
-		fC.style.marginTop = '10%';
 		d = document.createElement('div');
 		d.className = "mpTitle";
 		d.innerHTML = "Speed";

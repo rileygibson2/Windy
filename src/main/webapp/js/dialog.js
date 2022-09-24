@@ -26,24 +26,24 @@ function insertDialog(title, text, yesFunc, ...yesArgs) {
 	var close = document.createElement("div");
 	close.id = 'dialogCloseIcon';
 	div.append(close);
-	//Yes button and text
-	var yes = document.createElement("div");
-	yes.className = 'dialogButton';
-	yes.id = 'dialogYes';
-	var t = document.createElement("div");
-	t.className = 'dialogButtonT';
-	t.innerHTML = "Yes"
-	yes.append(t);
-	div.append(yes);
 	//No button and text
-	no = document.createElement("div");
+	var no = document.createElement("div");
 	no.className = 'dialogButton';
 	no.id = 'dialogNo';
-	t = document.createElement("div");
+	var t = document.createElement("div");
 	t.className = 'dialogButtonT';
-	t.innerHTML = "No";
+	t.innerHTML = "No"
 	no.append(t);
 	div.append(no);
+	//No button and text
+	yes = document.createElement("div");
+	yes.className = 'dialogButton';
+	yes.id = 'dialogYes';
+	t = document.createElement("div");
+	t.className = 'dialogButtonT';
+	t.innerHTML = "Yes";
+	yes.append(t);
+	div.append(yes);
 
 	//Event listeners
 	close.addEventListener("click", removeDialog);
