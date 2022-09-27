@@ -1,16 +1,21 @@
-.calCont { /*Container for calander pop up*/
+#calCont { /*Container for calander pop up*/
 	position: absolute;
-	width: 15vw;
-	height: 15vw;
 	background-color: rgb(80, 80, 80);
 	border-radius: 12px;
+	z-index: 101;
+}
+#calBlocker { /*Blocks rest of screen to sense click off calander*/
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	z-index: 100;
 }
 #calMonYearLabel {
 	position: absolute;
 	text-align: center;
 	font-family: openBold;
 	color: rgb(240, 240, 240);
-	font-size: 0.85vw;
+	font-size: 1vw;
 }
 .calArrow {
 	position: absolute;
@@ -22,6 +27,10 @@
 	z-index: 150;
 	opacity: 0.9;
 	cursor: pointer;
+	transition: all 0.3s;
+}
+.calArrow:hover {
+	transform: scale(1.2);
 }
 .calDayLabel {
 	position: absolute;
@@ -29,20 +38,22 @@
 	font-family: openSemiBold;
 	color: rgb(200, 200, 200);
 	opacity: 0.4;
-	font-size: 0.57vw;
+	font-size: 0.7vw;
 }
 .calDay {
 	position: absolute;
 	text-align: center;
 	font-family: openMedium;
 	color: rgb(220, 220, 220);
-	font-size: 0.8vw;
+	font-size: 0.95vw;
 	cursor: pointer;
 	transition: all 0.1s;
 	z-index: 500;
+	transition: all 0.3s;
 }
 .calDay:hover {
 	font-family: openBold;
+	transform: scale(1.3);
 }
 .currDay {
 	
@@ -54,3 +65,77 @@
 	fill: rgb(51, 180, 255, 0.6);
 	z-index: -100;
 }
+.calTimeLabel {
+	position: absolute;
+	text-align: center;
+	font-family: openBold;
+	color: rgb(240, 240, 240);
+	font-size: 1vw;
+}
+.callTimeCont {
+	position: absolute;
+	background-color: rgb(100, 100, 100);
+	border-radius: 12px;
+	cursor: pointer;
+}
+.calTimeSliderCont {
+	position: absolute;
+	background-color: rgb(100, 100, 100);
+	border-radius: 12px;
+	cursor: pointer;
+}
+.calTimeInput {
+	position: relative;
+	display: inline-block;
+	top: 50%;
+	width: 40%;
+	transform: translateY(-50%);
+	text-align: right;
+	font-family: openSemiBold;
+	color: rgb(240, 240, 240);
+	font-size: 1vw;
+	background-color: rgb(0, 0, 0, 0);
+	border: none;
+	user-select: text;
+	-webkit-touch-callout: text; /* iOS Safari */
+  	-webkit-user-select: text; /* Safari */
+  	overflow: hidden;
+  	outline: none;
+  	z-index: 100;
+  	cursor: pointer;
+}
+.calTimeColon {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	margin-left: 45%;
+	text-align: center;
+	font-family: openSemiBold;
+	color: rgb(240, 240, 240);
+	font-size: 1vw;
+	z-index: 101;
+}
+#callTimeSlidingElem {
+	position: absolute;
+	background-color: rgb(130, 130, 130);
+	border-radius: 8px;
+	z-index: 100;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+.calTimeSliderText {
+	position: relative;
+	display: inline-block;
+	top: 50%;
+	width: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	font-family: openSemiBold;
+	color: rgb(240, 240, 240);
+	font-size: 0.8vw;
+	z-index: 101;
+	cursor: pointer;
+}
+
+
+

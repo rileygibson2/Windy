@@ -82,7 +82,7 @@ function switchSections(i) {
 			break;
 		case 3:
 			title = "Reports";
-			text = "Formatted reports for different events";
+			text = "Professionally formatted information for different events";
 			unitText = "";
 			page = new ReportsPage("reports");
 			break;

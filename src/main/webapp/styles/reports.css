@@ -2,17 +2,43 @@
 	position: absolute;
 	width: 85%;
 	height: 90%;
-	margin-left: 10vw;
+	margin-left: 15vw;
 	margin-top: 5vh;
 }
-#tmpButton {
+#rpTitleBar {
 	position: absolute;
-	width: 6vw;
-	height: 4vh;
-	margin-left: 15vw;
-	margin-top: 15vh;
+	height: 8vh;
+	width: 75vw;
+	margin-top: 12vh;
+}
+.rpTitle {
+	position: relative;
+	display: inline-block;
+	top: 50%;
+	transform: translateY(-50%);
+	margin-left: 1vw;
+	font-family: openMedium;
+	font-size: 2vw;
+	color: white;
+}
+.rpDate {
+	position: relative;
+	display: inline-block;
+	height: 100%;
+	margin-left: 1vw;
 	border-radius: 12px;
 	background-color: var(--focus);
 	text-align: center;
+	cursor: pointer;
+}
+.rpDateText {
+	position: relative;
+	top: 50%;
+	padding-left: 1vw;
+	padding-right: 1vw;
+	transform: translateY(-50%);
+	font-family: openSemiBold;
+	font-size: 2vw;
+	color: white;
 	cursor: pointer;
 }
