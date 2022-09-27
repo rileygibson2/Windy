@@ -249,17 +249,15 @@
   	cursor: pointer;
 }
 .sTableDSelectArrow { /*Down arrow that sits next to a cell select*/
-	position: relative;
-	display: inline-block;
-	width: 20%;
-	height: 100%;
-	margin-left: 80%;
-	transform: translateY(52%);
+	position: absolute;
+	width: 2vw;
+	height: 6vh;
+	margin-top: -4vh;
 	background-image: url("../assets/icons/downarrow.svg");
 	background-size: 100%;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
-	opacity: 0.4;
+	opacity: 0.2;
 	cursor: pointer;
 }
 
@@ -286,6 +284,36 @@
 }
 #sTableAdd {
 	background-image: url("../assets/icons/pencil.svg");
+}
+
+.sTableDDCont { /*Drop down container*/
+	position: absolute;
+	background-color: rgb(30, 30, 30);
+	border: 2px solid rgb(45, 45, 45);
+	border-top: none;
+	opacity: 0;
+	transition: all 0.2s;
+}
+.sTableDDElem { /*Drop down element*/
+	height: 6vh;
+	cursor: pointer;
+}
+.sTableDDElemOdd { 
+	background-color: rgb(35, 35, 35);
+}
+.sTableDDElem:hover {
+	background-color: rgb(40, 40, 40);
+}
+.sTableDDElemText { /*Text inside a drop down table*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(200, 200, 200);
+	font-family: openMedium;
+	font-size: 0.85vw;
+	cursor: pointer;
 }
 
 #sLogOut { /*Settings logout button*/

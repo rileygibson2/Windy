@@ -31,7 +31,7 @@ function load() {
 			responseRecieved = true;
 			removeLoading();
 			if (req.status==200) { //Key is still valid
-				setTimeout(switchSections, 0, 1);
+				setTimeout(switchSections, 0, 3);
 			}
 			else openLogin(); //Key is not still valid
 		}
@@ -84,7 +84,7 @@ function switchSections(i) {
 			title = "Reports";
 			text = "Formatted reports for different events";
 			unitText = "";
-			page = new DashboardPage("dashboard");
+			page = new ReportsPage("reports");
 			break;
 		case 4:
 			title = "Forecast";

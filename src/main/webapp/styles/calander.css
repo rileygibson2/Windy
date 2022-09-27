@@ -1,0 +1,56 @@
+.calCont { /*Container for calander pop up*/
+	position: absolute;
+	width: 15vw;
+	height: 15vw;
+	background-color: rgb(80, 80, 80);
+	border-radius: 12px;
+}
+#calMonYearLabel {
+	position: absolute;
+	text-align: center;
+	font-family: openBold;
+	color: rgb(240, 240, 240);
+	font-size: 0.85vw;
+}
+.calArrow {
+	position: absolute;
+	width: 10%;
+	height: 8%;
+	background-size: 75%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	z-index: 150;
+	opacity: 0.9;
+	cursor: pointer;
+}
+.calDayLabel {
+	position: absolute;
+	text-align: center;
+	font-family: openSemiBold;
+	color: rgb(200, 200, 200);
+	opacity: 0.4;
+	font-size: 0.57vw;
+}
+.calDay {
+	position: absolute;
+	text-align: center;
+	font-family: openMedium;
+	color: rgb(220, 220, 220);
+	font-size: 0.8vw;
+	cursor: pointer;
+	transition: all 0.1s;
+	z-index: 500;
+}
+.calDay:hover {
+	font-family: openBold;
+}
+.currDay {
+	
+}
+#calSelectSVG {
+	position: absolute;
+}
+#calSelectCircle {
+	fill: rgb(51, 180, 255, 0.6);
+	z-index: -100;
+}

@@ -108,7 +108,7 @@ function implementSettingsData(jArr) {
 		td.id = jObj.id;
 
 		//Add other cells
-		makeSettingsCellDropdown(tr, "employee", "observer");
+		makeSettingsCellDropdown(tr, jObj.access, "employee", "observer", "test", "other test");
 		makeSettingsCell(true, "", tr, "Enter new password");
 		$('#sUsersTable').append(tr);
 	}
@@ -192,29 +192,73 @@ function makeSettingsCell(isInput, value, parent, placeholder) {
 	return td;
 }
 
-function makeSettingsCellDropdown(parent, ...options) {
+function makeSettingsCellDropdown(parent, value, ...options) {
 	//Cell
 	var td = document.createElement("td");
 	td.setAttribute("class", 'sTableDC');
-	//Select
-	var s = document.createElement("select");
-	s.setAttribute("class", 'sTableDSelect');
+	td.addEventListener('click', function() {loadDD(this, $("#sCont"), ...options);});
+	td.innerHTML = value;
+	td.value = value;
+	parent.append(td);
+
 	//Down arrow
 	var a = document.createElement("div");
 	a.setAttribute("class", 'sTableDSelectArrow');
-
-	//Add options
-	for (const option of options) {
-    	var o = document.createElement("option");
-    	o.value = option;
-    	o.innerHTML = option;
-    	s.append(o);
-  	}
-  	td.append(a);
-  	td.append(s);
-  	parent.append(td);
+	td.append(a);
 
   	return td;
+}
+
+function loadDD(elem, cont, ...options) { 
+	//Make container and position
+	var dd = document.createElement("div");
+	dd.setAttribute("class", 'sTableDDCont');
+	dd.style.width = elem.offsetWidth+"px";
+	dd.style.height = (6*options.length)+"vh";
+	dd.style.left = (elem.getBoundingClientRect().left-cont.offset().left)+"px";
+	dd.style.top = (elem.getBoundingClientRect().top-cont.offset().top)+"px";
+
+	//Make option nodes
+	var i = 0;
+	for (const option of options) {
+    	var e = document.createElement("div");
+		e.setAttribute("class", 'sTableDDElem');
+		e.setAttribute("id", "dd"+option);
+		if (i%2!=0) e.setAttribute("class", 'sTableDDElem sTableDDElemOdd');
+		e.addEventListener('click', function() {
+			elem.innerHTML = option;
+			elem.value = option;
+
+			//Add down arrow back in
+			var a = document.createElement("div");
+			a.setAttribute("class", 'sTableDSelectArrow');
+			elem.append(a);
+			closeDD(this.parentElement);
+		});
+
+		//Text inside option node
+		var t = document.createElement("div");
+		t.setAttribute("class", 'sTableDDElemText');
+		t.innerHTML = option;
+		e.append(t);
+		dd.append(e);
+		i++;
+  	}
+  	cont.append(dd);
+
+  	//Add listener
+  	//dd.addEventListener('mouseout', function() {closeDD(this);});
+
+  	//Slide in
+  	dd.style.top = (elem.getBoundingClientRect().top-cont.offset().top+elem.offsetHeight)+"px";
+  	dd.style.opacity = 1;
+}
+
+function closeDD(dd) {
+	dd.style.opacity = 0;
+	setTimeout(function() {
+		dd.remove();
+	}, 200);
 }
 
 function addSettingsKeyListeners() {
@@ -443,7 +487,7 @@ function addTableRow(i) {
 		tr = document.createElement("tr");
 		tr.setAttribute("class", 'sTableRow');
 		makeSettingsCell(true, "", tr, "Enter new username");
-		makeSettingsCellDropdown(tr, "employee", "observer");
+		makeSettingsCellDropdown(tr, "employee", "observer", "test", "other test");
 		makeSettingsCell(true, "", tr, "Enter new password");
 		break;
 	}
