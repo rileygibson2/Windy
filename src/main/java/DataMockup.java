@@ -85,10 +85,11 @@ public class DataMockup {
 		}
 
 		try {
+			new File("accounts").mkdirs();
 			FileWriter out = new FileWriter("accounts/"+username+".acc");
 			out.write(jObj.toString(1));
 			out.close();
 			System.out.println("Successfully created accounts.");
-		} catch (IOException e) {System.out.println("An error occurred."+e.getStackTrace());}
+		} catch (IOException e) {System.out.println("An error occurred."+e.toString());}
 	}
 }
