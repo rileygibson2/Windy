@@ -1,14 +1,5 @@
 class Calender {
 
-	/*
-	var elem; //Element attached to
-	var cont; //Container attached element is in
-	var w; //Width in px
-	var selectedDate; //Date currently selected
-	var timeMode;
-	var updateCallback; //Function to call when selection changes
-	*/
-
 	constructor(e, c, uC) {
 		this.elem = e;
 		this.updateCallback = uC;
@@ -18,9 +9,12 @@ class Calender {
 		var vw = window.innerWidth/100;
 		this.w = wVW*vw;
 		this.selectedDate = new Date();
+		var isOpen = false;
 	}
 
 	openCalander() {
+		if (this.isOpen) return;
+		this.isOpen = true;
 		var wVW = 20;
 		var vw = window.innerWidth/100;
 		var parent = this;
@@ -127,6 +121,7 @@ class Calender {
 		hI.type = "text";
 		hI.value = this.selectedDate.getHours();
 		if (this.selectedDate.getHours()>12) hI.value =  this.selectedDate.getHours()-12;
+		if (this.selectedDate.getHours()==0) hI.value = 12;
 		hI.addEventListener('focusout', function() {parent.selectTime();});
 		tC.append(hI);
 		var mI = document.createElement("input");
@@ -160,13 +155,14 @@ class Calender {
 		am.setAttribute("class", 'calTimeSliderText');
 		am.innerHTML = "AM";
 		tS.append(am);
-		am.addEventListener('click', this.switchTimeMode);
+		am.addEventListener('click', function() {parent.switchTimeMode();});
 		var pm = document.createElement("div");
 		pm.setAttribute("class", 'calTimeSliderText');
 		pm.innerHTML = "PM";
-		pm.addEventListener('click', this.switchTimeMode);
+		pm.addEventListener('click', function() {parent.switchTimeMode();});
 		tS.append(pm);
 
+		this.timeMode = 0;
 		if (this.selectedDate.getHours()>12) this.switchTimeMode();
 		this.updateCalander();
 		this.selectDayElem(document.getElementById("calDay"+this.selectedDate.getDate()), this);	
@@ -175,6 +171,7 @@ class Calender {
 	destroyCalander() {
 		$("#calCont").remove();
 		$("#calBlocker").remove();
+		this.isOpen = false;
 	}
 
 	selectDayElem(elem, parent) {
@@ -184,9 +181,11 @@ class Calender {
 		$("#calSelectSVG").css("display", "block");
 
 		//Update stored date
-		parent.selectedDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-		parent.selectedDate.setMonth(parent.selectedDate.getMonth()+parseInt($('#calMonYearLabel').val()));
-		parent.selectedDate.setDate(parseInt(elem.id.substring(6, elem.id.length)));
+		var newD = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+		newD.setHours(parent.selectedDate.getHours(), parent.selectedDate.getMinutes());
+		newD.setMonth(parent.selectedDate.getMonth()+parseInt($('#calMonYearLabel').val()));
+		newD.setDate(parseInt(elem.id.substring(6, elem.id.length)));
+		parent.selectedDate = newD;
 
 		this.updateCallback(parent.selectedDate);
 	}
@@ -195,7 +194,7 @@ class Calender {
 		//Validate input
 		var h = parseInt($('#calTimeHourInput').val());
 		var m = parseInt($('#calTimeMinuteInput').val());
-		if (h<0||h>12||$('#calTimeHourInput').val().match(/[^$,.\d]/)) {
+		if (h>12||h<=0||$('#calTimeHourInput').val().match(/[^$,.\d]/)) {
 			$('#calTimeHourInput').val('12');
 			h = 12;
 		}
@@ -203,9 +202,16 @@ class Calender {
 			$('#calTimeMinuteInput').val('00');
 			m = 0;
 		}
+		if (this.timeMode==0&&h==12) {
+			h = 0;
+		}
+		else if (this.timeMode==1&&h!=12) h += 12;
+
+		//Add leading zeros
+		if (h/10<1) $('#calTimeHourInput').val('0'+h);
+		if (m/10<1) $('#calTimeMinuteInput').val('0'+m);
 
 		//Update date
-		if (this.timeMode==1) h += 12;
 		this.selectedDate.setHours(h, m);
 		this.updateCallback(this.selectedDate);
 	}
@@ -266,6 +272,7 @@ class Calender {
 			this.timeMode = 0;
 			$('#callTimeSlidingElem').css('left', 0.705*this.w+"px");
 		}
+		this.selectTime();
 	}
 }
 

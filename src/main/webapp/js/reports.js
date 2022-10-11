@@ -36,11 +36,21 @@ class ReportsPage extends Page {
 	updateDateText1(date) {
 		if (date==undefined) return;
 		$("#rpDateText1").html(date.getDate()+" "+date.toLocaleString('default', {month: 'short'})+" "+date.toLocaleString('default', {year: 'numeric'}));
+		var h = date.getHours().toString();
+		var m = date.getMinutes().toString();
+		if (h.length==1) h = "0"+h;
+		if (m.length==1) m = "0"+m;
+		$("#rpTimeText1").html(h+":"+m);
 	}
 
 	updateDateText2(date) {
 		if (date==undefined) return;
 		$("#rpDateText2").html(date.getDate()+" "+date.toLocaleString('default', {month: 'short'})+" "+date.toLocaleString('default', {year: 'numeric'}));
+		var h = date.getHours().toString();
+		var m = date.getMinutes().toString();
+		if (h.length==1) h = "0"+h;
+		if (m.length==1) m = "0"+m;
+		$("#rpTimeText2").html(h+":"+m);
 	}
 
 	animateEntrance(start) {
