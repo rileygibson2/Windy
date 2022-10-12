@@ -1,0 +1,18 @@
+.cbCont {
+	cursor: pointer;
+}
+.cbOuterCircle {
+	stroke-width: 2px;
+	fill: none;
+	r: 45%;
+	cx: 50%;
+	cy: 50%;
+	cursor: pointer;
+}
+.cbInnerCircle {
+	r: 0%;
+	cx: 50%;
+	cy: 50%;
+	transition: all 0.2s;
+	cursor: pointer;
+}

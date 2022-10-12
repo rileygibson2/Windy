@@ -194,21 +194,20 @@ class Calender {
 		//Validate input
 		var h = parseInt($('#calTimeHourInput').val());
 		var m = parseInt($('#calTimeMinuteInput').val());
-		if (h>12||h<=0||$('#calTimeHourInput').val().match(/[^$,.\d]/)) {
+		if (h==NaN||h>12||h<=0||$('#calTimeHourInput').val().match(/[^$,.\d]/)) {
 			$('#calTimeHourInput').val('12');
 			h = 12;
 		}
-		if (m<0||m>60||$('#calTimeMinuteInput').val().match(/[^$,.\d]/)) {
+		if (m==NaN||m<0||m>60||$('#calTimeMinuteInput').val().match(/[^$,.\d]/)) {
 			$('#calTimeMinuteInput').val('00');
 			m = 0;
 		}
 		if (this.timeMode==0&&h==12) {
 			h = 0;
 		}
-		else if (this.timeMode==1&&h!=12) h += 12;
+		else if (this.timeMode==1) h += 12;
 
 		//Add leading zeros
-		if (h/10<1) $('#calTimeHourInput').val('0'+h);
 		if (m/10<1) $('#calTimeMinuteInput').val('0'+m);
 
 		//Update date

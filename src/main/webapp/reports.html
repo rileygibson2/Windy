@@ -1,3 +1,6 @@
+<div id="rpFullGradCheat"></div>
+<div id="rpLeftGradCheat"></div>
+<div id="rpRightGradCheat"></div>
 <div id="rpCont">
 	<div id="rpTitle">Generate report</div>
 	<div id="rpSubTitleBar">
@@ -7,7 +10,7 @@
 				<p id="rpDateText1" class="rpDateText">-- ----- ----</p>
 			</div>
 			<div class="rpDateTimeCont">
-				<p id="rpTimeText1" class="rpTimeText">--:--</p>
+				<p id="rpTimeText1" class="rpTimeText">--:-- --</p>
 			</div>
 		</div>
 		<div class="rpSubTitleText">to</div>
@@ -16,11 +19,53 @@
 				<p id="rpDateText2" class="rpDateText">-- ----- ----</p>
 			</div>
 			<div class="rpDateTimeCont">
-				<p id="rpTimeText2" class="rpTimeText">--:--</p>
+				<p id="rpTimeText2" class="rpTimeText">--:-- --</p>
 			</div>
 		</div>
 	</div>
-	<div id="rpGenerateButton">
+	<div class="rpCBPanel rpCBPanelFirst">
+		<div id="rpCBCont1" class="rpCBCont">
+			<div id="rpCB1" class="rpCBHolder"></div>
+			<div class="rpCBTextCont">
+				<div class="rpCBText">Include location data</div>
+			</div>
+		</div>
+		<div id="rpCBCont2" class="rpCBCont">
+			<div id="rpCB2" class="rpCBHolder"></div>
+			<div class="rpCBTextCont">
+				<div class="rpCBText">Use graphical report</div>
+			</div>
+		</div>
+		<div id="rpCBCont3" class="rpCBCont">
+			<div id="rpCB3" class="rpCBHolder"></div>
+			<div class="rpCBTextCont">
+				<div class="rpCBText">Use 24 hour time</div>
+			</div>
+		</div>
+		<div id="rpCBCont4" class="rpCBCont">
+			<div id="rpCB4" class="rpCBHolder"></div>
+			<div class="rpCBTextCont">
+				<div class="rpCBText">Add proof of alerts</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="rpCBPanel">
+		<div id="rpCBCont5" class="rpCBCont">
+			<div id="rpCB5" class="rpCBHolder"></div>
+			<div class="rpCBTextCont">
+				<div class="rpCBText">Use company styling</div>
+			</div>
+		</div>
+		<div id="rpCBCont6" class="rpCBCont">
+			<div id="rpCB6" class="rpCBHolder"></div>
+			<div class="rpCBTextCont">
+				<div class="rpCBText">Include forecasts</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="rpGenerateButton" onclick="page.generateReport()">
 		<p id="rpGenerateText">Generate</p>
 	</div>
 </div>
