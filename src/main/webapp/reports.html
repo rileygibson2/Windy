@@ -2,23 +2,30 @@
 <div id="rpLeftGradCheat"></div>
 <div id="rpRightGradCheat"></div>
 <div id="rpCont">
-	<div id="rpTitle">Generate report</div>
+	<div id="rpTitleBar">
+		<div id="rpTitleIcon"></div>
+		<p id="rpTitleText">Generate report</p>
+	</div>
 	<div id="rpSubTitleBar">
 		<div class="rpSubTitleText">From</div>
 		<div class="rpDateCont">
+			<div class="rpDateTextIcon"></div>
 			<div id="rpDate1" class="rpDateTextCont">
 				<p id="rpDateText1" class="rpDateText">-- ----- ----</p>
 			</div>
-			<div class="rpDateTimeCont">
+			<div class="rpTimeTextIcon"></div>
+			<div class="rpTimeTextCont">
 				<p id="rpTimeText1" class="rpTimeText">--:-- --</p>
 			</div>
 		</div>
 		<div class="rpSubTitleText">to</div>
 		<div class="rpDateCont">
+			<div class="rpDateTextIcon"></div>
 			<div id="rpDate2" class="rpDateTextCont">
 				<p id="rpDateText2" class="rpDateText">-- ----- ----</p>
 			</div>
-			<div class="rpDateTimeCont">
+			<div class="rpTimeTextIcon"></div>
+			<div class="rpTimeTextCont">
 				<p id="rpTimeText2" class="rpTimeText">--:-- --</p>
 			</div>
 		</div>
@@ -68,4 +75,13 @@
 	<div id="rpGenerateButton" onclick="page.generateReport()">
 		<p id="rpGenerateText">Generate</p>
 	</div>
+
+	<div id="rpFileCont">
+		<div class="rpFile"></div>
+	</div>
+
+	<!--<a class="btn btn-danger" role="button" href="google.com"
+   download="proposed_file_name">
+  Download-->
+</a>
 </div>

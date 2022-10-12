@@ -9,8 +9,8 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-image: linear-gradient(-50deg, rgb(80, 80, 100, 0.5) 48%, rgb(0, 0, 0, 0) 48%);
-	background-image: linear-gradient(-50deg, #0652c5 48%, rgb(0, 0, 0, 0) 48%);
+	background-image: linear-gradient(-50deg, rgb(120, 120, 120, 0.3) 48%, rgb(0, 0, 0, 0) 48%);
+	/*background-image: linear-gradient(-50deg, #0652c5 48%, rgb(0, 0, 0, 0) 48%);*/
 	
 	z-index: 40;
 }
@@ -27,18 +27,34 @@
 	height: 100%;
 	margin-top: 0%;
 	margin-left: 30%;
-	background-image: radial-gradient(#d4418e 0%, rgb(0, 0, 0, 0) 70%);
-	background-image: linear-gradient(to top left, rgb(7, 179, 247) 0%, rgb(0, 0, 0, 0) 50%);
+	background-image: linear-gradient(to top left, rgb(200, 200, 200, 0.3) 0%, rgb(0, 0, 0, 0) 40%);
 	z-index: 45;
 }
-#rpTitle {
+#rpTitleBar {
 	width: 30vw;
+	height: 5vw;
 	margin-top: 15vh;
 	margin-left: 13vw;
+	border-bottom: solid 2px rgb(255, 255, 255, 0.2);
+}
+#rpTitleIcon {
+	float: left;
+	width: 5vw;
+	height: 100%;
+	margin-left: 0.5vw;
+	background-repeat: no-repeat;
+	background-size: 70%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/report3.svg");
+}
+#rpTitleText {
+	position: relative;
+	float: left;
+	top: 50%;
+	transform: translateY(-50%);
 	font-family: openMedium;
 	font-size: 2.8vw;
 	color: white;
-	border-bottom: solid 2px rgb(255, 255, 255, 0.2);
 	text-shadow: 0px 0px 10px rgb(0, 0, 0, .5);
 }
 #rpSubTitleBar {
@@ -46,7 +62,7 @@
 	width: 50vw;
 	height: 14vh;
 	margin-top: 5vh;
-	margin-left: 13vw;
+	margin-left: 12vw;
 }
 .rpSubTitleText {
 	display: inline-block;
@@ -63,14 +79,25 @@
 	min-width: 8vw;
 	margin-left: 1vw;
 }
+.rpDateTextIcon {
+	position: absolute;
+	width: 3vw;
+	height: 55%;
+	margin-left: 0.5vw;
+	background-repeat: no-repeat;
+	background-size: 70%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/calender.svg");
+	z-index: 100;
+}
 .rpDateTextCont {
 	position: relative;
 	height: 55%;
-	padding-left: 3vw;
-	padding-right: 3vw;
+	padding-left: 4vw;
+	padding-right: 2vw;
 	border-radius: 12px;
 	background-color: var(--focus);
-	/*background-color: rgb(120, 120, 120);*/
+	/*background-color: rgb(100, 100, 100);*/
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	cursor: pointer;
 }
@@ -83,15 +110,28 @@
 	color: white;
 	cursor: pointer;
 }
-.rpDateTimeCont {
+.rpTimeTextIcon {
+	position: absolute;
+	width: 3vw;
+	height: 34%;
+	margin-top: 6%;
+	margin-left: 0.1vw;
+	background-repeat: no-repeat;
+	background-size: 60%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/clock.svg");
+	z-index: 100;
+}
+.rpTimeTextCont {
 	position: relative;
 	height: 34%;
 	width: 38%;
 	margin-top: 6%;
-	padding-left: 1.5vw;
-	padding-right: 1.5vw;
+	padding-left: 3vw;
+	padding-right: 1vw;
 	border-radius: 12px;
 	background-color: var(--focus);
+	/*background-color: rgb(100, 100, 100);*/
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	cursor: pointer;
 }
@@ -149,6 +189,7 @@
 	margin-top: 34vh;
 	margin-left: 13vw;
 	background-color: rgb(6, 207, 36);
+	background-color: var(--focus);
 	border-radius: 12px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	cursor: pointer;
@@ -166,4 +207,19 @@
 	color: white;
 	text-align: center;
 	cursor: pointer;
+}
+
+#rpFileCont {
+	position: absolute;
+	width: 50vw;
+	height: 100vh;
+	top: 0;
+	margin-left: 50vw;
+}
+.rpFile {
+	width: 20vw;
+	height: 30vh;
+	margin-top: 20vh;
+	margin-left: 10vw;
+	background-color: red;
 }

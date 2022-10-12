@@ -94,7 +94,7 @@ body {background-color: var(--bg);}
 	background-image: url("../assets/icons/history.svg");
 }
 #sbIcon4 {
-	background-image: url("../assets/icons/report.svg");
+	background-image: url("../assets/icons/report3.svg");
 }
 #sbIcon5 {
 	background-image: url("../assets/icons/clouds.svg");
@@ -176,6 +176,7 @@ body {background-color: var(--bg);}
 	margin-top: 6vh;
 	opacity: 1;
 	transition: all 0.8s;
+	z-index: 200;
 }
 #sITitle { /*Section title text*/
 	position: relative;
