@@ -2,17 +2,22 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	z-index: 50;
 	background-color: none;
 }
-#rpFullGradCheat {
+/*background-image: linear-gradient(-50deg, #0652c5 48%, rgb(0, 0, 0, 0) 48%);*/
+#rpLeftSplitCheat {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-image: linear-gradient(-50deg, rgb(0, 0, 0, 0) 48%, var(--bg) 48%);
+	z-index: 90;
+}
+#rpRightSplitCheat {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	background-image: linear-gradient(-50deg, rgb(120, 120, 120, 0.3) 48%, rgb(0, 0, 0, 0) 48%);
-	/*background-image: linear-gradient(-50deg, #0652c5 48%, rgb(0, 0, 0, 0) 48%);*/
-	
-	z-index: 40;
+	z-index: 80;
 }
 #rpLeftGradCheat { /*Gradient cheat from left hand corner*/
 	position: absolute;
@@ -31,11 +36,13 @@
 	z-index: 45;
 }
 #rpTitleBar {
+	position: relative;
 	width: 30vw;
 	height: 5vw;
 	margin-top: 15vh;
 	margin-left: 13vw;
 	border-bottom: solid 2px rgb(255, 255, 255, 0.2);
+	z-index: 100;
 }
 #rpTitleIcon {
 	float: left;
@@ -63,6 +70,7 @@
 	height: 14vh;
 	margin-top: 5vh;
 	margin-left: 12vw;
+	z-index: 100;
 }
 .rpSubTitleText {
 	display: inline-block;
@@ -88,7 +96,7 @@
 	background-size: 70%;
 	background-position: 50% 50%;
 	background-image: url("../assets/icons/calender.svg");
-	z-index: 100;
+	z-index: 110;
 }
 .rpDateTextCont {
 	position: relative;
@@ -120,7 +128,7 @@
 	background-size: 60%;
 	background-position: 50% 50%;
 	background-image: url("../assets/icons/clock.svg");
-	z-index: 100;
+	z-index: 110;
 }
 .rpTimeTextCont {
 	position: relative;
@@ -151,6 +159,7 @@
 	width: 15vw;
 	margin-top: 5vh;
 	margin-left: 2vw;
+	z-index: 100;
 }
 .rpCBPanelFirst {
 	margin-left: 13vw;
@@ -160,6 +169,7 @@
 	height: 5vh;
 	width: 100%;
 	margin-top: 1vh;
+	z-index: 100;
 }
 .rpCBHolder {
  	float: left;
@@ -193,6 +203,7 @@
 	border-radius: 12px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
 	cursor: pointer;
+	z-index: 100;
 	transition: all 0.3s;
 }
 #rpGenerateButton:hover {
@@ -209,17 +220,140 @@
 	cursor: pointer;
 }
 
-#rpFileCont {
+.rpFileCont {
 	position: absolute;
-	width: 50vw;
-	height: 100vh;
+	width: 28vw;
+	height: 35vh;
 	top: 0;
-	margin-left: 50vw;
+	z-index: 70;
+	transition: all 0.6s;
+	transition-timing-function: ease;
+}
+.rpFileContLeft {
+	display: block;
+	transform: skewY(35deg) scale(0.65);
+	margin-left: 40vw;
+	margin-top: 27vh;
+	opacity: 0;
+}
+.rpFileContCenter {
+	display: block;
+	transform: none;
+	margin-top: 40vh;
+	margin-left: 65vw;
+	opacity: 1;
+}
+.rpFileContRight {
+	display: block;
+	transform: skewY(-35deg) scale(0.65);
+	margin-left: 90vw;
+	margin-top: 27vh;
+	opacity: 0;
+}
+.rpFileContHidden {
+	display: none;
+	opacity: 0;
+}
+.rpFileTextCont {
+	float: left;
+	height: 60%;
+	width: 40%;
+	top: 0;
+	margin-top: 13%;
+	opacity: 1;
+	transition: all 1s;
+}
+.rpFileText {
+	width: 100%;
+	margin-top: 1.2vh;
+	position: relative;
+	font-family: openMedium;
+	font-size: 1.3vw;
+	color: white;
+	opacity: 0.8;
+	text-align: right;
+	cursor: pointer;
+}
+.rpFileDivider {
+	float: left;
+	height: 100%;
+	width: 2px;
+	margin-left: 8%;
+	background-color: rgb(130, 130, 130);
+	opacity: 1;
+	transition: all 0.8s;
 }
 .rpFile {
-	width: 20vw;
-	height: 30vh;
-	margin-top: 20vh;
-	margin-left: 10vw;
-	background-color: red;
+	float: left;
+	height: 100%;
+	width: 50%;
+	margin-left: 0%;
+	background-repeat: no-repeat;
+	background-size: 110%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/pdf.svg");
+	opacity: 1;
+	transition: all 1s;
 }
+
+#rpFileLB {
+	display: none;
+	position: absolute;
+	width: 6vw;
+	height: 6vh;
+	top: 0;
+	margin-top: 77vh;
+	margin-left: 58vw;
+	background-repeat: no-repeat;
+	background-size: 50%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/leftarrow.svg");
+	z-index: 100;
+	cursor: pointer;
+	opacity: 0.5;
+	transition: all 0.2s;
+}
+#rpFileLB:hover {
+	transform: scale(1.3);
+	opacity: 1;
+}
+#rpFileRB {
+	display: none;
+	position: absolute;
+	width: 6vw;
+	height: 6vh;
+	top: 0;
+	margin-top: 77vh;
+	margin-left: 93vw;
+	background-repeat: no-repeat;
+	background-size: 50%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/rightarrow.svg");
+	z-index: 100;
+	cursor: pointer;
+	opacity: 0.5;
+	transition: all 0.2s;
+}
+#rpFileRB:hover {
+	transform: scale(1.3);
+	opacity: 1;
+}
+#rpFileDotCont {
+	display: block;
+	position: absolute;
+	top: 0;
+	margin-top: 80vh;
+	margin-left: 78.2vw;
+	z-index: 100;
+}
+.rpFileDot {
+	float: left;
+	width: 0.7vw;
+	height: 0.7vw;
+	margin-left: 1vw;
+	border-radius: 50px;
+	background-color: white;
+	opacity: 0.5;
+}
+
+

@@ -1,7 +1,9 @@
-<div id="rpFullGradCheat"></div>
-<div id="rpLeftGradCheat"></div>
-<div id="rpRightGradCheat"></div>
 <div id="rpCont">
+	<div id="rpLeftSplitCheat"></div>
+	<div id="rpRightSplitCheat"></div>
+	<!-- <div id="rpLeftGradCheat"></div> -->
+	<!-- <div id="rpRightGradCheat"></div> -->
+
 	<div id="rpTitleBar">
 		<div id="rpTitleIcon"></div>
 		<p id="rpTitleText">Generate report</p>
@@ -76,12 +78,9 @@
 		<p id="rpGenerateText">Generate</p>
 	</div>
 
-	<div id="rpFileCont">
-		<div class="rpFile"></div>
-	</div>
+	<div id="rpFileLB" onclick="page.shiftFilesLeft()"></div>
+  	<div id="rpFileRB" onclick="page.shiftFilesRight()"></div>
 
-	<!--<a class="btn btn-danger" role="button" href="google.com"
-   download="proposed_file_name">
-  Download-->
+	<div id="rpFileDotCont"></div>
 </a>
 </div>

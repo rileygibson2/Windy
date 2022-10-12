@@ -8,6 +8,9 @@ class ReportsPage extends Page {
 		link.setAttribute('rel', 'stylesheet');
 		link.setAttribute('href', '../styles/reports.css');
 		document.head.appendChild(link);
+
+		this.files = 0;
+		this.currentFile = 0;
 	}
 
 	//Required actions
@@ -91,74 +94,138 @@ class ReportsPage extends Page {
 	}
 
 	generateReport() {
-		//insertLoading(screen.width*0.75, screen.height*0.55, false);
+		/*insertLoading(screen.width*0.75, screen.height*0.55, false);
 		
-		this.makeThumb(window);
+		//Focussed file	
+		setTimeout(function() {
+			removeLoading();
+			$("#ipFile1").css("display", "block");
+			setTimeout(function() {
+				$("#ipFile1").css({"margin-top":"", "opacity":"1"});
+			}, 100);
+			setTimeout(function() {
+				$("#rpFD1").css({"margin-left":"27vw", "opacity":"1"});
+				$("#rpFTC1").css({"margin-left":"4vw", "opacity":"1"});
+			}, 300);
+		}, 1000);*/
+		//$("#rpFC1").attr('class', 'rpFileCont rpFileContLeft');
+		
+		//Go all the way to the right
+		insertLoading(screen.width*0.75, screen.height*0.55, false);
 
+		setTimeout(function() {
+			removeLoading();
+			//Shift all the way to right
+			for (var i=page.currentFile; i<page.files; i++) {
+				page.shiftFilesRight();
+			}
+			//Shift one more to get a clean space 
+			if (page.files>0) {
+				$("#rpFC"+(page.files-1)).attr('class', 'rpFileCont rpFileContLeft');
+				page.currentFile++;
+			}
+
+			page.makeFile(page.files);
+			if (page.files>0) page.showControls();
+		}, 500);
+
+	}
+
+	makeFile(i) {
+		var parent = $("#rpCont");
+		//File stuff container
+		var c = document.createElement("div");
+		c.className = "rpFileCont rpFileContCenter";
+		c.id = "rpFC"+i;
+		parent.append(c);
+
+		//File text container
+		var tc = document.createElement("div");
+		tc.className = "rpFileTextCont";
+		tc.id = "rpTC"+i;
+		c.append(tc);
+
+		//File text
+		var tx = document.createElement("div");
+		tx.className = "rpFileText";
+		tx.innerHTML = "windy321-report.pdf";
+		tc.append(tx);
+
+		tx = document.createElement("div");
+		tx.className = "rpFileText";
+		tx.innerHTML = "3 Pages";
+		tc.append(tx);
+
+		tx = document.createElement("div");
+		tx.className = "rpFileText";
+		tx.innerHTML = "288 megabytes";
+		tc.append(tx);
+
+		tx = document.createElement("div");
+		tx.className = "rpFileText";
+		tx.innerHTML = "6:31 PM "+i;
+		tc.append(tx);
+
+		//Divider
+		var dv = document.createElement("div");
+		dv.className = "rpFileDivider";
+		c.append(dv);
+
+		//File thumbnail
+		var f = document.createElement("div");
+		f.className = "rpFile";
+		f.id = "rpFile"+i;
+		c.append(f);
+
+		//Dot
+		var d = document.createElement("div");
+		d.className = "rpFileDot";
+		d.id = "rpFileDot"+i;
+		if (page.files==0) d.style.marginLeft = "0";
+		document.getElementById("rpFileDotCont").append(d);
+
+		//Adjust dot container position
+		if (page.files>0) {
+			var l = $("#rpFileDotCont").offset().left-(0.875*(window.innerWidth/100));
+			$("#rpFileDotCont").css('margin-left', l+"px")
+		}
+		page.files++;
+
+		//Reselect dot
+		$("#rpFileDot"+(page.files-2)).css("opacity", "0.5");
+		$("#rpFileDot"+(page.files-1)).css("opacity", "1");		
+
+		return c;
+	}
+
+	shiftFilesRight() {
+		if (this.currentFile+1<this.files) {
+			$("#rpFC"+this.currentFile).attr('class', 'rpFileCont rpFileContLeft');
+			$("#rpFileDot"+this.currentFile).css("opacity", "0.5");
+			this.currentFile++;
+			$("#rpFC"+this.currentFile).attr('class', 'rpFileCont rpFileContCenter');
+			$("#rpFileDot"+this.currentFile).css("opacity", "1");
+		}
+	}
+
+	shiftFilesLeft() {
+		if (this.currentFile-1>=0) {
+			$("#rpFC"+this.currentFile).attr('class', 'rpFileCont rpFileContRight');
+			$("#rpFileDot"+this.currentFile).css("opacity", "0.5");
+			this.currentFile--;
+			$("#rpFC"+this.currentFile).attr('class', 'rpFileCont rpFileContCenter');
+			$("#rpFileDot"+this.currentFile).css("opacity", "1");
+		}
+	}
+
+	showControls() {
+		$("#rpFileRB").css("display", "block");
+		$("#rpFileLB").css("display", "block");
+		$("#rpFileDotCont").css("display", "block");
 	}
 
 	animateEntrance(start) {
 		setTimeout(removeLoading, start);
 		setTimeout(fadeIn, start, $("#rpCont"));
 	}
-
-	makeThumb(page) {
-
-
-
-
-	   //
-  // If absolute URL from the remote server is provided, configure the CORS
-  // header on that server.
-  //
-  const url = '"https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf"';
-
-  //
-  // The workerSrc property shall be specified.
-  //
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    '../../node_modules/pdfjs-dist/build/pdf.worker.js';
-
-  //
-  // Asynchronous download PDF
-  //
-  const loadingTask = pdfjsLib.getDocument(url);
-  (async () => {
-    const pdf = await loadingTask.promise;
-    //
-    // Fetch the first page
-    //
-    const page = await pdf.getPage(1);
-    const scale = 1.5;
-    const viewport = page.getViewport({ scale });
-    // Support HiDPI-screens.
-    const outputScale = window.devicePixelRatio || 1;
-
-    //
-    // Prepare canvas using PDF page dimensions
-    //
-    const canvas = document.getElementById("rpFile");
-    const context = canvas.getContext("2d");
-
-    canvas.width = Math.floor(viewport.width * outputScale);
-    canvas.height = Math.floor(viewport.height * outputScale);
-    canvas.style.width = Math.floor(viewport.width) + "px";
-    canvas.style.height = Math.floor(viewport.height) + "px";
-
-    const transform = outputScale !== 1 
-      ? [outputScale, 0, 0, outputScale, 0, 0] 
-      : null;
-
-    //
-    // Render PDF page into canvas context
-    //
-    const renderContext = {
-      canvasContext: context,
-      transform,
-      viewport,
-    };
-    page.render(renderContext);
-  })();
-	}
-
 }
