@@ -320,21 +320,30 @@
 }
 .cTB { /*Center circle big text*/
 	position: relative;
-	width: 100%;
+	display: inline-block;
+	padding-left: 28%;
 	margin-top: 27%;
 	color: rgb(255, 255, 255);
-	text-align: center;
+	text-align: right;
 	font-family: openBold;
 	font-size: 2.2vw;
+}
+.cTM { /*Center circle medium text*/
+	position: relative;
+	display: inline-block;
+	text-align: left;
+	font-family: openMedium;
+	font-size: 1vw;
+	color: rgb(255, 255, 255, 0.5);
 }
 .cTS { /*Center circle small text*/
 	position: relative;
 	width: 100%;
-	margin-top: -2%;
 	color: rgb(180, 180, 180);
 	text-align: center;
 	font-family: open;
 	font-size: 0.9vw;
+	opacity: 0.8;
 }
 #cDS { /*Alert circle drop shadow*/
 	flood-color: rgb(0, 0, 0);

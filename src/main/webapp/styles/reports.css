@@ -220,6 +220,17 @@
 	cursor: pointer;
 }
 
+#rpNoFilesText {
+	top: 0;
+	margin-top: 8%;
+	margin-left: 50%;
+	position: relative;
+	font-family: openMedium;
+	font-size: 1.8vw;
+	color: white;
+	opacity: 0.3;
+	text-align: center;
+}
 .rpFileCont {
 	position: absolute;
 	width: 28vw;
@@ -299,13 +310,13 @@
 #rpFileLB {
 	display: none;
 	position: absolute;
-	width: 6vw;
-	height: 6vh;
+	width: 4vw;
+	height: 4vw;
 	top: 0;
-	margin-top: 77vh;
-	margin-left: 58vw;
+	margin-top: 88vh;
+	margin-left: 85vw;
 	background-repeat: no-repeat;
-	background-size: 50%;
+	background-size: 75%;
 	background-position: 50% 50%;
 	background-image: url("../assets/icons/leftarrow.svg");
 	z-index: 100;
@@ -320,13 +331,13 @@
 #rpFileRB {
 	display: none;
 	position: absolute;
-	width: 6vw;
-	height: 6vh;
+	width: 4vw;
+	height: 4vw;
 	top: 0;
-	margin-top: 77vh;
-	margin-left: 93vw;
+	margin-top: 88vh;
+	margin-left: 89vw;
 	background-repeat: no-repeat;
-	background-size: 50%;
+	background-size: 75%;
 	background-position: 50% 50%;
 	background-image: url("../assets/icons/rightarrow.svg");
 	z-index: 100;
@@ -339,10 +350,9 @@
 	opacity: 1;
 }
 #rpFileDotCont {
-	display: block;
 	position: absolute;
 	top: 0;
-	margin-top: 80vh;
+	margin-top: 82vh;
 	margin-left: 78.2vw;
 	z-index: 100;
 }
@@ -354,6 +364,47 @@
 	border-radius: 50px;
 	background-color: white;
 	opacity: 0.5;
+}
+
+#rpDownloadButton {
+	display: none;
+	position: absolute;
+	width: 4vw;
+	height: 4vw;
+	top: 0;
+	margin-top: 88vh;
+	margin-left: 93vw;
+	background-repeat: no-repeat;
+	background-size: 130%;
+	background-position: 50% 50%;
+	background-image: url("../assets/icons/download.svg");
+	z-index: 150;
+	cursor: pointer;
+	opacity: 0.5;
+}
+#rpDownloadCont {
+	position: absolute;
+	width: 3vw;
+	height: 4vw;
+	top: 0;
+	margin-top: 88vh;
+	margin-left: 93vw;
+	padding-left: 1vw;
+	overflow: hidden;
+	border-radius: 15px;
+	background-color: var(--focus);
+	z-index: 140;
+	opacity: 0;
+	cursor: pointer;
+	transition: opacity 0.4s, margin-left 0.5s, width 0.5s;
+}
+#rpDownloadText {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	color: white;
+	font-family: openSemiBold;
+	font-size: 1.4vw;
 }
 
 

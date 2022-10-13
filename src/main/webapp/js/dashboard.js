@@ -226,9 +226,6 @@ class DashboardPage extends Page {
 		this.animateGraph().then(result => page.animateCircleGraphs());
 		
 		//Other listeners to be added on this page load
-		$("#gSVG").mouseover(function(event) { 
-			page.focusGraph();
-		});
 		$("#gSVG").mouseout(function(event) { 
 			page.unfocusGraph();
 		});
@@ -481,12 +478,6 @@ class DashboardPage extends Page {
 		return promise;
 	}
 
-	focusGraph() {
-		$("#gFocusCircle").css("display", "block");
-		$("#gFocusText").css("display", "block");
-		$("#gFocusLine").css("display", "block");
-	}
-
 	unfocusGraph() {
 		$("#gFocusCircle").css("display", "none");
 		$("#gFocusText").css("display", "none");
@@ -513,7 +504,10 @@ class DashboardPage extends Page {
 		//Get relative x of mouse and closest data points
 		var mX = event.pageX-svg.offset().left-gLeft; //Mouse x
 		var i = Math.floor(mX/xSplit); //Index in graph data
-		if (i<0||i+1>=this.gVisualData.length) return;
+		if (i<0||i+1>=this.gVisualData.length||this.gVisualData[i]==0) {
+			this.unfocusGraph();
+			return;
+		}
 
 		//Find points in real space
 		var p1x = i*xSplit+gLeft;
@@ -549,6 +543,10 @@ class DashboardPage extends Page {
 
 		var d = "M "+mX+" "+gBot+" L "+mX+" "+gTop;
 		$("#gFocusLine").attr("d", d);
+
+		$("#gFocusCircle").css("display", "block");
+		$("#gFocusText").css("display", "block");
+		$("#gFocusLine").css("display", "block");
 	}
 
 	graphSlideFinished() {
@@ -577,20 +575,21 @@ class DashboardPage extends Page {
 		var s = "mins";
 		v = this.alarmLevelTimes[i];
 		if (v>60) {
-			s = "hours";
 			v = Math.floor(v/60);
+			if (v==1) s = "hour";
+			else s = "hours";
 			if (v>=24) {
-				s = "days"
-				v = Math.floor(v/24)
+				v = Math.floor(v/24);
+				if (v==1) s = "day";
+				else s = "days";
 			}
 		}
-		if (i==0) s += " at green";
-		if (i==1) s += " at amber";
-		if (i==2) s += " at red";
-		$('#cTS'+(i+1)).html(s);
 
-		//Update text with number
+		//Update text
 		$('#cTB'+(i+1)).html(v);
+		if (v.toString().length==1) $('#cTB'+(i+1)).css("padding-left", "33%");
+		else $('#cTB'+(i+1)).css("padding-left", "27%");
+		$('#cTM'+(i+1)).html(s);
 		$('#cT'+(i+1)).css("opacity", 1);
 	}
 

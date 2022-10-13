@@ -94,23 +94,6 @@ class ReportsPage extends Page {
 	}
 
 	generateReport() {
-		/*insertLoading(screen.width*0.75, screen.height*0.55, false);
-		
-		//Focussed file	
-		setTimeout(function() {
-			removeLoading();
-			$("#ipFile1").css("display", "block");
-			setTimeout(function() {
-				$("#ipFile1").css({"margin-top":"", "opacity":"1"});
-			}, 100);
-			setTimeout(function() {
-				$("#rpFD1").css({"margin-left":"27vw", "opacity":"1"});
-				$("#rpFTC1").css({"margin-left":"4vw", "opacity":"1"});
-			}, 300);
-		}, 1000);*/
-		//$("#rpFC1").attr('class', 'rpFileCont rpFileContLeft');
-		
-		//Go all the way to the right
 		insertLoading(screen.width*0.75, screen.height*0.55, false);
 
 		setTimeout(function() {
@@ -126,7 +109,11 @@ class ReportsPage extends Page {
 			}
 
 			page.makeFile(page.files);
-			if (page.files>0) page.showControls();
+			if (page.files==2) page.showControls();
+			if (page.files==1) {
+				$("#rpDownloadButton").css("display", "block");
+				$("#rpNoFilesText").remove();
+			}
 		}, 500);
 
 	}
@@ -221,7 +208,33 @@ class ReportsPage extends Page {
 	showControls() {
 		$("#rpFileRB").css("display", "block");
 		$("#rpFileLB").css("display", "block");
-		$("#rpFileDotCont").css("display", "block");
+	}
+
+	expandDownload() {
+		$("#rpDownloadButton").css("opacity", "1");
+		$("#rpDownloadCont").css({
+			"opacity":"1",
+			"margin-left":"85vw",
+			"width":"11vw"
+		});
+	}
+
+	collapseDownload() {
+		$("#rpDownloadButton").css("opacity", "0.5");
+		$("#rpDownloadCont").css({
+			"opacity":"0",
+			"margin-left":"93vw",
+			"width":"3vw"
+		});
+	}
+
+	downloadFile() {
+		var a = document.createElement("a");
+		a.href = "../assets/pdfs/aa.pdf";
+		a.download = "myaa.pdf";
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
 	}
 
 	animateEntrance(start) {
