@@ -224,6 +224,17 @@ class DashboardPage extends Page {
 
 		this.gXMarkings.reverse();
 		this.animateGraph().then(result => page.animateCircleGraphs());
+		
+		//Other listeners to be added on this page load
+		$("#gSVG").mouseover(function(event) { 
+			page.focusGraph();
+		});
+		$("#gSVG").mouseout(function(event) { 
+			page.unfocusGraph();
+		});
+		$("#gSVG").mousemove(function(event) { 
+			page.moveOnGraph(event);
+		});
 	}
 
 	animateEntrance(start) {
@@ -428,6 +439,19 @@ class DashboardPage extends Page {
 			path.setAttribute("d", d);
 			svg.append(path);
 		}
+
+		//Make focus stuff
+		var focusC = document.createElementNS(nS, "circle");
+		focusC.setAttribute("id", "gFocusCircle");
+		svg.append(focusC);
+
+		var focusT = document.createElementNS(nS, "text");
+		focusT.setAttribute("id", "gFocusText");
+		svg.append(focusT);
+
+		var focusP = document.createElementNS(nS, "path");
+		focusP.setAttribute("id", 'gFocusLine');
+		svg.append(focusP);
 	}
 
 	animateGraph() {
@@ -455,6 +479,76 @@ class DashboardPage extends Page {
 			}, 8);
 		});
 		return promise;
+	}
+
+	focusGraph() {
+		$("#gFocusCircle").css("display", "block");
+		$("#gFocusText").css("display", "block");
+		$("#gFocusLine").css("display", "block");
+	}
+
+	unfocusGraph() {
+		$("#gFocusCircle").css("display", "none");
+		$("#gFocusText").css("display", "none");
+		$("#gFocusLine").css("display", "none");
+	}
+
+	moveOnGraph(event) {
+		/*Goal is to get the exact point on the
+		double bezier curve to place the focus circle*/
+
+		//SVG dimensions
+		var svg = $("#gSVG");
+		var w = parseFloat(svg.css("width"));
+		var h = parseFloat(svg.css("height"));
+
+		//Dimensions of graph inside svg
+		var gBot = h*0.86;
+		var gTop = h*0.06;
+		var gLeft = w*0.05;
+		var gRight = w*0.95;
+		var ySplit = (gBot-gTop)/(this.gYTopVal-this.gYBotVal);
+		var xSplit = (gRight-gLeft)/this.gPointsOnX;
+
+		//Get relative x of mouse and closest data points
+		var mX = event.pageX-svg.offset().left-gLeft; //Mouse x
+		var i = Math.floor(mX/xSplit); //Index in graph data
+		if (i<0||i+1>=this.gVisualData.length) return;
+
+		//Find points in real space
+		var p1x = i*xSplit+gLeft;
+		var p1y = (this.gYTopVal-this.gVisualData[i])*ySplit+gTop;
+		var p2x = (i+1)*xSplit+gLeft;
+		var p2y = (this.gYTopVal-this.gVisualData[i+1])*ySplit+gTop;
+		var ix = p1x+(p2x-p1x)/2;  //Intermediate point
+		var iy = p1y+(p2y-p1y)/2;
+
+		mX += gLeft; //Add back so is absolute point again
+		var mY;
+		var a;
+		//Get point on bezier line
+		if (mX>ix) {
+			 //Use up curving quadratic
+			a = (iy-p2y)/Math.pow((ix-p2x), 2);
+			mY = a*Math.pow(mX-p2x, 2)+p2y;
+		}
+		else {
+			//Use down curving quadratic
+			a = (iy-p1y)/Math.pow((ix-p1x), 2);
+			mY = a*Math.pow(mX-p1x, 2)+p1y;
+		}
+
+		//Update
+		$("#gFocusCircle").attr("cx", mX);
+		$("#gFocusCircle").attr("cy", mY);
+
+		var t = Math.floor(this.gVisualData[i])+" km/h";
+		$("#gFocusText").attr("x", mX-(w*0.009)*(t.length/2));
+		$("#gFocusText").attr("y", mY-(h*0.03));
+		$("#gFocusText").html(t);
+
+		var d = "M "+mX+" "+gBot+" L "+mX+" "+gTop;
+		$("#gFocusLine").attr("d", d);
 	}
 
 	graphSlideFinished() {

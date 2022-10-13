@@ -1,4 +1,13 @@
 /*Dashboard page*/
+#tester {
+	position: absolute;
+	top: 5%;
+	left: 50%;
+	background-color: white;
+	color: black;
+	z-index: 200;
+}
+
 
 #rtCont { /*Real-time module container*/
 	position: absolute;
@@ -136,10 +145,11 @@
 #graphCover { /*Graph cover which provides a gradient out*/
 	position: absolute;
 	top: -12%;
-	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 70%, var(--bgGrad) 100%);
-	width: 100%;
+	background-image: linear-gradient(to right, rgb(0, 0, 0, 0) 0%, var(--bgGrad) 100%);
+	width: 30%;
 	height: 100%;
 	margin-top: 5%;
+	margin-left: 70%;
 	z-index: 10;
 }
 #gSVG {
@@ -179,6 +189,31 @@
 .gDataCircle { /*Data point circle*/
 	fill: rgb(50, 255, 50, 0.8);
 	r: 2px;
+	z-index: 101;
+}
+#gFocusCircle {
+	display: none;
+	fill: none;
+	stroke: white;
+	stroke-width: 1.5px;
+	r: 5px;
+	z-index: 101;
+	opacity: 0.8;
+}
+#gFocusText {
+	display: none;
+	fill: white;
+	font-family: open;
+	font-size: 1.2vw;
+	opacity: 0.8;
+	z-index: 101;
+}
+#gFocusLine {
+	display: none;
+	stroke: rgb(255, 255, 255);
+	stroke-width: 1px;
+	stroke-linecap: round;
+	opacity: 0.3;
 	z-index: 101;
 }
 /*Linear gradient under data line path*/
