@@ -371,11 +371,8 @@ function animateExit(start) {
 	redAlarmAniKill = true;
 	var c1 = $('#effCont').children();
 	for (i=0; i<c1.length; i++) {
-		//var c2 = c1.eq(i).children();
-		//for (z=c2.length; z>=0; z--) {
-			setTimeout(fadeOut, start, c1.eq(i));
-			start += 40;
-		//}
+		setTimeout(fadeOut, start, c1.eq(i));
+		start += 40;
 	}
 
 	let promise = new Promise(function (resolve, reject) {

@@ -9,7 +9,7 @@ class ReportsPage extends Page {
 		link.setAttribute('href', '../styles/reports.css');
 		document.head.appendChild(link);
 
-		this.files = 0;
+		this.files = new Array();
 		this.currentFile = 0;
 	}
 
@@ -25,6 +25,11 @@ class ReportsPage extends Page {
 			resolve();
 		});
 		return promise;
+	}
+
+	recieveData(req) {
+		var jObj = JSON.parse(req.responseText);
+		this.files.push([jObj["pdf"], jObj["thumbnail"]]);
 	}
 
 	setupCalenders() {
@@ -96,25 +101,42 @@ class ReportsPage extends Page {
 	generateReport() {
 		insertLoading(screen.width*0.75, screen.height*0.55, false);
 
-		setTimeout(function() {
-			removeLoading();
-			//Shift all the way to right
-			for (var i=page.currentFile; i<page.files; i++) {
-				page.shiftFilesRight();
+		let promise = new Promise(function (resolve, reject) {
+			var req = new XMLHttpRequest(); //Fetch data
+			req.open('GET', 'data/?sK='+sessionKey+'&m=10&t='+Math.random(), true);
+			req.onreadystatechange = function() {
+				if (checkResponse(req)) {
+					page.recieveData(req);
+					resolve();
+				}
 			}
-			//Shift one more to get a clean space 
-			if (page.files>0) {
-				$("#rpFC"+(page.files-1)).attr('class', 'rpFileCont rpFileContLeft');
-				page.currentFile++;
-			}
+			req.send();
 
-			page.makeFile(page.files);
-			if (page.files==2) page.showControls();
-			if (page.files==1) {
-				$("#rpDownloadButton").css("display", "block");
-				$("#rpNoFilesText").remove();
-			}
-		}, 500);
+			//Initiate loading
+			setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, false);}, loadingWait);
+		});
+
+		promise.then(function() {
+			setTimeout(function() {
+				removeLoading();
+				//Shift all the way to right
+				for (var i=page.currentFile; i<page.files.length; i++) {
+					page.shiftFilesRight();
+				}
+				//Shift one more to get a clean space 
+				if (page.files>0) {
+					$("#rpFC"+(page.files.length-1)).attr('class', 'rpFileCont rpFileContLeft');
+					page.currentFile++;
+				}
+
+				page.makeFile(page.files.length);
+				if (page.files.length==2) page.showControls();
+				if (page.files.length==1) {
+					$("#rpDownloadButton").css("display", "block");
+					$("#rpNoFilesText").remove();
+				}
+			}, 500);
+		});
 
 	}
 
@@ -162,31 +184,32 @@ class ReportsPage extends Page {
 		var f = document.createElement("div");
 		f.className = "rpFile";
 		f.id = "rpFile"+i;
+		alert(page.files[page.files.length-1][1]);
+		f.style.backgroundImage = "url("+page.files[page.files.length-1][1]+")";
 		c.append(f);
 
 		//Dot
 		var d = document.createElement("div");
 		d.className = "rpFileDot";
 		d.id = "rpFileDot"+i;
-		if (page.files==0) d.style.marginLeft = "0";
+		if (page.files.length==0) d.style.marginLeft = "0";
 		document.getElementById("rpFileDotCont").append(d);
 
 		//Adjust dot container position
-		if (page.files>0) {
+		if (page.files.length>0) {
 			var l = $("#rpFileDotCont").offset().left-(0.875*(window.innerWidth/100));
 			$("#rpFileDotCont").css('margin-left', l+"px")
 		}
-		page.files++;
 
 		//Reselect dot
-		$("#rpFileDot"+(page.files-2)).css("opacity", "0.5");
-		$("#rpFileDot"+(page.files-1)).css("opacity", "1");		
+		$("#rpFileDot"+(page.files.length-2)).css("opacity", "0.5");
+		$("#rpFileDot"+(page.files.length-1)).css("opacity", "1");		
 
 		return c;
 	}
 
 	shiftFilesRight() {
-		if (this.currentFile+1<this.files) {
+		if (this.currentFile+1<this.files.length) {
 			$("#rpFC"+this.currentFile).attr('class', 'rpFileCont rpFileContLeft');
 			$("#rpFileDot"+this.currentFile).css("opacity", "0.5");
 			this.currentFile++;

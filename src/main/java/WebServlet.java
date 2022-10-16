@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.json.JSONObject;
+
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +24,8 @@ public class WebServlet extends HttpServlet {
 	private static final int checkSessionKey = 7;
 	private static final int authenticationSalts = 8;
 	private static final int forecastData = 9;
+	private static final int genReport = 10;
+	
 	
 	private static final String blue = "\033[36m";
 	private static final String red = "\033[31m";
@@ -152,6 +157,16 @@ public class WebServlet extends HttpServlet {
 			if (data==null) {failBadRequest(resp); return;}
 			break;
 
+		case genReport:
+			System.out.println(blue+" --- Recieving report request --- "+reset);
+			String pdf = PDFManager.createPDF();
+			String thumbnail = PDFManager.generateThumbnail(pdf);
+			JSONObject jObj = new JSONObject();
+			jObj.put("pdf", pdf);
+			jObj.put("thumbnail", thumbnail);
+			data =  jObj.toString(1);
+			break;
+			
 		default: failBadRequest(resp); return;
 		}
 		System.out.println("sessionKey: "+sK+"\n"+blue+" --- End GET  --- "+reset+"\n");
