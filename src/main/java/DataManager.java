@@ -173,7 +173,9 @@ public class DataManager {
 		jObj.put("data", recordCount.toString());
 		return jObj.toString(1);
 	}
-
+	
+	//TODO Restrict scope of visible units to lowest level user
+	
 	public static String getUnitsData(String user) {
 		//Look at account file
 		JSONObject jObj = CoreServer.accountManager.getHighestLevelAccountInfo(user);

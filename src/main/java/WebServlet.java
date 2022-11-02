@@ -35,7 +35,8 @@ public class WebServlet extends HttpServlet {
 		int mode;
 		try {mode = Integer.parseInt(req.getParameter("m"));}
 		catch (NumberFormatException e) {failBadRequest(resp); return;}
-
+		String unit = null; //May or may not be set during this method based on request type
+		
 		//Check session key
 		if (mode!=authenticationSalts&&mode!=authenticationLogin) {
 			if (sK==null) {failBadRequest(resp); return;}
@@ -51,8 +52,9 @@ public class WebServlet extends HttpServlet {
 		switch (mode) {
 		case dashboardData:
 			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving real time data request --- "+CLI.reset);
+			
 			int graphMode;
-			String unit = req.getParameter("u");
+			unit = req.getParameter("u");
 			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
 			
@@ -60,6 +62,10 @@ public class WebServlet extends HttpServlet {
 				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
 				CLI.debug(Loc.HTTP, "Using default unit.");
 			}
+			
+			//Handle MQTT live state
+			CoreServer.mqttManager.sendLiveStart(unit);
+			session.setLiveReading(unit);
 			
 			data = DataManager.getDashboardData(unit, graphMode);
 			if (data==null) {failBadRequest(resp); return;}
@@ -166,6 +172,12 @@ public class WebServlet extends HttpServlet {
 		}
 		CLI.debug(Loc.HTTP, "sessionKey: "+sK);
 		CLI.debug(Loc.HTTP, CLI.blue+" --- End GET  --- "+CLI.reset+"\n");
+		
+		//Check and stop MQTT live state
+		if (mode!=dashboardData&&session!=null&&session.isLiveReading()) {
+			CoreServer.mqttManager.sendLiveStop(session.getLiveUnit());
+			session.clearLiveReading();
+		}
 		
 		//Send response
 		resp.setStatus(HttpServletResponse.SC_OK);

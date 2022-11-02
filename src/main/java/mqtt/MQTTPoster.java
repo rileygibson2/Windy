@@ -6,20 +6,29 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import main.java.debug.CLI;
+import main.java.debug.CLI.Loc;
 import main.java.mqtt.MQTTManager.PostTopic;
 
 public class MQTTPoster {
 	
 	private MqttClient client;
-	private PostTopic topic;
 	private int qos;
 	
-	public MQTTPoster(String clientID, PostTopic topic, int qos) throws MqttException {
-		this.topic = topic;
+	public MQTTPoster(String clientID, int qos) throws MqttException {
 		this.qos = qos;
 		this.client = new MqttClient(MQTTManager.broker, clientID, new MemoryPersistence());
 		MQTTUtil.connect(client);
 	}
 	
 	public MqttClient getClient() {return this.client;}
+	
+	public void sendMessage(String content, PostTopic topic) {
+		try {
+			MQTTUtil.sendMessage(client, topic.toString(), qos, content);
+		} catch (MqttException e) {
+			CLI.debug(Loc.MQTT, "Exception: "+e);
+			e.printStackTrace();
+		}
+	}
 }

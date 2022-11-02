@@ -39,7 +39,7 @@ public class CoreServer {
 		makeMockupData();
 		//new PDFManager("report1/report.pdf").generatePDF();
 		mqttManager = new MQTTManager();
-
+		
 		server.start();
 		CLI.debug(Loc.CORE, "Server running!");
 		server.join();
