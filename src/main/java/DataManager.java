@@ -3,20 +3,21 @@ package main.java;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import main.java.debug.CLI;
+import main.java.debug.CLI.Loc;
 
 public class DataManager {
 
-	final static int amberAlarm = 50;
-	final static int redAlarm = 80;
+	public final static int amberAlarm = 50;
+	public final static int redAlarm = 80;
 	final static double msInMinute = 60000;
 	final static double msInHour = 3.6e+6;
 	final static double msInDay = 8.64e+7;
@@ -60,7 +61,7 @@ public class DataManager {
 		String[] units = CoreServer.accountManager.getAssignedUnits(user);
 		if (units==null) return null;
 		for (String unit : units) {
-			jObj = CoreServer.unitManager.getUnitObject(unit);
+			jObj = UnitUtils.getUnitObject(unit);
 			if (jObj==null) return null;
 			jObj.put("desc", "unit"); //Add convience tag
 			jArr.put(jObj);
@@ -93,7 +94,7 @@ public class DataManager {
 		List<List<Long>> records = new ArrayList<>();
 
 		//Get log scanner
-		Scanner s = CoreServer.unitManager.getLogScanner(unit);
+		Scanner s = UnitUtils.getLogScanner(unit);
 		if (s==null) return null;
 
 		//Get records from period
@@ -137,7 +138,7 @@ public class DataManager {
 		long dE = (long) (dS+msInDay); //End time for count
 
 		//Get log scanner
-		Scanner s = CoreServer.unitManager.getLogScanner(unit);
+		Scanner s = UnitUtils.getLogScanner(unit);
 		if (s==null) return null;
 
 		//Count records for each day
@@ -185,7 +186,7 @@ public class DataManager {
 		//Get status on all assigned units
 		JSONArray jArr = new JSONArray();
 		for (String unit : units) {
-			JSONObject uS = CoreServer.unitManager.getUnitObject(unit);
+			JSONObject uS = UnitUtils.getUnitObject(unit);
 			if (uS==null) return null;
 			jArr.put(uS);
 		}
@@ -202,10 +203,9 @@ public class DataManager {
 		long record[] = new long[4];
 
 		//Get log scanner
-		Scanner s = CoreServer.unitManager.getLogScanner(unit);
+		Scanner s = UnitUtils.getLogScanner(unit);
 		if (s==null) return null;
-
-
+		
 		if (s.hasNext()) {
 			String r = s.next();
 			String[] a = r.substring(0, r.length()-1).split(",");
@@ -238,7 +238,7 @@ public class DataManager {
 		int[] mins = new int[3];
 
 		//Get log scanner
-		Scanner s = CoreServer.unitManager.getLogScanner(unit);
+		Scanner s = UnitUtils.getLogScanner(unit);
 		if (s==null) return null;
 
 		//Search back through logs for last two hours
@@ -307,16 +307,16 @@ public class DataManager {
 		//Top up array if not correct size
 		if (recordsA.size()<(period/increment)) {
 			int topUp = (int) Math.abs((period/increment)-recordsA.size());
-			System.out.println("TOPPING UP WITH "+topUp);
+			CLI.debug(Loc.HTTP,  "TOPPING UP WITH "+topUp);
 			for (int i=0; i<topUp; i++) {
 				recordsA.add(0);
 				recordsTS.add((long) 0);
 			}
 		}
 
-		/*System.out.println("end "+recordsA.size());
+		/*CLI.debug(Loc.HTTP,  "end "+recordsA.size());
 		for (int i=0; i<recordsTS.size(); i++) {
-			System.out.println(new Date(recordsTS.get(i)).toString()+" v: "+recordsA.get(i));
+			CLI.debug(Loc.HTTP,  new Date(recordsTS.get(i)).toString()+" v: "+recordsA.get(i));
 		}*/
 		return recordsA;
 	}
@@ -348,7 +348,7 @@ public class DataManager {
 			records = getRecordsFromPeriod(unit, (long) (d-msInHour+(msInMinute*5)), (long) (d+(msInMinute*5)));
 			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInMinute*5), (long) (d+(msInMinute*5)), (long) (msInHour));
-			System.out.println(recordsA.toString());
+			CLI.debug(Loc.HTTP,  recordsA.toString());
 			break;
 
 		case 2: //Day 
@@ -361,7 +361,7 @@ public class DataManager {
 			records = getRecordsFromPeriod(unit, (long) (d-msInDay+(msInHour/2)), (long) (d+(msInHour/2)));
 			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInHour/2), (long) (d+(msInHour/2)), (long) (msInDay));
-			System.out.println(recordsA.toString());
+			CLI.debug(Loc.HTTP,  recordsA.toString());
 			break;
 
 		case 3: //Week
@@ -375,7 +375,7 @@ public class DataManager {
 			records = getRecordsFromPeriod(unit, (long) (d-msInWeek+msInHour), (long) (d+msInHour));
 			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInHour), (long) (d+msInHour), (long) (msInWeek));
-			System.out.println(recordsA.toString());
+			CLI.debug(Loc.HTTP,  recordsA.toString());
 			break;
 
 		case 4: //Month
@@ -389,7 +389,7 @@ public class DataManager {
 			records = getRecordsFromPeriod(unit, (long) (d-msInMonth+(msInDay/2)), d);
 			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInDay/2), (long) (d+(msInDay/2)), (long) (msInMonth));
-			System.out.println(recordsA.toString());
+			CLI.debug(Loc.HTTP,  recordsA.toString());
 		}
 
 		//Format in JSON
@@ -407,7 +407,7 @@ public class DataManager {
 			data = s.useDelimiter("\\A").next();
 			s.close();
 		}
-		catch (FileNotFoundException e) {System.out.println("IO Error"); return null;}
+		catch (FileNotFoundException e) {CLI.debug(Loc.HTTP,  "IO Error"); return null;}
 		return data;
 	}
 }

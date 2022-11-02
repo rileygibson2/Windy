@@ -1,4 +1,4 @@
-package main.java;
+package main.java.pdf;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -18,53 +18,68 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
-public class PDFManager {
-
+public class PDFUtils {
 	private static String prefix = "reports/";
-	
-	public static String createPDF() {
+
+	public static PDDocument createPDF() {
 		PDDocument pdf = new PDDocument();    
-		PDPage p1 = new PDPage();
-		pdf.addPage(p1);
 		setProperties(pdf);
-		String filePath = "report1/report.pdf";
+		return pdf;
+	}
+
+	public static void addPage(PDDocument pdf) {
+		PDPage p = new PDPage();
+		pdf.addPage(p);
+	}
+
+	public static PDPageContentStream getStream(PDDocument pdf, int pageNum) {
 		try {
-			PDPageContentStream cStream = new PDPageContentStream(pdf, p1);
-			String s = "Hello this is a pdf my name is riley and I am great how are you today fine sir?";
-			insertText(s, new Point(25, 500), cStream);
-			drawRect(Color.RED, new Point(25, 600), new Point(100, 150), cStream);
-			cStream.close();
-			writePDF(pdf, prefix+filePath);
+			return new PDPageContentStream(pdf, pdf.getPage(pageNum));
+		} catch (IOException e) {return null;}
+	}
+	
+	public static PDPage getPage(PDDocument pdf, int pageNum) {
+		return pdf.getPage(pageNum);
+	}
+
+	public static void closeStream(PDPageContentStream stream) {
+		try {stream.close();}
+		catch (IOException e) {e.printStackTrace();}
+	}
+
+	public static void insertText(String text, Point pos, PDPageContentStream cStream) {
+		try {
+			cStream.beginText(); 
+			cStream.setFont(PDType1Font.COURIER, 12);
+			cStream.newLineAtOffset(pos.x, pos.y);
+			cStream.showText(text);      
+			cStream.endText();
 		}
 		catch (IOException e) {e.printStackTrace();}
-		return filePath;
 	}
 
-	public static void insertText(String text, Point pos, PDPageContentStream cStream) throws IOException {
-		cStream.beginText(); 
-		cStream.setFont(PDType1Font.COURIER, 12);
-		cStream.newLineAtOffset(pos.x, pos.y);
-		cStream.showText(text);      
-		cStream.endText();
+	public static void insertImage(String filename, Point pos, Point size, PDDocument pdf, PDPageContentStream cStream) {
+		try {
+			PDImageXObject pdImage = PDImageXObject.createFromFile(filename, pdf);
+			pdImage.setWidth(size.x);
+			pdImage.setHeight(size.y);
+			cStream.drawImage(pdImage, pos.x, pos.y);
+		}
+		catch (IOException e) {e.printStackTrace();}
 	}
 
-	public static void insertImage(String filename, Point pos, Point size, PDDocument pdf, PDPageContentStream cStream) throws IOException {
-		PDImageXObject pdImage = PDImageXObject.createFromFile(filename, pdf);
-		pdImage.setWidth(size.x);
-		pdImage.setHeight(size.y);
-		cStream.drawImage(pdImage, pos.x, pos.y);
-	}
-	
 	public static void drawRect(Color c, Point pos, Point size, PDPageContentStream cStream) throws IOException {
 		cStream.setNonStrokingColor(c);
 		cStream.addRect(pos.x, pos.y, size.x, size.y);
 		cStream.fill();
 	}
 
-	public static void writePDF(PDDocument pdf, String filename) throws IOException {
-		pdf.save(filename);
-		pdf.close();
-		System.out.println("PDF created");
+	public static void writePDF(PDDocument pdf, String filename) {
+		try {
+			pdf.save(prefix+filename);
+			pdf.close();
+			System.out.println("PDF created");
+		} catch (IOException e) {e.printStackTrace();}
 	}
 
 	public static void setProperties(PDDocument pdf) {

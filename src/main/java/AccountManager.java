@@ -12,6 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import main.java.debug.CLI;
+import main.java.debug.CLI.Loc;
+
 public class AccountManager {
 
 	private final Map<Integer, AuthenticationSession> authSessions;
@@ -35,10 +38,10 @@ public class AccountManager {
 		AuthenticationSession auth = null;
 
 		try {auth = new AuthenticationSession(id, jObj.get("salt").toString(), (long) (DataManager.msInMinute*10));}
-		catch (JSONException e) {System.out.println("Error with creating authentication session - unit does not contain a salt"); return null;}
+		catch (JSONException e) {CLI.debug(Loc.ACCOUNT, "Error with creating authentication session - unit does not contain a salt"); return null;}
 
 		authSessions.put(id, auth);
-		System.out.println("Created Auth Session: "+auth.formatInJSON());
+		CLI.debug(Loc.ACCOUNT, "Created Auth Session: "+auth.formatInJSON());
 		return auth.formatInJSON();
 	}
 
@@ -92,7 +95,7 @@ public class AccountManager {
 	public String authenticateAccount(String user, String pass, int authID) {
 		//Find relevant authentication session
 		AuthenticationSession auth = getAuthSession(authID);
-		if (auth==null) {System.out.println("Invalid or expired authentication session."); return null;}
+		if (auth==null) {CLI.debug(Loc.ACCOUNT, "Invalid or expired authentication session."); return null;}
 
 		//Read account file
 		JSONObject jObj = getAccountObject(user);
@@ -100,21 +103,21 @@ public class AccountManager {
 
 		//Hash stored pass with authentication session salt
 		String actualPass = Utils.hash(jObj.get("password").toString(), auth.getS2());
-		System.out.println("Actual Pass: "+actualPass+"\nGiven Pass: "+pass);
+		CLI.debug(Loc.ACCOUNT, "Actual Pass: "+actualPass+"\nGiven Pass: "+pass);
 		authSessions.remove(authID); //Done with authentication session
 
 		if (actualPass.equals(pass)) { //Valid password
 			//Generate session key
 			Session sK = new Session(user, (long) 2.16e+7);
 			sessions.add(sK);
-			System.out.println("Valid authentication - issuing session key "+sK.getKey());
+			CLI.debug(Loc.ACCOUNT, "Valid authentication - issuing session key "+sK.getKey());
 
 			//Get default unit from highest level account
 			String defunit;
 			jObj = getHighestLevelAccountInfo(user);
 			try {defunit = jObj.get("defunit").toString();}
 			catch (JSONException e) {
-				System.out.println("No default unit assigned to account.");
+				CLI.debug(Loc.ACCOUNT, "No default unit assigned to account.");
 				return null;
 			}
 
@@ -124,7 +127,7 @@ public class AccountManager {
 			return toSend.toString(1);
 		}
 
-		System.out.println("Invalid.");
+		CLI.debug(Loc.ACCOUNT, "Invalid.");
 		return null;
 	}
 
@@ -144,7 +147,7 @@ public class AccountManager {
 		JSONObject jObj = getAccountObject(user);
 		if (jObj==null) return null;
 		try {return jObj.get("children").toString().split(" ");}
-		catch (JSONException e) {System.out.println("User "+user+" does not have children accounts"); return null;}
+		catch (JSONException e) {CLI.debug(Loc.ACCOUNT, "User "+user+" does not have children accounts"); return null;}
 	}
 
 	public JSONObject getAccountObject(String user) {
@@ -155,9 +158,9 @@ public class AccountManager {
 			jObj = new JSONObject(s.useDelimiter("\\A").next());
 			s.close();
 		}
-		catch (FileNotFoundException e) {System.out.println("Invalid user - "+user); return null;}
-		catch (JSONException e) {System.out.println("Empty or invalid account file contents - JSON error."); return null;}
-		System.out.println("Requested user: "+user);
+		catch (FileNotFoundException e) {CLI.debug(Loc.ACCOUNT, "Invalid user - "+user); return null;}
+		catch (JSONException e) {CLI.debug(Loc.ACCOUNT, "Empty or invalid account file contents - JSON error."); return null;}
+		CLI.debug(Loc.ACCOUNT, "Requested user: "+user);
 		return jObj;
 	}
 
@@ -168,7 +171,7 @@ public class AccountManager {
 
 		//Get parent if has one
 		if (!jObj.get("parent").toString().equals("null")) {
-			System.out.println("Using parent: "+jObj.get("parent"));
+			CLI.debug(Loc.ACCOUNT, "Using parent: "+jObj.get("parent"));
 			jObj = getAccountObject(jObj.get("parent").toString());
 		}
 
@@ -188,7 +191,7 @@ public class AccountManager {
 			catch (JSONException e) {} //Swallow as checked in a second
 			jObj.remove("desc");
 			jObj.remove("clienttag");
-			System.out.println("\nObject Metadata: description="+desc+" clientag="+clienttag);
+			CLI.debug(Loc.ACCOUNT, "\nObject Metadata: description="+desc+" clientag="+clienttag);
 
 			//Object is an account
 			if (desc.equals("account")) {
@@ -215,11 +218,11 @@ public class AccountManager {
 					Utils.writeToFile("accounts/"+username+".acc", jObj.toString(1));
 				}
 				else if (clienttag.equals("add")) { //New account
-					System.out.println("Adding account: "+jObj.getString("username"));
+					CLI.debug(Loc.ACCOUNT, "Adding account: "+jObj.getString("username"));
 					makeChildAccount(jObj);
 				}
 				else if (clienttag.equals("remove")) { //Remove account
-					System.out.println("Removing account: "+jObj.getString("username"));
+					CLI.debug(Loc.ACCOUNT, "Removing account: "+jObj.getString("username"));
 					removeAccount(jObj);
 				}
 			}
@@ -227,7 +230,7 @@ public class AccountManager {
 			//If object is a unit
 			if (desc.equals("unit")) {
 				String id = jObj.getString("id");
-				JSONObject unitObj = CoreServer.unitManager.getUnitObject(id);
+				JSONObject unitObj = UnitUtils.getUnitObject(id);
 				if (unitObj==null) return false;
 
 				if (clienttag==null) { //No special action, just update info
@@ -237,7 +240,7 @@ public class AccountManager {
 					Utils.writeToFile("units/"+id+"/unit.info", jObj.toString(1));
 				}
 				else if (clienttag.equals("remove")) {
-					System.out.println("Removing unit: "+jObj.getString("id"));
+					CLI.debug(Loc.ACCOUNT, "Removing unit: "+jObj.getString("id"));
 					removeUnit(unitObj, user);
 				}
 			}

@@ -232,6 +232,23 @@ class DashboardPage extends Page {
 		$("#gSVG").mousemove(function(event) { 
 			page.moveOnGraph(event);
 		});
+
+		this.setupLive();
+	}
+
+	//Set up MQTT client and subscribe to live readings
+	setupLive() {
+		var clientID = "WebSocketClient"+Math.random().toString().replace('.', '');
+		var client = new Paho.Client('127.0.0.1', 9001, clientID);
+		client.connect({
+			onSuccess:function() {
+				console.log("connected");
+				client.subscribe('Log');
+			}
+		});
+		client.onMessageArrived = function(message) {
+			console.log(message);
+		}
 	}
 
 	animateEntrance(start) {

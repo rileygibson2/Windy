@@ -1,7 +1,6 @@
 package main.java;
 
 import java.io.File;
-import java.lang.reflect.Array;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -9,21 +8,23 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 
+import main.java.debug.CLI;
+import main.java.debug.CLI.Loc;
+import main.java.mqtt.MQTTManager;
+
 public class CoreServer {
 	public static AccountManager accountManager;
-	public static UnitManager unitManager;
+	public static MQTTManager mqttManager;
 
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(80);
 		String webappPath = System.getProperty("user.dir")+"/src/main/webapp";
 		String reportsPath = System.getProperty("user.dir")+"/reports";
-		System.out.println(webappPath);
+		CLI.debug(Loc.CORE, webappPath);
 		accountManager = new AccountManager();
-		unitManager = new UnitManager();
 
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setResourceBase(webappPath);
-		//resourceHandler.setDirAllowed(false);
 		ResourceHandler reportsHandler = new ResourceHandler();
 		reportsHandler.setResourceBase(reportsPath);
 		//reportsHandler.setDirAllowed(false);
@@ -36,9 +37,11 @@ public class CoreServer {
 		server.setHandler(handlers);
 
 		makeMockupData();
+		//new PDFManager("report1/report.pdf").generatePDF();
+		mqttManager = new MQTTManager();
 
 		server.start();
-		System.out.println("Server running!");
+		CLI.debug(Loc.CORE, "Server running!");
 		server.join();
 	}
 

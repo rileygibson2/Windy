@@ -10,6 +10,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
+import main.java.debug.CLI;
+import main.java.debug.CLI.Loc;
+
 public class Utils {
 
 	//Characters for alphanumeric ids
@@ -20,15 +23,15 @@ public class Utils {
 			FileWriter out = new FileWriter(filePath);
 			out.write(content);
 			out.close();
-			System.out.println("Successfully written to file "+filePath);
+			CLI.debug(Loc.UTIL, "Successfully written to file "+filePath);
 			return true;
-		} catch (IOException e) {System.out.println("IO Error."); return false;}
+		} catch (IOException e) {CLI.debug(Loc.UTIL, "IO Error."); return false;}
 	}
 
 	public static String hash(String toHash, String salt) {
 		MessageDigest md = null;
 		try {md = MessageDigest.getInstance("SHA-256");} 
-		catch (NoSuchAlgorithmException e) {System.out.println("Hashing algorithim error: "+e.getStackTrace());}
+		catch (NoSuchAlgorithmException e) {CLI.debug(Loc.UTIL, "Hashing algorithim error: "+e.getStackTrace());}
 
 		md.update(salt.getBytes(StandardCharsets.UTF_8)); // Change this to UTF-16 if needed
 		md.update(toHash.getBytes(StandardCharsets.UTF_8)); // Change this to UTF-16 if needed

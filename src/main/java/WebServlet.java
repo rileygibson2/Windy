@@ -5,12 +5,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.json.JSONObject;
-
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import main.java.debug.CLI;
+import main.java.debug.CLI.Loc;
 
 public class WebServlet extends HttpServlet {
 
@@ -25,11 +24,6 @@ public class WebServlet extends HttpServlet {
 	private static final int authenticationSalts = 8;
 	private static final int forecastData = 9;
 	private static final int genReport = 10;
-	
-	
-	private static final String blue = "\033[36m";
-	private static final String red = "\033[31m";
-	private static final String reset = "\033[49m\033[39m";
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -56,7 +50,7 @@ public class WebServlet extends HttpServlet {
 		String data = "";
 		switch (mode) {
 		case dashboardData:
-			System.out.println(blue+" --- Recieving real time data request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving real time data request --- "+CLI.reset);
 			int graphMode;
 			String unit = req.getParameter("u");
 			try {graphMode = Integer.parseInt(req.getParameter("gm"));}
@@ -64,7 +58,7 @@ public class WebServlet extends HttpServlet {
 			
 			if (unit.equals("undefined")) { //If no unit defined then use default one
 				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
-				System.out.println("Using default unit.");
+				CLI.debug(Loc.HTTP, "Using default unit.");
 			}
 			
 			data = DataManager.getDashboardData(unit, graphMode);
@@ -72,19 +66,19 @@ public class WebServlet extends HttpServlet {
 			break;
 
 		case unitsData:
-			System.out.println(blue+" --- Recieving units data request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving units data request --- "+CLI.reset);
 			
 			data = DataManager.getUnitsData(session.getUser());
 			if (data==null) {failBadRequest(resp); return;}
 			break;
 
 		case recordsOverview:
-			System.out.println(blue+" --- Recieving record overview data request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving record overview data request --- "+CLI.reset);
 			unit = req.getParameter("u");
 			
 			if (unit.equals("undefined")) { //If no unit defined then use default one
 				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
-				System.out.println("Using default unit.");
+				CLI.debug(Loc.HTTP, "Using default unit.");
 			}
 			
 			data = DataManager.getRecordCount(unit);
@@ -92,7 +86,7 @@ public class WebServlet extends HttpServlet {
 			break;
 
 		case recordsForPeriod:
-			System.out.println(blue+" --- Recieving record period data request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving record period data request --- "+CLI.reset);
 			long rS, rE;
 			unit = req.getParameter("u");
 			try {
@@ -103,17 +97,17 @@ public class WebServlet extends HttpServlet {
 			
 			if (unit.equals("undefined")) { //If no unit defined then use default one
 				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
-				System.out.println("Using default unit.");
+				CLI.debug(Loc.HTTP, "Using default unit.");
 			}
 			
-			System.out.println("For records from "+new Date(rS).toString()+" to "+new Date(rE).toString());
+			CLI.debug(Loc.HTTP, "For records from "+new Date(rS).toString()+" to "+new Date(rE).toString());
 			List<List<Long>> records = DataManager.getRecordsFromPeriod(unit, rS, rE);
 			if (records==null) {failBadRequest(resp); return;}
 			data = records.toString();
 			break;
 			
 		case settingsData:
-			System.out.println(blue+" --- Recieving settings data request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving settings data request --- "+CLI.reset);
 			data = DataManager.getSettingsData(session.getUser());
 			if (data==null) {failBadRequest(resp); return;}
 			
@@ -122,12 +116,12 @@ public class WebServlet extends HttpServlet {
 			break;
 			
 		case checkSessionKey:
-			System.out.println(blue+" --- Recieving session key check request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving session key check request --- "+CLI.reset);
 			//Validation has already taken place at the top
 			break;
 
 		case authenticationLogin:
-			System.out.println(blue+" --- Recieving login request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving login request --- "+CLI.reset);
 			String user = req.getParameter("user");
 			String pass = req.getParameter("p");
 			int authID;
@@ -140,7 +134,7 @@ public class WebServlet extends HttpServlet {
 			break;
 			
 		case authenticationSalts:
-			System.out.println(blue+" --- Recieving authentication session init request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving authentication session init request --- "+CLI.reset);
 			user = req.getParameter("user");
 			if (user==null) {failBadRequest(resp); return;}
 			data = CoreServer.accountManager.createAuthenticationSession(user);
@@ -152,24 +146,25 @@ public class WebServlet extends HttpServlet {
 			break;
 			
 		case forecastData:
-			System.out.println(blue+" --- Recieving forecast data request --- "+reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving forecast data request --- "+CLI.reset);
 			data = DataManager.getForecastData();
 			if (data==null) {failBadRequest(resp); return;}
 			break;
 
 		case genReport:
-			System.out.println(blue+" --- Recieving report request --- "+reset);
-			String pdf = PDFManager.createPDF();
-			String thumbnail = PDFManager.generateThumbnail(pdf);
-			JSONObject jObj = new JSONObject();
-			jObj.put("pdf", pdf);
-			jObj.put("thumbnail", thumbnail);
-			data =  jObj.toString(1);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving report request --- "+CLI.reset);
+//			String pdf = PDFManager.createPDF();
+//			String thumbnail = PDFManager.generateThumbnail(pdf);
+//			JSONObject jObj = new JSONObject();
+//			jObj.put("pdf", pdf);
+//			jObj.put("thumbnail", thumbnail);
+//			data =  jObj.toString(1);
 			break;
 			
 		default: failBadRequest(resp); return;
 		}
-		System.out.println("sessionKey: "+sK+"\n"+blue+" --- End GET  --- "+reset+"\n");
+		CLI.debug(Loc.HTTP, "sessionKey: "+sK);
+		CLI.debug(Loc.HTTP, CLI.blue+" --- End GET  --- "+CLI.reset+"\n");
 		
 		//Send response
 		resp.setStatus(HttpServletResponse.SC_OK);
@@ -190,19 +185,19 @@ public class WebServlet extends HttpServlet {
 		if (user==null) failBadRequest(resp);
 		
 		//Get data
-		System.out.println(blue+" --- Recieving data --- "+reset);
+		CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving data --- "+CLI.reset);
 		String data = "";
 		if ("POST".equalsIgnoreCase(req.getMethod())) {
 			data = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 		}
-		//System.out.println("Data: "+data);
+		//CLI.debug(Loc.HTTP, "Data: "+data);
 
 		//Update user records
 		boolean success = CoreServer.accountManager.updateSettings(user, data);
 		if (success) resp.setStatus(HttpServletResponse.SC_OK);
 		else failBadRequest(resp);
 		//resp.setStatus(HttpServletResponse.SC_OK);
-		System.out.println("sessionKey: "+sK+"\n"+blue+" --- End Post --- "+reset+"\n");
+		CLI.debug(Loc.HTTP, "sessionKey: "+sK+"\n"+CLI.blue+" --- End Post --- "+CLI.reset+"\n");
 	}
 
 	@Override
@@ -210,16 +205,16 @@ public class WebServlet extends HttpServlet {
 
 	public void failBadRequest(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		System.out.println(red+" --- Bad request --- "+reset+"\n");
+		CLI.debug(Loc.HTTP, CLI.red+" --- Bad request --- "+CLI.reset+"\n");
 	}
 
 	public void failNotAuthorised(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		System.out.println(red+" --- Unauthorised request --- "+reset+"\n");
+		CLI.debug(Loc.HTTP, CLI.red+" --- Unauthorised request --- "+CLI.reset+"\n");
 	}
 
 	public void failServerError(HttpServletResponse resp) {
 		resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		System.out.println(red+" --- Server error --- "+reset+"\n");
+		CLI.debug(Loc.HTTP, CLI.red+" --- Server error --- "+CLI.reset+"\n");
 	}
 }

@@ -5,9 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Random;
 
 import org.json.JSONObject;
+
+import main.java.debug.CLI;
+import main.java.debug.CLI.Loc;
 
 public class DataMockup {
 
@@ -54,7 +56,7 @@ public class DataMockup {
 			jObj.put("lon", lon);
 			out.write(jObj.toString(1));
 			out.close();
-			System.out.println("Successfully created records.");
+			CLI.debug(Loc.CORE,  "Successfully created records.");
 		} catch (IOException e) {e.printStackTrace();}
 	}
 
@@ -89,7 +91,7 @@ public class DataMockup {
 			FileWriter out = new FileWriter("accounts/"+username+".acc");
 			out.write(jObj.toString(1));
 			out.close();
-			System.out.println("Successfully created accounts.");
-		} catch (IOException e) {System.out.println("An error occurred."+e.toString());}
+			CLI.debug(Loc.CORE, "Successfully created accounts.");
+		} catch (IOException e) {CLI.debug(Loc.CORE, "An error occurred."+e.toString());}
 	}
 }

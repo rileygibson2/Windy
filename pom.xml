@@ -147,6 +147,20 @@
 	    <artifactId>jbig2-imageio</artifactId>
 	    <version>3.0.4</version>
 	  </dependency>
+	  
+	  <!-- Paho MQTT -->
+	  <dependency>
+	  	<groupId>org.eclipse.paho</groupId>
+	  	<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+	  	<version>1.2.0</version>
+	  </dependency>
+	  
+	  <!-- Apache Commons IO -->
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.11.0</version>
+		</dependency>
   
   	<!-- Junit -->
   	<dependency>
