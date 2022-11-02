@@ -20,7 +20,7 @@ public class MQTTNodeMock extends Thread {
 
 	public MQTTNodeMock() throws MqttException {
 		this.stop = false;
-		this.topic = SubscribeTopic.Log;
+		this.topic = SubscribeTopic.LiveReadings;
 		this.qos = 2;
 		this.client = new MqttClient(MQTTManager.broker, "MQTTNodeMock-Log", new MemoryPersistence());
 		MQTTUtil.connect(client);
@@ -29,15 +29,22 @@ public class MQTTNodeMock extends Thread {
 	@Override
 	public void run() {
 		while (!stop) {
-			long record[] = new long[4];
+			/*long record[] = new long[4];
 			record[0] = new Date().getTime(); //Timestamp
 			record[1] = (int) (Math.random()*(100-1)+1); //Windspeed
 			record[2] = (int) (Math.random()*(360-0)+0); //Direction
 			record[3] = 1; //Alert level
 			if (record[1]>DataManager.amberAlarm) record[3] = 2;
 			if (record[1]>DataManager.redAlarm) record[3] = 3;
-			String out = Arrays.toString(record).replace(" ", "");
+			String out = Arrays.toString(record).replace(" ", "");*/
 
+			
+			int speed = (int) (Math.random()*(100-1)+1);
+			int direction = (int) (Math.random()*(360-0)+0);
+			int level = 1; //Alert level
+			if (speed>DataManager.amberAlarm) level = 2;
+			if (speed>DataManager.redAlarm) level = 3;
+			String out = speed+","+direction+","+level;
 			String unit = new File("units").listFiles()[0].getName();
 			
 			try {

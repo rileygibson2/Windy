@@ -5,4 +5,5 @@ class Page {
 
 	updatePageData() {}
 	animateEntrance() {}
+	onExit() {}
 }

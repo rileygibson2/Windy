@@ -2,13 +2,12 @@
 var nS = "http://www.w3.org/2000/svg";
 var page;
 var activeSection; //Which side bar section we are on
-var alertMessageShown = false; //Whether a high wind speed alert message has been shown
 
 //Synchronisation booleans
 var animatingOut;
 var animatingIn;
 
-//Request stuff
+//Request
 var unit;
 var unitName;
 var sessionKey;
@@ -31,6 +30,7 @@ function load() {
 			responseRecieved = true;
 			removeLoading();
 			if (req.status==200) { //Key is still valid
+				unit = req.responseText;
 				setTimeout(switchSections, 0, 0);
 			}
 			else openLogin(); //Key is not still valid
@@ -56,6 +56,9 @@ function switchSections(i) {
 	//Check sections
 	if (animatingOut||animatingOut||activeSection==i) return;
 	activeSection = i;
+
+	//Exit current page
+	if (page!=undefined) page.onExit();
 
 	//Load new section
 	var title;
@@ -368,7 +371,6 @@ function closeHelp() {
 function animateExit(start) {
 	//Animate elements out - nested for loop used because first element is a container for visible modules
 	animatingOut = true;
-	redAlarmAniKill = true;
 	var c1 = $('#effCont').children();
 	for (i=0; i<c1.length; i++) {
 		setTimeout(fadeOut, start, c1.eq(i));

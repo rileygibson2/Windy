@@ -113,13 +113,7 @@ public class AccountManager {
 			CLI.debug(Loc.ACCOUNT, "Valid authentication - issuing session key "+sK.getKey());
 
 			//Get default unit from highest level account
-			String defunit;
-			jObj = getHighestLevelAccountInfo(user);
-			try {defunit = jObj.get("defunit").toString();}
-			catch (JSONException e) {
-				CLI.debug(Loc.ACCOUNT, "No default unit assigned to account.");
-				return null;
-			}
+			String defunit = getDefaultUnit(user);
 
 			//Send session key and default unit
 			JSONObject toSend = new JSONObject();
@@ -132,9 +126,13 @@ public class AccountManager {
 	}
 
 	public String getDefaultUnit(String user) {
-		JSONObject jObj = getAccountObject(user);
-		if (jObj==null) return null;
-		return jObj.get("defunit").toString();
+		String defunit;
+		JSONObject jObj = getHighestLevelAccountInfo(user);
+		try {return jObj.get("defunit").toString();}
+		catch (JSONException e) {
+			CLI.debug(Loc.ACCOUNT, "No default unit assigned to account.");
+			return null;
+		}
 	}
 
 	public String[] getAssignedUnits(String user) {

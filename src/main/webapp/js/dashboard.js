@@ -9,13 +9,14 @@ class DashboardPage extends Page {
 		link.setAttribute('href', '../styles/dashboard.css');
 		document.head.appendChild(link);
 
-		//Class vars
-
 		//Real-time data
+		this.mqttClient;
 		this.rtWindSpeed;
 		this.rtLastUpdateTime;
 		this.rtDegrees;
 		this.rtAlarmLevel;
+		this.alertMessageShown = false; //Whether a high wind speed alert message has been shown
+		this.redFlashInterval; //Allows control of red flash animation
 
 		//Graph data
 		this.gYTopVal;
@@ -88,59 +89,9 @@ class DashboardPage extends Page {
 
 	implementData() {
 		//Real-time module
-		
-		$('#rtSpeed1').html(this.rtWindSpeed); //Set wind speed
-		
-		//Set wind speed module background color according to alarm level
-		switch (this.rtAlarmLevel) {
-			case 1: $('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(100, 199, 100) 0%, rgb(3, 173, 15) 50%)'); break;
-			case 2: 
-				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 182, 40) 0%, rgb(255, 153, 0) 50%)');
-				$('#rtSpeedIcon').css({'background-image':'url("../assets/icons/warning.svg")', 'background-size':'65%', 'background-position':'50% 50%'});
-				break;
-			case 3: 
-				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 67, 27) 0%, rgb(220, 8, 0) 50%)');
-				$('#rtSpeedIcon').css({'background-image':'url("../assets/icons/warning.svg")', 'background-size':'65%', 'background-position':'50% 50%'});
-				break;
-		}
-
-		//Find diff between last update time and now and display
-		var timeDiff = Math.abs(this.rtLastUpdateTime-Date.now());
-		var days = Math.floor(timeDiff/8.64e+7);
-		var hours = Math.floor(timeDiff/3600000);
-		var mins = Math.floor(timeDiff/60000);
-		
-		if (days>=1) {
-			if (days==1) $('#rtSpeed4').html(days+" day ago");
-			else $('#rtSpeed4').html(days+" days ago");
-		}
-		else if (hours>=1) {
-			mins = mins-(hours*60);
-			var h = " hours ";
-			var m = " mins ";
-			if (hours==1) h = " hour ";
-			if (mins==1) m = " min ";
-			if (mins==0) $('#rtSpeed4').html(hours+h+"ago");
-			else $('#rtSpeed4').html(hours+h+mins+m+"ago");
-		}
-		else {
-			if (mins==1) $('#rtSpeed4').html(mins+" min ago");
-			else $('#rtSpeed4').html(mins+" mins ago");
-		}
-
-		//Display degrees
-		$('#rtDir2').html(this.rtDegrees+"°");
-		if (this.rtDegrees<45) $('#rtDir1').html("N");
-		if (this.rtDegrees>=45) $('#rtDir1').html("NE");
-		if (this.rtDegrees>=90) $('#rtDir1').html("E");
-		if (this.rtDegrees>=135) $('#rtDir1').html("SE");
-		if (this.rtDegrees>=180) $('#rtDir1').html("S");
-		if (this.rtDegrees>=225) $('#rtDir1').html("SW");
-		if (this.rtDegrees>=270) $('#rtDir1').html("W");
-		if (this.rtDegrees>=315) $('#rtDir1').html("NW");
+		this.updateLiveValues();
 
 		//Graph module
-
 		//Find y axis markings based on graph view mode and current time
 		var ms = 1000*60*5; //Num ms in 5 minutes for rounding
 
@@ -236,18 +187,82 @@ class DashboardPage extends Page {
 		this.setupLive();
 	}
 
+	updateLiveValues() {
+		$('#rtSpeed1').html(page.rtWindSpeed); //Set wind speed
+		
+		//Set wind speed module background color according to alarm level
+		clearInterval(this.redFlashInterval);
+		switch (page.rtAlarmLevel) {
+			case 1: 
+				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(100, 199, 100) 0%, rgb(3, 173, 15) 50%)');
+				$('#rtSpeedIcon').css('background-image', '');
+				break;
+			case 2: 
+				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 182, 40) 0%, rgb(255, 153, 0) 50%)');
+				$('#rtSpeedIcon').css({'background-image':'url("../assets/icons/warning.svg")', 'background-size':'65%', 'background-position':'50% 50%'});
+				break;
+			case 3: 
+				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 67, 27) 0%, rgb(220, 8, 0) 50%)');
+				$('#rtSpeedIcon').css({'background-image':'url("../assets/icons/warning.svg")', 'background-size':'65%', 'background-position':'50% 50%'});
+				break;
+		}
+
+		//Find diff between last update time and now and display
+		var timeDiff = Math.abs(this.rtLastUpdateTime-Date.now());
+		var days = Math.floor(timeDiff/8.64e+7);
+		var hours = Math.floor(timeDiff/3600000);
+		var mins = Math.floor(timeDiff/60000);
+		
+		if (days>=1) {
+			if (days==1) $('#rtSpeed4').html(days+" day ago");
+			else $('#rtSpeed4').html(days+" days ago");
+		}
+		else if (hours>=1) {
+			mins = mins-(hours*60);
+			var h = " hours ";
+			var m = " mins ";
+			if (hours==1) h = " hour ";
+			if (mins==1) m = " min ";
+			if (mins==0) $('#rtSpeed4').html(hours+h+"ago");
+			else $('#rtSpeed4').html(hours+h+mins+m+"ago");
+		}
+		else {
+			if (mins==1) $('#rtSpeed4').html(mins+" min ago");
+			else $('#rtSpeed4').html(mins+" mins ago");
+		}
+
+		//Display degrees
+		$('#rtDir2').html(this.rtDegrees+"°");
+		$('#rtDir1').html(this.getDegree(this.rtDegrees));
+
+		//Animate
+		if (this.rtAlarmLevel==3) this.initiateRedAlarm(); 
+		if (this.rtAlarmLevel==2) this.initiateAmberAlarm();
+		page.animateDirection();
+	}
+
 	//Set up MQTT client and subscribe to live readings
 	setupLive() {
 		var clientID = "WebSocketClient"+Math.random().toString().replace('.', '');
-		var client = new Paho.Client('127.0.0.1', 9001, clientID);
-		client.connect({
+		page.mqttClient = new Paho.Client('127.0.0.1', 9001, clientID);
+		page.mqttClient.connect({
 			onSuccess:function() {
-				console.log("connected");
-				client.subscribe('Log');
+				console.log("MQTT Client Connected");
+				page.mqttClient.subscribe('LiveReadings');
 			}
 		});
-		client.onMessageArrived = function(message) {
-			console.log(message);
+		page.mqttClient.onMessageArrived = function(message) {
+			var mUnit = message.payloadString.split("-")[0];
+			if (mUnit!=unit) return; //Check mqtt message is for currently viewed unit
+
+			var data = message.payloadString.split("-")[1].split(",");
+			console.log("[MQTT Message] Unit: "+mUnit+" Speed: "+data[0]+" Direction: "+data[1]+" Level: "+data[2]);
+			page.rtWindSpeed = parseInt(data[0]);
+			page.rtDegrees = parseInt(data[1]);
+			page.rtAlarmLevel = parseInt(data[2]);
+			page.rtLastUpdateTime = Date.now();
+
+			page.updateLiveValues();
 		}
 	}
 
@@ -259,17 +274,16 @@ class DashboardPage extends Page {
 		setTimeout(fadeIn, start+100, $("#cCont"));
 		setTimeout(fadeIn, start+150, $("#graph"));
 		setTimeout(fadeIn, start+200, $("#slider"));
-		setTimeout(() => {this.animateDirection();}, start+800);
-		setTimeout(() => {
-			if (this.rtAlarmLevel==3) this.initiateRedAlarm(); 
-			if (this.rtAlarmLevel==2) this.initiateAmberAlarm(); 
-		}, 2000);
+	}
+
+	onExit() {
+		clearInterval(page.redFlashInterval);
+      	page.mqttClient.disconnect();
 	}
 
 	//Real-time module actions
 
-	animateDirection() {
-		//Animate direction arrow spinning to value
+	animateDirection() { //Animate direction arrow spinning to value
 		$('#rtDirIndicator').css('transform', 'rotate('+this.rtDegrees+'deg');
 	}
 
@@ -623,6 +637,19 @@ class DashboardPage extends Page {
 
 	//General functions
 
+	getDegree(degree) {
+		var d = "";
+		if (degree<45) d = "N";
+		if (degree>=45) d = "NE"; 
+		if (degree>=90) d = "E"; 
+		if (degree>=135) d = "SE"; 
+		if (degree>=180) d = "S"; 
+		if (degree>=225) d = "SW"; 
+		if (degree>=270) d = "W"; 
+		if (degree>=315) d = "NW";
+		return d; 
+	}
+
 	dateSuffix(i) {
 	    if (i > 3 && i < 21) return 'th';
 	    switch (i % 10) {
@@ -635,32 +662,29 @@ class DashboardPage extends Page {
 
 	initiateRedAlarm() {
 		//Flash color on windspeed to indicate red alarm level
-		this.redAlarmAniKill = false;
 		this.redAlarmAniOp = 100;
 	 	this.redAlarmAniDir = -1;
 
-		if (!alertMessageShown) {
-				insertMessage("Warning - Extremely high wind speeds", 0);
-				alertMessageShown = true;
+		if (!this.alertMessageShown) {
+			insertMessage("Warning - Extremely high wind speeds", 0);
+			this.alertMessageShown = true;
 		}
 
 		var self = this;
-		let flash = setInterval(function() {
-			if (self.redAlarmAniKill) clearInterval(flash);
-			else {
-				if (self.redAlarmAniOp>=100) self.redAlarmAniDir = -2;
-				if (self.redAlarmAniOp<=1) self.redAlarmAniDir = 2;
-				
-				self.redAlarmAniOp += self.redAlarmAniDir;
-				$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 67, 27, '+(self.redAlarmAniOp/100)+') 0%, rgb(220, 8, 0, '+(self.redAlarmAniOp/100)+') 50%)');
-			}
+		this.redFlashInterval = setInterval(function() {
+			if (self.redAlarmAniOp>=100) self.redAlarmAniDir = -2;
+			if (self.redAlarmAniOp<=1) self.redAlarmAniDir = 2;
+			
+			self.redAlarmAniOp += self.redAlarmAniDir;
+			$('#rtSpeed').css('background-image', 'linear-gradient(to bottom right, rgb(247, 67, 27, '+(self.redAlarmAniOp/100)+') 0%, rgb(220, 8, 0, '+(self.redAlarmAniOp/100)+') 50%)');
+		
 		}, 16);
 	}
 
 	initiateAmberAlarm() {
-		if (!alertMessageShown) {
+		if (!this.alertMessageShown) {
 			insertMessage("Caution - Wind speeds are higher than normal", 0);
-			alertMessageShown = true;
+			this.alertMessageShown = true;
 		}
 	}
 }

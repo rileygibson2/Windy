@@ -117,7 +117,8 @@ public class WebServlet extends HttpServlet {
 			
 		case checkSessionKey:
 			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving session key check request --- "+CLI.reset);
-			//Validation has already taken place at the top
+			//Validation has already taken place at the top, just send back default unit to be nice
+			data = CoreServer.accountManager.getDefaultUnit(session.getUser());
 			break;
 
 		case authenticationLogin:
