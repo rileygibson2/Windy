@@ -46,6 +46,20 @@ public class UnitUtils {
 		}
 		return false;
 	}
+	
+	public static void updateUnitStatus(String unit, String ip, int battery, String lat, String lon) {
+		if (unit==null||!unitExists(unit)) return;
+		
+		JSONObject jObj = getUnitObject(unit);
+		if (jObj==null) return;
+		jObj.put("ip", ip);
+		jObj.put("battery", battery);
+		jObj.put("lat", lat);
+		jObj.put("lon", lon);
+		
+		//Write to file
+		Utils.writeToFile("units/"+unit+"/unit.info", jObj.toString(1));
+	}
 
 	public static Scanner getLogScanner(String unit) {
 		if (unit==null||!unitExists(unit)) return null;
@@ -78,6 +92,7 @@ public class UnitUtils {
 			if (!f.isDirectory()) continue;
 			if (f.getName().equals(unit)) return true;
 		}
+		CLI.debug(Loc.UNIT, "Invalid unit - "+unit);
 		return false;
 	}
 }

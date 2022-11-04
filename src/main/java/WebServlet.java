@@ -73,6 +73,9 @@ public class WebServlet extends HttpServlet {
 
 		case unitsData:
 			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving units data request --- "+CLI.reset);
+			//Request status from all assigned units
+			String units[] = CoreServer.accountManager.getAssignedUnits(session.getUser());
+			for (String u : units) CoreServer.mqttManager.sendStatusRequest(u);
 			
 			data = DataManager.getUnitsData(session.getUser());
 			if (data==null) {failBadRequest(resp); return;}

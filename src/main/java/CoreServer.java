@@ -53,7 +53,8 @@ public class CoreServer {
 		String id[] = new String[count];
 		String ids = "";
 		for (int i=0; i<count; i++) {
-			id[i] = "windy"+Utils.makeID();
+			if (i==0) id[i] = "node1";
+			else id[i] = "windy"+Utils.makeID();
 			if (i>0) ids += " ";
 			ids += id[i];
 		}

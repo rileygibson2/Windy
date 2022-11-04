@@ -244,27 +244,38 @@ class DashboardPage extends Page {
 	//Set up MQTT client and subscribe to live readings
 	setupLive() {
 		var clientID = "WebSocketClient"+Math.random().toString().replace('.', '');
-		page.mqttClient = new Paho.Client('127.0.0.1', 9001, clientID);
+		page.mqttClient = new Paho.Client('54.203.107.18', 9876, clientID);
 		page.mqttClient.connect({
 			onSuccess:function() {
-				console.log("MQTT Client Connected");
 				page.mqttClient.subscribe('LiveReadings');
+				console.log("MQTT Client Connected");
 			}
 		});
 		page.mqttClient.onMessageArrived = function(message) {
 			var mUnit = message.payloadString.split("-")[0];
-			if (mUnit!=unit) return; //Check mqtt message is for currently viewed unit
+			if (mUnit.trim()!=unit.trim()) return; //Check mqtt message is for currently viewed unit
 
 			var data = message.payloadString.split("-")[1].split(",");
-			console.log("[MQTT Message] Unit: "+mUnit+" Speed: "+data[0]+" Direction: "+data[1]+" Level: "+data[2]);
 			page.rtWindSpeed = parseInt(data[0]);
 			page.rtDegrees = parseInt(data[1]);
-			page.rtAlarmLevel = parseInt(data[2]);
+			page.rtAlarmLevel = 1;
+			if (page.rtWindSpeed>=50) page.rtAlarmLevel = 2;
+			if (page.rtWindSpeed>=80) page.rtAlarmLevel = 3;
+			console.log("[MQTT Message] Unit: "+mUnit+" Speed: "+page.rtWindSpeed+" Direction: "+page.rtDegrees+" Level: "+page.rtAlarmLevel);
+
+			//page.rtAlarmLevel = parseInt(data[2]);
 			page.rtLastUpdateTime = Date.now();
 
 			page.updateLiveValues();
 		}
+		page.mqttClient.onConnectionLost = page.onConnectionLost;
 	}
+
+	onConnectionLost(responseObject) {
+    	if (responseObject.errorCode !== 0) {
+        	console.log("onConnectionLost:" + responseObject.errorMessage);
+    	}
+ 	}
 
 	animateEntrance(start) {
 		this.moveSlider(document.getElementsByClassName('sliderN')[0], true);
@@ -278,7 +289,7 @@ class DashboardPage extends Page {
 
 	onExit() {
 		clearInterval(page.redFlashInterval);
-      	page.mqttClient.disconnect();
+      	//page.mqttClient.disconnect();
 	}
 
 	//Real-time module actions

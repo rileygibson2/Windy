@@ -1,7 +1,5 @@
 package main.java.mqtt;
 
-import java.util.Arrays;
-
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -44,25 +42,56 @@ class MQTTSubscriberCallback implements MqttCallback {
 	
 	public void connectionLost(Throwable cause) {
 		CLI.debug(Loc.MQTT, "Connection Lost: " + cause.getMessage());
+		cause.printStackTrace();
 	}
 
 	public void messageArrived(String top, MqttMessage payload) {
 		String message = new String(payload.getPayload());
-		CLI.debug(Loc.MQTT, "Message: "+message+" (Topic: "+topic+")");
 		SubscribeTopic topic = null;
 		for (SubscribeTopic t : SubscribeTopic.values()) {
 			if (top.equals(t.toString())) topic = t;
 		}
 		if (topic==null||topic!=this.topic) return;
-		//windy3OZI8AWQKP
+		CLI.debug(Loc.MQTT, "Message: "+message+" (Topic: "+topic+")");
 		
+		if (!message.contains("|")) return; //Malformed or data-less message
+		
+		String unit = message.split("\\|")[0];
+		String data[] = message.split("\\|")[1].split(",");
 		switch(topic) {
 		case Log:
-			//Split unit from log data
-			String unit = message.split("-")[0];
-			String log = message.split("-")[1];
+			/*
+			 * Log format:
+			 * Log epoch time [0]
+			 * Wind speed at time log dispatched [1]
+			 * Peak gust time (in last minute lgo represents, epoch time of highest gust) [2]
+			 * Peak gust (at peak gust time) [4]
+			 * Min wind speed [5]
+			 * Avg wind speed [6]
+			 * Direction [7]
+			 */
+			/*if (data.length<7) return;
+			String log = "["+data[0]+","+data[1]+","+data[7];
+			if (Integer.parseInt(data[1])<DataManager.amberAlarm) log += ",1]";
+			if (Integer.parseInt(data[1])>DataManager.amberAlarm) log += ",2]";
+			if (Integer.parseInt(data[1])>DataManager.redAlarm) log += ",3]";
 			CLI.debug(Loc.MQTT, "Unit: "+unit+" log: "+log);
-			UnitUtils.addLogToUnit(unit, log);
+			UnitUtils.addLogToUnit(unit, log);*/
+			break;
+		case StatusUpdate:
+			/*
+			 *	Status format
+			 *	Local ip
+			 *	Epoch time of status update
+			 *	Battery level
+			 *	Lat
+			 *	Lon
+			 *	Accuracy of location 
+			 */
+			
+			//Split unit from log data
+			if (data.length!=6) return;
+			UnitUtils.updateUnitStatus(unit, data[0], Integer.parseInt(data[2]), data[3], data[4]);
 			break;
 		default:
 			break;

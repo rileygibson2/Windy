@@ -29,6 +29,7 @@ public class MQTTUtil {
 	}
 	
 	public static void sendMessage(MqttClient client, String topic, int qos, String content) throws MqttPersistenceException, MqttException {
+		if (client==null||!client.isConnected()) return;
 		MqttMessage message = new MqttMessage(content.getBytes());
 		message.setQos(qos);
 		client.publish(topic, message);
