@@ -1,154 +1,49 @@
-package main.java;
+package main.java.accounts;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import main.java.core.Utils;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
+import main.java.units.UnitUtils;
 
-public class AccountManager {
-
-	private final Map<Integer, AuthenticationSession> authSessions;
-	private final Set<Session> sessions;
+public class AccountUtils {
 
 	//Attributes present in different types of data files
 	private static final String[] adminAccAttrs = {"id","alertNumbers","password","salt","PD","LF","RAL","AAL", "ENF","alertEmails","username","defunit","units","organisation","contactemail","children","access","parent"};
 	private static final String[] childAccAttrs = {"id","access","parent","username","salt","password"};
 	private static final String[] unitInfoAttrs = {"ip","id","name","status","power","battery","version","direction", "lat", "lon"};
 
-	public AccountManager() {
-		sessions = new HashSet<Session>();
-		authSessions = new HashMap<Integer, AuthenticationSession>();
-	}
-
-	public String createAuthenticationSession(String user) {
-		JSONObject jObj = getAccountObject(user);
-		if (jObj==null) return null;
-
-		int id = authSessions.size()+1;
-		AuthenticationSession auth = null;
-
-		try {auth = new AuthenticationSession(id, jObj.get("salt").toString(), (long) (DataManager.msInMinute*10));}
-		catch (JSONException e) {CLI.debug(Loc.ACCOUNT, "Error with creating authentication session - unit does not contain a salt"); return null;}
-
-		authSessions.put(id, auth);
-		CLI.debug(Loc.ACCOUNT, "Created Auth Session: "+auth.formatInJSON());
-		return auth.formatInJSON();
-	}
-
-	public AuthenticationSession getAuthSession(int id) {
-		//Take chance to clean expired sessions
-		Set<Integer> toRemove = new HashSet<>();
-		for (Map.Entry<Integer, AuthenticationSession> m : authSessions.entrySet()) {
-			if (m.getValue().isExpired()) toRemove.add(m.getKey());
-		}
-		for (Integer i : toRemove) authSessions.remove(i);
-
-		//Get requested authentication session
-		AuthenticationSession auth = authSessions.get(id);
-		if (auth==null) return null;
-		return auth;
-	}
-
-	public boolean authenticateSessionKey(String key) {
-		boolean valid = false;
-		Set<Session> toRemove = new HashSet<>(); //Take chance to clean expired keys
-		for (Session sK : sessions) {
-			if (sK.isExpired()) toRemove.add(sK);
-			else if (sK.getKey().equals(key)) valid = true;
-		}
-		sessions.removeAll(toRemove);
-		return valid;
-	}
-
-	public Session getSession(String key) {
-		for (Session sK : sessions) {
-			if (sK.getKey().equals(key)&&!sK.isExpired()) return sK;
-		}
-		return null;
-	}
-
-	/**
-	 * Process:
-	 * 	- client obtains auth session aS
-	 * 	- client does p = h(aS.s2+h(aS.s1+password))
-	 * 	- client sends p with aS.id
-	 * 
-	 * 	- server recieves and locates aS from the transmitted aS.id
-	 * 	- server finds password in file (which is stored presalted with
-	 * 	  s1).
-	 * 	- server does p = h(aS.s2+storedPass)
-	 * 	- server compares 2 p's.
-	 * 
-	 * @param key
-	 * @return the generated session key, or "invalid"
-	 */
-	public String authenticateAccount(String user, String pass, int authID) {
-		//Find relevant authentication session
-		AuthenticationSession auth = getAuthSession(authID);
-		if (auth==null) {CLI.debug(Loc.ACCOUNT, "Invalid or expired authentication session."); return null;}
-
-		//Read account file
-		JSONObject jObj = getAccountObject(user);
-		if (jObj==null) return null;
-
-		//Hash stored pass with authentication session salt
-		String actualPass = Utils.hash(jObj.get("password").toString(), auth.getS2());
-		CLI.debug(Loc.ACCOUNT, "Actual Pass: "+actualPass+"\nGiven Pass: "+pass);
-		authSessions.remove(authID); //Done with authentication session
-
-		if (actualPass.equals(pass)) { //Valid password
-			//Generate session key
-			Session sK = new Session(user, (long) 2.16e+7);
-			sessions.add(sK);
-			CLI.debug(Loc.ACCOUNT, "Valid authentication - issuing session key "+sK.getKey());
-
-			//Get default unit from highest level account
-			String defunit = getDefaultUnit(user);
-
-			//Send session key and default unit
-			JSONObject toSend = new JSONObject();
-			toSend.put("sK", sK.getKey()).put("defunit", defunit);
-			return toSend.toString(1);
-		}
-
-		CLI.debug(Loc.ACCOUNT, "Invalid.");
-		return null;
-	}
-
-	public String getDefaultUnit(String user) {
+	public static String getDefaultUnit(String user) {
 		String defunit;
 		JSONObject jObj = getHighestLevelAccountInfo(user);
 		try {return jObj.get("defunit").toString();}
 		catch (JSONException e) {
-			CLI.debug(Loc.ACCOUNT, "No default unit assigned to account.");
+			CLI.error(Loc.ACCOUNT, "No default unit assigned to account.");
 			return null;
 		}
 	}
 
-	public String[] getAssignedUnits(String user) {
+	public static String[] getAssignedUnits(String user) {
 		JSONObject jObj = getHighestLevelAccountInfo(user);
 		if (jObj==null) return null;
 		return jObj.get("units").toString().split(" ");
 	}
 
-	public String[] getChildrenAccounts(String user) {
+	public static String[] getChildrenAccounts(String user) {
 		JSONObject jObj = getAccountObject(user);
 		if (jObj==null) return null;
 		try {return jObj.get("children").toString().split(" ");}
-		catch (JSONException e) {CLI.debug(Loc.ACCOUNT, "User "+user+" does not have children accounts"); return null;}
+		catch (JSONException e) {CLI.error(Loc.ACCOUNT, "User "+user+" does not have children accounts"); return null;}
 	}
 
-	public JSONObject getAccountObject(String user) {
+	public static JSONObject getAccountObject(String user) {
 		//Read account file
 		JSONObject jObj = null;
 		try {
@@ -156,15 +51,14 @@ public class AccountManager {
 			jObj = new JSONObject(s.useDelimiter("\\A").next());
 			s.close();
 		}
-		catch (FileNotFoundException e) {CLI.debug(Loc.ACCOUNT, "Invalid user - "+user); return null;}
-		catch (JSONException e) {CLI.debug(Loc.ACCOUNT, "Empty or invalid account file contents - JSON error."); return null;}
-		CLI.debug(Loc.ACCOUNT, "Requested user: "+user);
+		catch (FileNotFoundException e) {CLI.error(Loc.ACCOUNT, "Invalid user - "+user); return null;}
+		catch (JSONException e) {CLI.error(Loc.ACCOUNT, "Empty or invalid account file contents - JSON error."); return null;}
 		return jObj;
 	}
 
-	public JSONObject getHighestLevelAccountInfo(String user) {
+	public static JSONObject getHighestLevelAccountInfo(String user) {
 		//Look at account file
-		JSONObject jObj = CoreServer.accountManager.getAccountObject(user);
+		JSONObject jObj = AccountUtils.getAccountObject(user);
 		if (jObj==null) return null;
 
 		//Get parent if has one
@@ -176,7 +70,7 @@ public class AccountManager {
 		return jObj;
 	}
 
-	public boolean updateSettings(String user, String data) {
+	public static boolean updateSettings(String user, String data) {
 		JSONArray jArr = new JSONArray(data);
 
 		for (int i=0; i<jArr.length(); i++) {
@@ -247,7 +141,7 @@ public class AccountManager {
 		return true;
 	}
 
-	public void makeChildAccount(JSONObject accObj) {
+	public static void makeChildAccount(JSONObject accObj) {
 		//Add extra fields and create file
 		accObj.put("id", Utils.makeID());
 		accObj.put("password", Utils.hash("w1", "12345678910"));
@@ -269,7 +163,7 @@ public class AccountManager {
 		}
 	}
 
-	public void removeAccount(JSONObject accObj) {
+	public static void removeAccount(JSONObject accObj) {
 		String username = accObj.getString("username");
 
 		//Delete account file
@@ -295,7 +189,7 @@ public class AccountManager {
 		}
 	}
 	
-	public void removeUnit(JSONObject unitObj, String user) {
+	public static void removeUnit(JSONObject unitObj, String user) {
 		String id = unitObj.getString("id");
 
 		//Delete unit files

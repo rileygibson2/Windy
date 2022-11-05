@@ -13,6 +13,9 @@ class UnitsPage extends Page {
 		this.units;
 		this.pairProgress;
 		this.mapLoaded = false;
+
+		//Real-time data
+		this.mqttClient;
 	}
 
 	//Required actions
@@ -155,7 +158,38 @@ class UnitsPage extends Page {
 			//Build battery svg
 			this.buildBatterySVG(this.units[i].battery, d);
 		}
+
+		page.setupLive();
 	}
+
+	//Set up MQTT client and subscribe to live readings
+	setupLive() {
+		var clientID = "WebSocketClient"+Math.random().toString().replace('.', '');
+		page.mqttClient = new Paho.Client('54.203.107.18', 9876, clientID);
+		page.mqttClient.connect({
+			onSuccess:function() {
+				page.mqttClient.subscribe('StatusUpdate');
+				console.log("MQTT Client Connected - (Topic) StatusUpdate");
+			}
+		});
+		page.mqttClient.onMessageArrived = function(message) {
+			var mUnit = message.payloadString.split("|")[0];
+			if (mUnit.trim()!=unit.trim()) return; //Check mqtt message is for currently viewed unit
+
+			var data = message.payloadString.split("|")[1].split(",");
+			console.log("[MQTT Message] Unit: "+mUnit+" IP: "+data[0]+" Battery: "+data[2]);
+
+
+			//page.updateLiveValues();
+		}
+		page.mqttClient.onConnectionLost = page.onConnectionLost;
+	}
+
+	onConnectionLost(responseObject) {
+    	if (responseObject.errorCode !== 0) {
+        	console.log("onConnectionLost:" + responseObject.errorMessage);
+    	}
+ 	}
 
 	buildBatterySVG(level, parent) {
 		var svg = document.createElementNS(nS, "svg");

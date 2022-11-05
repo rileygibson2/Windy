@@ -1,4 +1,4 @@
-package main.java.mqtt;
+package main.java.mock;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,11 +12,13 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import main.java.DataManager;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
+import main.java.mqtt.MQTTManager;
 import main.java.mqtt.MQTTManager.PostTopic;
 import main.java.mqtt.MQTTManager.SubscribeTopic;
+import main.java.mqtt.MQTTUtil;
+import main.java.units.UnitUtils;
 
 /**
  * Mocksup a windy node.
@@ -27,17 +29,24 @@ import main.java.mqtt.MQTTManager.SubscribeTopic;
  */
 public class MQTTNodeMock extends Thread {
 
+	//Connection stuff
 	final String clientName = "MQTTNodeMock";
 	MqttClient poster;
 	Map<PostTopic, MqttClient> subscribers;
 	int qos;
-	boolean stop;
+	public boolean stop;
+	
+	//Node stuff 
+	long nextLogTime;
+	final static long logInterval = 30000;
 
 	Set<String> mockedLiveUnits; //All units this is currently mocking live readings for
 
 	public MQTTNodeMock() throws MqttException {
 		this.stop = false;
+		this.nextLogTime = System.currentTimeMillis()+logInterval;
 		this.qos = 2;
+		mockedLiveUnits = new HashSet<String>();
 
 		//Setup post client
 		this.poster = new MqttClient(MQTTManager.broker, clientName+"-Poster", new MemoryPersistence());
@@ -54,53 +63,50 @@ public class MQTTNodeMock extends Thread {
 			subscriber.subscribe(t.toString(), qos);
 			subscribers.put(t, subscriber);
 		}
-
-		//Other stuff
-		mockedLiveUnits = new HashSet<String>();
 	}
 
 	@Override
 	public void run() {
 		while (!stop) {
+			//Mock logs from all units
+			if (System.currentTimeMillis()>=nextLogTime) {
+				for (String unit : UnitUtils.getAllUnits()) {
+					long time = System.currentTimeMillis();
+					long speed = (int) (Math.random()*(100-1)+1);
+					long dir = (int) (Math.random()*(360-0)+0);
+					String out = unit+"|"+time+","+speed+",0,0,0,0,"+dir;
+					try {
+						MQTTUtil.sendMessage(poster, SubscribeTopic.Log.toString(), qos, out);
+					} catch (Exception e1) {e1.printStackTrace();}
+				}
+				nextLogTime = System.currentTimeMillis()+logInterval;
+			}
 			
-			//Send live reading to all mockedUnits currently with live trigger active
+			//Mock live reading from all currently live triggered
 			for (String unit : mockedLiveUnits) {
 				int speed = (int) (Math.random()*(100-1)+1);
 				int direction = (int) (Math.random()*(360-0)+0);
-				int level = 1; //Alert level
-				if (speed>DataManager.amberAlarm) level = 2;
-				if (speed>DataManager.redAlarm) level = 3;
-				String out = speed+","+direction+","+level;
-				//String unit = new File("units").listFiles()[0].getName();
+				String out = unit+"|"+speed+","+direction;
 
 				try {
-					MQTTUtil.sendMessage(poster, SubscribeTopic.LiveReadings.toString(), qos, unit+"-"+out);
+					MQTTUtil.sendMessage(poster, SubscribeTopic.LiveReadings.toString(), qos, out);
 				} catch (Exception e1) {e1.printStackTrace();}
-
-				try {Thread.sleep(5000);}
-				catch (InterruptedException e) {e.printStackTrace();}
 			}
-			
-			/*long record[] = new long[4];
-			record[0] = new Date().getTime(); //Timestamp
-			record[1] = (int) (Math.random()*(100-1)+1); //Windspeed
-			record[2] = (int) (Math.random()*(360-0)+0); //Direction
-			record[3] = 1; //Alert level
-			if (record[1]>DataManager.amberAlarm) record[3] = 2;
-			if (record[1]>DataManager.redAlarm) record[3] = 3;
-			String out = Arrays.toString(record).replace(" ", "");*/
+
+			try {Thread.sleep(1000);}
+			catch (InterruptedException e) {e.printStackTrace();}
 		}
 	}
-	
+
 	public void shutdownAll() {
-		CLI.debug(Loc.MQTT, "Shutting down all mock clients...");
+		CLI.debug(Loc.MOCK, "Shutting down all mock clients...");
 		try {
 			if (poster.isConnected()) MQTTUtil.disconnect(poster);
 			for (Map.Entry<PostTopic, MqttClient> e : subscribers.entrySet()) {
 				if (e.getValue().isConnected()) MQTTUtil.disconnect(e.getValue());
 			}
 		} catch(Exception e) {
-			CLI.debug(Loc.MQTT, "Exception: "+e);
+			CLI.error(Loc.MOCK, "Exception: "+e);
 			e.printStackTrace();
 		}
 	}
@@ -118,7 +124,7 @@ class MQTTMockCallback implements MqttCallback {
 
 
 	public void connectionLost(Throwable cause) {
-		CLI.debug(Loc.MQTT, "Connection Lost: " + cause.getMessage());
+		CLI.error(Loc.MOCK, "Connection Lost: " + cause.toString());
 	}
 
 	public void messageArrived(String top, MqttMessage payload) {
@@ -132,15 +138,32 @@ class MQTTMockCallback implements MqttCallback {
 		switch(topic) {
 		case LiveTrigger: //Start or stop mocking this unit's live readings
 			//Split unit from log data
-			String unit = message.split("-")[0];
-			int trigger = Integer.parseInt(message.split("-")[1]);
+			String unit = message.split("\\|")[0];
+			if (unit==null) break;
+			int trigger = Integer.parseInt(message.split("\\|")[1]);
 			if (trigger==1) mock.mockedLiveUnits.add(unit);
 			if (trigger==0) mock.mockedLiveUnits.remove(unit);
+			break;
+		case StatusRequest: //Respond with status update
+			//Split unit from log data
+			unit = message;
+			if (unit==null) break;
+			
+			String ip = "10.10.10.10";
+			long time = System.currentTimeMillis();
+			int battery = (int) (Math.random()*(100-1)+1);
+			int lat = (int) (Math.random()*(100-1)+1);
+			int lon = (int) (Math.random()*(100-1)+1);
+			int locAcc = 1;
+			String out = unit+"|"+ip+","+time+","+battery+","+lat+","+lon+","+locAcc;
+			try {
+				MQTTUtil.sendMessage(mock.poster, SubscribeTopic.StatusUpdate.toString(), mock.qos, out);
+			} catch (Exception e1) {e1.printStackTrace();}
+			
 			break;
 		default:
 			break;
 		}
-
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken token) {

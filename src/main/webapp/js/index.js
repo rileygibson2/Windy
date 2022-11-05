@@ -31,7 +31,7 @@ function load() {
 			removeLoading();
 			if (req.status==200) { //Key is still valid
 				unit = req.responseText;
-				setTimeout(switchSections, 0, 0);
+				setTimeout(switchSections, 0, 1);
 			}
 			else openLogin(); //Key is not still valid
 		}

@@ -1,4 +1,4 @@
-package main.java;
+package main.java.http;
 
 import java.io.IOException;
 import java.util.Date;
@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import main.java.CoreServer;
+import main.java.accounts.AccountUtils;
+import main.java.core.DataManager;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
 
@@ -40,11 +43,11 @@ public class WebServlet extends HttpServlet {
 		//Check session key
 		if (mode!=authenticationSalts&&mode!=authenticationLogin) {
 			if (sK==null) {failBadRequest(resp); return;}
-			if (!CoreServer.accountManager.authenticateSessionKey(sK)) {
+			if (!CoreServer.sessionManager.authenticateSessionKey(sK)) {
 				failNotAuthorised(resp);
 				return;
 			}
-			session = CoreServer.accountManager.getSession(sK);
+			session = CoreServer.sessionManager.getSession(sK);
 		}
 
 		//Get data
@@ -59,7 +62,7 @@ public class WebServlet extends HttpServlet {
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
 			
 			if (unit.equals("undefined")) { //If no unit defined then use default one
-				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
+				unit = AccountUtils.getDefaultUnit(session.getUser());
 				CLI.debug(Loc.HTTP, "Using default unit.");
 			}
 			
@@ -74,7 +77,7 @@ public class WebServlet extends HttpServlet {
 		case unitsData:
 			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving units data request --- "+CLI.reset);
 			//Request status from all assigned units
-			String units[] = CoreServer.accountManager.getAssignedUnits(session.getUser());
+			String units[] = AccountUtils.getAssignedUnits(session.getUser());
 			for (String u : units) CoreServer.mqttManager.sendStatusRequest(u);
 			
 			data = DataManager.getUnitsData(session.getUser());
@@ -86,7 +89,7 @@ public class WebServlet extends HttpServlet {
 			unit = req.getParameter("u");
 			
 			if (unit.equals("undefined")) { //If no unit defined then use default one
-				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
+				unit = AccountUtils.getDefaultUnit(session.getUser());
 				CLI.debug(Loc.HTTP, "Using default unit.");
 			}
 			
@@ -105,7 +108,7 @@ public class WebServlet extends HttpServlet {
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
 			
 			if (unit.equals("undefined")) { //If no unit defined then use default one
-				unit = CoreServer.accountManager.getDefaultUnit(session.getUser());
+				unit = AccountUtils.getDefaultUnit(session.getUser());
 				CLI.debug(Loc.HTTP, "Using default unit.");
 			}
 			
@@ -127,7 +130,7 @@ public class WebServlet extends HttpServlet {
 		case checkSessionKey:
 			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving session key check request --- "+CLI.reset);
 			//Validation has already taken place at the top, just send back default unit to be nice
-			data = CoreServer.accountManager.getDefaultUnit(session.getUser());
+			data = AccountUtils.getDefaultUnit(session.getUser());
 			break;
 
 		case authenticationLogin:
@@ -139,7 +142,7 @@ public class WebServlet extends HttpServlet {
 			catch (NumberFormatException e) {failBadRequest(resp); return;}
 			if (user==null||pass==null) failBadRequest(resp);
 			
-			data = CoreServer.accountManager.authenticateAccount(user, pass, authID);
+			data = CoreServer.sessionManager.authenticateAccount(user, pass, authID);
 			if (data==null) {failNotAuthorised(resp); return;}
 			break;
 			
@@ -147,7 +150,7 @@ public class WebServlet extends HttpServlet {
 			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving authentication session init request --- "+CLI.reset);
 			user = req.getParameter("user");
 			if (user==null) {failBadRequest(resp); return;}
-			data = CoreServer.accountManager.createAuthenticationSession(user);
+			data = CoreServer.sessionManager.createAuthenticationSession(user);
 			
 			/* Need to fail not authorised here instead of bad request, because
 			 * the primary way this goes bad is an invalid username, which should trigger
@@ -192,7 +195,7 @@ public class WebServlet extends HttpServlet {
 		//Get and check session key
 		String sK = req.getParameter("sK");
 		if (sK==null) {failBadRequest(resp); return;}
-		if (!CoreServer.accountManager.authenticateSessionKey(sK)) {
+		if (!CoreServer.sessionManager.authenticateSessionKey(sK)) {
 			failNotAuthorised(resp);
 			return;
 		}
@@ -209,7 +212,7 @@ public class WebServlet extends HttpServlet {
 		//CLI.debug(Loc.HTTP, "Data: "+data);
 
 		//Update user records
-		boolean success = CoreServer.accountManager.updateSettings(user, data);
+		boolean success = AccountUtils.updateSettings(user, data);
 		if (success) resp.setStatus(HttpServletResponse.SC_OK);
 		else failBadRequest(resp);
 		//resp.setStatus(HttpServletResponse.SC_OK);

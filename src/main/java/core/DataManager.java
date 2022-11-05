@@ -1,4 +1,4 @@
-package main.java;
+package main.java.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,14 +11,17 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import main.java.CoreServer;
+import main.java.accounts.AccountUtils;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
+import main.java.units.UnitUtils;
 
 public class DataManager {
 
 	public final static int amberAlarm = 50;
 	public final static int redAlarm = 80;
-	final static double msInMinute = 60000;
+	public final static double msInMinute = 60000;
 	final static double msInHour = 3.6e+6;
 	final static double msInDay = 8.64e+7;
 	final static double msInWeek = 6.048e+8;
@@ -48,7 +51,7 @@ public class DataManager {
 		JSONObject jObj;
 
 		//Get account data
-		jObj = CoreServer.accountManager.getAccountObject(user);
+		jObj = AccountUtils.getAccountObject(user);
 		if (jObj==null) return null;
 		jObj.remove("password"); jObj.remove("salt");
 		jObj.put("desc", "account"); //Add convience tag
@@ -58,7 +61,7 @@ public class DataManager {
 		if (!jObj.get("access").equals("admin")) return "unauthorised";
 
 		//Get unit data
-		String[] units = CoreServer.accountManager.getAssignedUnits(user);
+		String[] units = AccountUtils.getAssignedUnits(user);
 		if (units==null) return null;
 		for (String unit : units) {
 			jObj = UnitUtils.getUnitObject(unit);
@@ -68,11 +71,11 @@ public class DataManager {
 		}
 
 		//Get children accounts data
-		String[] children = CoreServer.accountManager.getChildrenAccounts(user);
+		String[] children = AccountUtils.getChildrenAccounts(user);
 		if (children==null) return null;
 		for (String child : children) {
 			if (child.isBlank()) continue;
-			jObj = CoreServer.accountManager.getAccountObject(child);
+			jObj = AccountUtils.getAccountObject(child);
 			if (jObj==null) return null;
 			jObj.put("desc", "childuser"); //Add convience tag
 			jArr.put(jObj);
@@ -178,11 +181,11 @@ public class DataManager {
 	
 	public static String getUnitsData(String user) {
 		//Look at account file
-		JSONObject jObj = CoreServer.accountManager.getHighestLevelAccountInfo(user);
+		JSONObject jObj = AccountUtils.getHighestLevelAccountInfo(user);
 		if (jObj==null) return null;
 
 		//Get assigned unit names
-		String[] units = CoreServer.accountManager.getAssignedUnits(user);
+		String[] units = AccountUtils.getAssignedUnits(user);
 		if (units==null) return null;
 
 		//Get status on all assigned units

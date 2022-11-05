@@ -1,4 +1,4 @@
-package main.java;
+package main.java.mock;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,6 +8,8 @@ import java.util.Date;
 
 import org.json.JSONObject;
 
+import main.java.core.DataManager;
+import main.java.core.Utils;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
 
@@ -56,8 +58,8 @@ public class DataMockup {
 			jObj.put("lon", lon);
 			out.write(jObj.toString(1));
 			out.close();
-			CLI.debug(Loc.CORE,  "Successfully created records.");
-		} catch (IOException e) {e.printStackTrace();}
+			CLI.debug(Loc.MOCK,  "Successfully created records for "+id+".");
+		} catch (IOException e) {CLI.error(Loc.MOCK, "An error occurred - "+e.toString());}
 	}
 
 	public static void makeAccount(String username, String access, String parent, String defaultUnit, String attachedUnits) {
@@ -91,7 +93,7 @@ public class DataMockup {
 			FileWriter out = new FileWriter("accounts/"+username+".acc");
 			out.write(jObj.toString(1));
 			out.close();
-			CLI.debug(Loc.CORE, "Successfully created accounts.");
-		} catch (IOException e) {CLI.debug(Loc.CORE, "An error occurred."+e.toString());}
+			CLI.debug(Loc.MOCK, "Successfully created account "+username+".");
+		} catch (IOException e) {CLI.error(Loc.MOCK, "An error occurred - "+e.toString());}
 	}
 }

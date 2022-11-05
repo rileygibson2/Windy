@@ -1,11 +1,13 @@
-package main.java;
+package main.java.units;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -13,6 +15,7 @@ import org.apache.commons.io.LineIterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import main.java.core.Utils;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
 
@@ -94,5 +97,15 @@ public class UnitUtils {
 		}
 		CLI.debug(Loc.UNIT, "Invalid unit - "+unit);
 		return false;
+	}
+	
+	public static Set<String> getAllUnits() {
+		Set<String> units = new HashSet<String>();
+		File[] files = new File("units").listFiles();
+		for (File f : files) {
+			if (!f.isDirectory()) continue;
+			units.add(f.getName());
+		}
+		return units;
 	}
 }

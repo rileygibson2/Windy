@@ -8,21 +8,30 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 
+import main.java.core.Utils;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
+import main.java.http.SessionManager;
+import main.java.http.WebServlet;
+import main.java.mock.DataMockup;
 import main.java.mqtt.MQTTManager;
 
 public class CoreServer {
-	public static AccountManager accountManager;
+	
+	private static Server server;
+	public static SessionManager sessionManager;
 	public static MQTTManager mqttManager;
 
-	public static void main(String[] args) throws Exception {
-		Server server = new Server(80);
+	public static void main(String[] args) {
+		//Initialise
+		server = new Server(80);
+		server.setStopAtShutdown(true);
 		String webappPath = System.getProperty("user.dir")+"/src/main/webapp";
 		String reportsPath = System.getProperty("user.dir")+"/reports";
-		CLI.debug(Loc.CORE, webappPath);
-		accountManager = new AccountManager();
+		CLI.initialise();
+		CLI.debug(Loc.CORE, "Webapp path: "+webappPath);
 
+		//Initialise paths
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setResourceBase(webappPath);
 		ResourceHandler reportsHandler = new ResourceHandler();
@@ -32,23 +41,50 @@ public class CoreServer {
 		ServletHandler dataHandler = new ServletHandler();
 		dataHandler.addServletWithMapping(WebServlet.class, "/data/*");
 
+		//Set Handlers
 		HandlerList handlers = new HandlerList();
 		handlers.setHandlers(new Handler[] { resourceHandler, reportsHandler, dataHandler});
 		server.setHandler(handlers);
 
+		//Start other components
 		makeMockupData();
 		//new PDFManager("report1/report.pdf").generatePDF();
-		mqttManager = new MQTTManager();
-		
-		server.start();
-		CLI.debug(Loc.CORE, "Server running!");
-		server.join();
+		sessionManager = new SessionManager();
+		mqttManager = new MQTTManager(true);
+
+		//Set shutdown hook
+		Thread shutdownHook = new Thread(() -> shutdown());
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+		try {
+			server.start();
+			CLI.debug(Loc.CORE, "Server running!");
+		}
+		catch (Exception e) {
+			CLI.error(Loc.CORE, "Server didn't start - "+e.toString());
+		}
+		try {server.join();}
+		catch (InterruptedException e) {
+			CLI.error(Loc.CORE, "Server loop interrupted - "+e.toString());
+		}
+	}
+	
+	public static void shutdown() {
+		CLI.debug(Loc.CORE, "Starting shutdown...");
+		mqttManager.shutdownAll(); //Close MQTT clients
+		try {
+			server.stop();
+			CLI.debug(Loc.CORE, "Server shutdown.");
+		}
+		catch (Exception e) {
+			CLI.error(Loc.CORE, "Problem stopping server - "+e.toString());
+		}
 	}
 
 	public static void makeMockupData() {
 		Utils.deleteFolder(new File("units"), false);
 		Utils.deleteFolder(new File("accounts"), false);
-		
+
 		int count = 3;
 		String id[] = new String[count];
 		String ids = "";
@@ -58,7 +94,7 @@ public class CoreServer {
 			if (i>0) ids += " ";
 			ids += id[i];
 		}
-		
+
 		DataMockup.makeAccount("mywindy", "admin", "null", id[0], ids);
 		DataMockup.makeAccount("child", "employee", "mywindy", "", "");
 		DataMockup.makeAccount("otherchild", "employee", "mywindy", "", "");

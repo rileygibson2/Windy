@@ -86,7 +86,6 @@ class DashboardPage extends Page {
 		this.implementData();
 	}
 
-
 	implementData() {
 		//Real-time module
 		this.updateLiveValues();
@@ -178,10 +177,10 @@ class DashboardPage extends Page {
 		
 		//Other listeners to be added on this page load
 		$("#gSVG").mouseout(function(event) { 
-			page.unfocusGraph();
+			if (typeof page.unfocusGraph==="function") page.unfocusGraph();
 		});
 		$("#gSVG").mousemove(function(event) { 
-			page.moveOnGraph(event);
+			if (typeof page.moveOnGraph==="function") page.moveOnGraph(event);
 		});
 
 		this.setupLive();
@@ -248,14 +247,14 @@ class DashboardPage extends Page {
 		page.mqttClient.connect({
 			onSuccess:function() {
 				page.mqttClient.subscribe('LiveReadings');
-				console.log("MQTT Client Connected");
+				console.log("MQTT Client Connected - (Topic) LiveReadings");
 			}
 		});
 		page.mqttClient.onMessageArrived = function(message) {
-			var mUnit = message.payloadString.split("-")[0];
+			var mUnit = message.payloadString.split("|")[0];
 			if (mUnit.trim()!=unit.trim()) return; //Check mqtt message is for currently viewed unit
 
-			var data = message.payloadString.split("-")[1].split(",");
+			var data = message.payloadString.split("|")[1].split(",");
 			page.rtWindSpeed = parseInt(data[0]);
 			page.rtDegrees = parseInt(data[1]);
 			page.rtAlarmLevel = 1;
@@ -266,7 +265,7 @@ class DashboardPage extends Page {
 			//page.rtAlarmLevel = parseInt(data[2]);
 			page.rtLastUpdateTime = Date.now();
 
-			page.updateLiveValues();
+			if (typeof page.updateLiveValues==="function") page.updateLiveValues();
 		}
 		page.mqttClient.onConnectionLost = page.onConnectionLost;
 	}

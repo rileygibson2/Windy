@@ -27,7 +27,7 @@ public class MQTTPoster {
 		try {
 			MQTTUtil.sendMessage(client, topic.toString(), qos, content);
 		} catch (MqttException e) {
-			CLI.debug(Loc.MQTT, "Exception: "+e);
+			CLI.error(Loc.MQTT, "Exception: "+e);
 			e.printStackTrace();
 		}
 	}

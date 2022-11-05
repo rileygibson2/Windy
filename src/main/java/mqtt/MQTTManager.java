@@ -7,18 +7,55 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
+import main.java.mock.MQTTNodeMock;
 
 public class MQTTManager {
 
 	public static enum PostTopic {
 		Config, //Server sends info about its state
-		LiveTrigger, //Server requests for node to start transmitting live data
-		StatusRequest //Server requests status (location, battery, ip) from node
+		/**
+		 * Control for live data
+		 * Unit name [|]
+		 * Stop/Start [0]
+		 */
+		LiveTrigger,
+		/**
+		 * Node status resuests
+		 * Unit name [|]
+		 */
+		StatusRequest
 	};
 	public static enum SubscribeTopic {
-		Log, //Logs from node
-		LiveReadings, //Live readings from node
-		StatusUpdate, //Recieve status from node
+		/**
+		 * Logs from node.
+		 * Unit name [|]
+		 * Log epoch time [0]
+		 * Wind speed at time log dispatched [1]
+		 * Peak gust epoch time [2]
+		 * Peak gust [3]
+		 * Min wind speed [4]
+		 * Avg wind speed [5]
+		 * Direction [6]
+		 */
+		Log,
+		/**
+		 * Live values from node
+		 * Unit name [|]
+		 * Wind speed [0]
+		 * Direction [1]
+		 */
+		LiveReadings,
+		/**
+		 *	Status response from log
+		 *	Unit name [|]
+		 *	Unit IP [0]
+		 *	Epoch time of status update [1]
+		 *	Battery [2]
+		 *	Lat [3]
+		 *	Lon [4]
+		 *	Location accuracy [5]
+		 */
+		StatusUpdate,
 		LiveTrigger, //For testing only
 		StatusRequest //For testing only
 	};
@@ -30,12 +67,9 @@ public class MQTTManager {
 	Map<SubscribeTopic, MQTTSubscriber> subscribers;
 	MQTTNodeMock mock = null;
 
-	public MQTTManager() {
-		//Add the shutdown hook to close MQTT clients
-		Thread shutdownHook = new Thread(() -> shutdownAll());
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+	public MQTTManager(boolean mockNode) {
 		allConnected = false;
-
+		
 		//Create all MQTT clients
 		subscribers = new HashMap<SubscribeTopic, MQTTSubscriber>();
 
@@ -45,23 +79,25 @@ public class MQTTManager {
 				subscribers.put(t, new MQTTSubscriber(serverName+"-"+t.toString(), t, 2));
 			}
 			//Build mockup
-			//mock = new MQTTNodeMock();
-			//mock.start();
+			if (mockNode) {
+				mock = new MQTTNodeMock();
+				mock.start();
+			}
 			allConnected = true;
 		} catch(MqttException e) {
-			CLI.debug(Loc.MQTT, "Exception: "+e);
+			CLI.error(Loc.MQTT, "Exception: "+e);
 			//e.printStackTrace();
 		}
 	}
 
 	public void sendLiveStart(String unit) {
 		if (!allConnected) return;
-		poster.sendMessage(unit+"-1", PostTopic.LiveTrigger);
+		poster.sendMessage(unit+"|1", PostTopic.LiveTrigger);
 	}
 
 	public void sendLiveStop(String unit) {
 		if (!allConnected) return;
-		poster.sendMessage(unit+"-0", PostTopic.LiveTrigger);
+		poster.sendMessage(unit+"|0", PostTopic.LiveTrigger);
 	}
 	
 	public void sendStatusRequest(String unit) {
@@ -81,7 +117,7 @@ public class MQTTManager {
 				mock.stop = true;
 			}
 		} catch(Exception e) {
-			CLI.debug(Loc.MQTT, "Exception: "+e);
+			CLI.error(Loc.MQTT, "Exception: "+e);
 			e.printStackTrace();
 		}
 	}
