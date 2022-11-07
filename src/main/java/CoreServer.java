@@ -50,7 +50,7 @@ public class CoreServer {
 		makeMockupData();
 		//new PDFManager("report1/report.pdf").generatePDF();
 		sessionManager = new SessionManager();
-		mqttManager = new MQTTManager(true);
+		mqttManager = new MQTTManager(false);
 
 		//Set shutdown hook
 		Thread shutdownHook = new Thread(() -> shutdown());

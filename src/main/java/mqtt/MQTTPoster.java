@@ -24,6 +24,11 @@ public class MQTTPoster {
 	public MqttClient getClient() {return this.client;}
 	
 	public void sendMessage(String content, PostTopic topic) {
+		if (!client.isConnected()) {
+			CLI.error(Loc.MQTT, topic.toString()+"Client is not connected");
+			return;
+		}
+		
 		try {
 			MQTTUtil.sendMessage(client, topic.toString(), qos, content);
 		} catch (MqttException e) {

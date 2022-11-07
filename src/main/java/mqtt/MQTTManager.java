@@ -91,17 +91,14 @@ public class MQTTManager {
 	}
 
 	public void sendLiveStart(String unit) {
-		if (!allConnected) return;
 		poster.sendMessage(unit+"|1", PostTopic.LiveTrigger);
 	}
 
 	public void sendLiveStop(String unit) {
-		if (!allConnected) return;
 		poster.sendMessage(unit+"|0", PostTopic.LiveTrigger);
 	}
 	
 	public void sendStatusRequest(String unit) {
-		if (!allConnected) return;
 		poster.sendMessage(unit, PostTopic.StatusRequest);
 	}
 
