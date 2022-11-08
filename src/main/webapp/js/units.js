@@ -6,7 +6,8 @@ class UnitsPage extends Page {
 		//Add styles
 		var link = document.createElement('link');
 		link.setAttribute('rel', 'stylesheet');
-		link.setAttribute('href', '../styles/units.css');
+		if (isMobile) link.setAttribute('href', '../styles/mobile/units.css');
+		else link.setAttribute('href', '../styles/units.css');
 		document.head.appendChild(link);
 
 		//Class vars
@@ -16,6 +17,9 @@ class UnitsPage extends Page {
 
 		//Real-time data
 		this.mqttClient;
+
+		//Mobile carosel
+		this.focussedUnit;
 	}
 
 	//Required actions
@@ -46,123 +50,199 @@ class UnitsPage extends Page {
 	}
 
 	implementData() {
-		self = this;
-		var row1 = document.getElementById('uRow1');
-		var row = row1;
-		
-		//Figure out rows
-		if (this.units.length>3) { //Will need two rows
-			//Shift up old row and make new row
-			row.style.marginTop = "13%";
-			row = document.createElement("div");
-			row.setAttribute("class", 'uRow');
-			row.setAttribute("id", 'uRow2');
-			$('#unitsCont').append(row);
-			$("#uAdd").detach().appendTo('#uRow2') //Move plus button
-		}
-
 		//Add units
-		for (i=this.units.length-1; i>=0; i--) {
-			if ((i+1)/3<=1) {
-				row = row1; //Check if this unit needs to go in new containers
+		if (isMobile) { //Carosel based structure
+			//Build all units
+			for (i=0; i<this.units.length; i++) {
+				var n = page.buildUnit(i)
+				$('#uRow1').append(n);
+				n.style.marginLeft = (15+(i*72))+"vw";
+				//Shrink unfocussed units
+				if (i!=0) n.style.transform = "scale(0.8)";
 			}
 
-			//Get ip location info
-			var req = new XMLHttpRequest(); //Fetch data
-			req.i = i;
-			req.open('GET', 'https://ipapi.co/'+this.units[i].ip+'/json/');
-			req.onreadystatechange = function() {
-				if (this.readyState!=4) return; 
+			//Position add icon
+			$('#uAdd').css("margin-left", (20+(this.units.length*72))+"vw");
 
-				var jObj = undefined;
-				if (this.status==200) { //Success, show location
-					jObj = JSON.parse(this.responseText);
-					$('#uNLocationText'+this.i).html(jObj.city+", "+jObj.country_name);
-				}
-				//Faliure, show ip instead
-				if (this.status!=200||jObj.city==undefined||jObj.country_name==undefined) {
-					$('#uNLocationText'+this.i).html(self.units[this.i].ip);
-				}
-				$('#uNLocationText'+this.i).css('opacity', '1');
-			}
-			req.send();
-
-			//Node
-			var n = document.createElement("div");
-			n.setAttribute("class", 'uN');
-			n.setAttribute("id", 'uN'+i);
-			/*if (unitData[i][0]==1) n.style.borderBottom = "3px solid rgb(3, 220, 15)";
-			else n.style.borderBottom = "3px solid rgb(220, 0, 0)";*/
+			if (this.units.length>0) page.focussedUnit = 0;
+			//Swipe listener
+			var hammertime = new Hammer(document.getElementById('uRow1'));
+			hammertime.on('swipe', page.moveCarosel);
+		}
+		else { //Row based structure
+			var row1 = document.getElementById('uRow1');
+			var row = row1;
 			
-			//Main Icon
-			var d = document.createElement("div");
-			d.setAttribute("class", 'uNIcon');
-			n.append(d);
-			//Title
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNTitle');
-			d.innerHTML = this.units[i].name;
-			n.append(d);
-			//Location text
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNLocationText');
-			d.setAttribute("id", 'uNLocationText'+i);
-			n.append(d);
-			//Version
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNText');
-			d.innerHTML = "Version<br>1.0.5";
-			n.append(d);
-
-			//Status icon and text
-			var c = document.createElement("div");
-			c.setAttribute("class", 'uNStatusCont');
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNStatusIcon');
-			var t = document.createElement("div");
-			t.setAttribute("class", 'uNStatusText');
-			if (this.units[i].status==1) {
-				d.style.backgroundColor = 'rgb(3, 220, 15)';
-				t.innerHTML = "Online";
+			//Figure out rows
+			if (this.units.length>3) { //Will need two rows
+				//Shift up old row and make new row
+				row.style.marginTop = "13%";
+				row = document.createElement("div");
+				row.setAttribute("class", 'uRow');
+				row.setAttribute("id", 'uRow2');
+				$('#unitsCont').append(row);
+				$("#uAdd").detach().appendTo('#uRow2') //Move plus button
 			}
-			else {
-				d.style.backgroundColor = 'rgb(255, 50, 50)';
-				t.innerHTML = "Offline";
+
+			//Build all units
+			for (i=this.units.length-1; i>=0; i--) {
+				if ((i+1)/3<=1) row = row1; //Check if this unit needs to go in new containers
+				row.prepend(page.buildUnit(i));
 			}
-			c.append(d);
-			c.append(t);
-			n.append(c);
-
-			//Battery icon and text
-			c = document.createElement("div");
-			c.setAttribute("class", 'uNBatteryCont');
-			d = document.createElement("div");
-			d.setAttribute("class", 'uNBatteryIcon');
-			t = document.createElement("div");
-			t.setAttribute("class", 'uNBatteryText');
-			if (this.units[i].power==0) {
-				d.style.backgroundColor = 'rgb(255, 153, 0)';
-				d.style.backgroundImage = 'url("../assets/icons/power.svg")';
-				t.innerHTML = "Check power";
-			}
-			else t.innerHTML = this.units[i].battery+"%";
-			c.append(d);
-			c.append(t);
-			n.append(c);
-
-			//Add click listener and add to DOM
-			var addListener = function(i) {n.onmousedown = function() {self.changeUnit(i);};}
-			addListener(i);
-			row.prepend(n);
-
-			//Build battery svg
-			this.buildBatterySVG(this.units[i].battery, d);
 		}
 
 		page.setupLive();
 	}
 
-	//Set up MQTT client and subscribe to live readings
+	/**
+	 * Builds and returns a unit DOM object.
+	 */
+	buildUnit(i) {
+		//Get ip location info
+		var req = new XMLHttpRequest(); //Fetch data
+		req.i = i;
+		req.open('GET', 'https://ipapi.co/'+this.units[i].ip+'/json/');
+		req.onreadystatechange = function() {
+			if (this.readyState!=4) return; 
+
+			var jObj = undefined;
+			if (this.status==200) { //Success, show location
+				jObj = JSON.parse(this.responseText);
+				$('#uNLocationText'+this.i).html(jObj.city+", "+jObj.country_name);
+			}
+			//Faliure, show ip instead
+			if (this.status!=200||jObj.city==undefined||jObj.country_name==undefined) {
+				$('#uNLocationText'+this.i).html(self.units[this.i].ip);
+			}
+			$('#uNLocationText'+this.i).css('opacity', '1');
+		}
+		req.send();
+
+		//Node
+		var n = document.createElement("div");
+		n.setAttribute("class", 'uN');
+		n.setAttribute("id", 'uN'+i);
+		/*if (unitData[i][0]==1) n.style.borderBottom = "3px solid rgb(3, 220, 15)";
+		else n.style.borderBottom = "3px solid rgb(220, 0, 0)";*/
+		
+		//Main Icon
+		var d = document.createElement("div");
+		d.setAttribute("class", 'uNIcon');
+		n.append(d);
+		//Title
+		d = document.createElement("div");
+		d.setAttribute("class", 'uNTitle');
+		d.innerHTML = this.units[i].name;
+		n.append(d);
+		//Location text
+		d = document.createElement("div");
+		d.setAttribute("class", 'uNLocationText');
+		d.setAttribute("id", 'uNLocationText'+i);
+		n.append(d);
+		//Version
+		d = document.createElement("div");
+		d.setAttribute("class", 'uNText');
+		d.innerHTML = "Version<br>1.0.5";
+		n.append(d);
+
+		//Status icon and text
+		var c = document.createElement("div");
+		c.setAttribute("class", 'uNStatusCont');
+		d = document.createElement("div");
+		d.setAttribute("class", 'uNStatusIcon');
+		var t = document.createElement("div");
+		t.setAttribute("class", 'uNStatusText');
+		if (this.units[i].status==1) {
+			d.style.backgroundColor = 'rgb(3, 220, 15)';
+			t.innerHTML = "Online";
+		}
+		else {
+			d.style.backgroundColor = 'rgb(255, 50, 50)';
+			t.innerHTML = "Offline";
+		}
+		c.append(d);
+		c.append(t);
+		n.append(c);
+
+		//Battery icon and text
+		c = document.createElement("div");
+		c.setAttribute("class", 'uNBatteryCont');
+		d = document.createElement("div");
+		d.setAttribute("class", 'uNBatteryIcon');
+		t = document.createElement("div");
+		t.setAttribute("class", 'uNBatteryText');
+		if (this.units[i].power==0) {
+			d.style.backgroundColor = 'rgb(255, 153, 0)';
+			d.style.backgroundImage = 'url("../assets/icons/power.svg")';
+			t.innerHTML = "Check power";
+		}
+		else t.innerHTML = this.units[i].battery+"%";
+		c.append(d);
+		c.append(t);
+		n.append(c);
+		//Build battery svg
+		page.buildBatterySVG(page.units[i].battery, d);
+
+		//Add click listener and add to DOM
+		var addListener = function(i) {n.onmousedown = function() {page.changeUnit(i);};}
+		addListener(i);
+		return n;
+	}
+
+	/**
+	 * MOBILE-ONLY
+	 * Moves the mobile carosel in a direction
+	 */
+	moveCarosel(ev) {
+		if (ev.direction==4) { //Swiped right
+			if (page.focussedUnit-1<0) return;
+
+			//Minimise current
+			$('#uN'+page.focussedUnit).css("transform", "scale(0.8)");
+			$('#uN'+(page.focussedUnit-1)).css("transform", "scale(1)");
+			
+			//Shift all right
+			var w = $('#uN0').css("width");
+			w = parseFloat(w.substr(0, w.length-2));
+			for (i=0; i<page.units.length; i++) {
+				var l = $('#uN'+i).css("left");
+				l = parseFloat(l.substr(0, l.length-2));
+				$('#uN'+i).css("left", (l+w)+"px")
+			}
+			//Handle add icon
+			var l = $('#uAdd').css("left");
+			l = parseFloat(l.substr(0, l.length-2));
+			$('#uAdd').css("left", (l+w)+"px");
+
+			page.focussedUnit--;
+		}
+		else if (ev.direction==2) { //Swiped left
+			if (page.focussedUnit+1>page.units.length) return;
+
+			//Minimise current
+			$('#uN'+page.focussedUnit).css("transform", "scale(0.8)");
+			$('#uN'+(page.focussedUnit+1)).css("transform", "scale(1)");
+			
+			//Shit all left
+			var w = $('#uN0').css("width");
+			w = parseFloat(w.substr(0, w.length-2));
+			for (i=0; i<page.units.length; i++) {
+				var l = $('#uN'+i).css("left");
+				l = parseFloat(l.substr(0, l.length-2));
+				$('#uN'+i).css("left", (l-w)+"px")
+			}
+			//Handle add icon
+			var l = $('#uAdd').css("left");
+			l = parseFloat(l.substr(0, l.length-2));
+			$('#uAdd').css("left", (l-w)+"px");
+
+			page.focussedUnit++;
+		}
+	}
+
+	/**
+	 * Set up MQTT client and subscribe to live readings.
+	 */
 	setupLive() {
 		var clientID = "WebSocketClient"+Math.random().toString().replace('.', '');
 		page.mqttClient = new Paho.Client('54.203.107.18', 9876, clientID);
@@ -191,6 +271,9 @@ class UnitsPage extends Page {
     	}
  	}
 
+ 	/**
+ 	 * Builds the battery SVG and assigns to a DOM element.
+ 	 */
 	buildBatterySVG(level, parent) {
 		var svg = document.createElementNS(nS, "svg");
 		svg.setAttribute("class", 'uBatSVG');
@@ -237,12 +320,19 @@ class UnitsPage extends Page {
 		parent.append(svg);
 	}
 
+	/**
+	 * Opens the dashboard for a selected unit.
+	 */
 	changeUnit(i) {
 		unit = this.units[i].id;
 		unitName = this.units[i].name;
 		switchSections(0);
 	}
 
+	/**
+	 * Sets up all DOM elements required for the register
+	 * dialog.
+	 */
 	openRegisterDialog() {
 		this.pairProgress = -1;
 
@@ -267,6 +357,9 @@ class UnitsPage extends Page {
 		req.send();
 	}
 
+	/**
+	 * Destroys all elements related to the register dialog.
+	 */
 	closeRegisterDialog() {
 		//Animate register container out
 		$('#regCont').css("animation", "closeRegister 0.4s ease-in-out forwards");
@@ -282,6 +375,11 @@ class UnitsPage extends Page {
 		$('#uSlider').css({'filter':'none', 'opacity':'1'});
 	}
 
+	/**
+	 * Validates register dialog input and converts
+	 * the register dialog DOM elements into the register
+	 * progress tracker.
+	 */
 	buildProgressScreen() {
 		//Validate input
 		var validIP = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/.test(new String($('#regIP').val()));
@@ -369,6 +467,10 @@ class UnitsPage extends Page {
 		}, 500);
 	}
 
+	/**
+	 * Increases the register tracker DOM through different
+	 * stages. This function must be called in order.
+	 */
 	increaseProgressBar() {
 		//At initial stage so show elements
 		if (this.pairProgress==-1) {
@@ -415,6 +517,9 @@ class UnitsPage extends Page {
 		this.pairProgress++;
 	}
 
+	/**
+	 * Opens the help element on the register dialog.
+	 */
 	openRegisterHelp() {
 		var message = "The new unit's ip address is located on the back of the SIM card.<br><br>The hardcoded pairing key can be found in the front of the setup guide or on a sticker inside the unit itself.";
 		openHelp($('#regInfo').offset().left+($('#regInfo').width()/2), $('#regInfo').offset().top, message);
@@ -445,6 +550,9 @@ class UnitsPage extends Page {
 
 	lastObj;
 
+	/**
+	 * Moves the unit view slider.
+	 */
 	moveUnitsSlider(obj) {
 		var a = document.getElementById("uSlider").getBoundingClientRect().left;
 		$('#uSliderS').css("left", obj.getBoundingClientRect().left-a);
@@ -467,6 +575,10 @@ class UnitsPage extends Page {
 		}
 	}
 
+	/**
+	 * Sets up the DOM elements required for the unit
+	 * map view.
+	 */
 	buildMap() {
 		if (!this.mapLoaded) {
 			//Load map
@@ -485,6 +597,9 @@ class UnitsPage extends Page {
 		}
 	}
 
+	/**
+	 * Adds a marker to the unit map view.
+	 */
 	addMarker(map, jObj) {
 		var mHTML = "";
 

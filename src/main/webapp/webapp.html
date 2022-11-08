@@ -3,19 +3,36 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#282828"/>
+	<meta name="theme-color" content="#141414"/>
 	<title>Windy - Your Very Best Friend</title>
 	<link rel="icon" type="image/x-icon" href="../assets/icons/favicon.png">
 
+	<!-- Root stylesheets -->
+	<link rel="stylesheet" type="text/css" href="styles/base.css">
 	<link rel="stylesheet" media="screen and (min-width: 601px)" href="styles/style.css" />
-	<link rel="stylesheet" media="screen and (max-width: 600px)" href="styles/mobile.css" />
-	<link rel="stylesheet" type="text/css" href="styles/loading.css">
-	<link rel="stylesheet" type="text/css" href="styles/message.css">
-	<link rel="stylesheet" type="text/css" href="styles/dialog.css">
-	<link rel="stylesheet" type="text/css" href="styles/calander.css">
-	<link rel="stylesheet" type="text/css" href="styles/checkbox.css">
+	<link rel="stylesheet" media="screen and (max-width: 600px)" href="styles/mobile/style.css" />
+	<!-- Module stylesheets -->
+	<link rel="stylesheet" type="text/css" href="styles/mod/loading.css">
+	<link rel="stylesheet" media="screen and (min-width: 601px)" href="styles/mod/message.css" />
+	<link rel="stylesheet" media="screen and (max-width: 600px)" href="styles/mobile/mod/message.css" />
+	<link rel="stylesheet" type="text/css" href="styles/mod/dialog.css">
+	<link rel="stylesheet" type="text/css" href="styles/mod/calander.css">
+	<link rel="stylesheet" type="text/css" href="styles/mod/checkbox.css">
+	<link href='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
 
+	<!-- Lib -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+	<script src="js/lib/sha256.js"></script>
+	<script src="js/lib/paho-mqtt.js"></script>
+	<script src="js/lib/hammer.js"></script>
+	<!-- Modules -->
+	<script src="js/mod/loading.js"></script>
+	<script src="js/mod/message.js"></script>
+	<script src="js/mod/dialog.js"></script>
+	<script src="js/mod/calander.js"></script>
+	<script src="js/mod/checkbox.js"></script>
+	<!-- Pages -->
 	<script src="js/settings.js"></script>
 	<script src="js/page.js"></script>
 	<script src="js/dashboard.js"></script>
@@ -23,17 +40,7 @@
 	<script src="js/history.js"></script>
 	<script src="js/forecast.js"></script>
 	<script src="js/reports.js"></script>
-	<script src="js/mod/loading.js"></script>
-	<script src="js/mod/message.js"></script>
-	<script src="js/mod/dialog.js"></script>
-	<script src="js/mod/calander.js"></script>
-	<script src="js/mod/checkbox.js"></script>
-	<script src="js/lib/sha256.js"></script>
-	<script src="js/lib/paho-mqtt.js"></script>
 	<script src="js/index.js"></script>
-
-	<link href='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
-	<script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
 </head>
 <body onload="load()">
 	<div id="sbCont" onmouseout="unhoverSB()">
@@ -65,6 +72,7 @@
 
 	<div id="sICont">
 		<div id="sITitle"></div>
+		<div id="sIDivider"></div>
 		<div id="sIUnit"></div>
 		<div id="sIText"></div>
 	</div>

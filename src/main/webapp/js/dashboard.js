@@ -6,7 +6,8 @@ class DashboardPage extends Page {
 		//Add styles
 		var link = document.createElement('link');
 		link.setAttribute('rel', 'stylesheet');
-		link.setAttribute('href', '../styles/dashboard.css');
+		if (isMobile) link.setAttribute('href', '../styles/mobile/dashboard.css');
+		else link.setAttribute('href', '../styles/dashboard.css');
 		document.head.appendChild(link);
 
 		//Real-time data
@@ -367,6 +368,11 @@ class DashboardPage extends Page {
 			text.setAttribute("x", w1-((gLeft*0.1)*(t.length/2)));
 			text.setAttribute("y", (gBot*1.05));
 			text.setAttribute("font-size", (w*0.01));
+			
+			if (isMobile) {
+				text.setAttribute("x", w1-((gLeft*0.1)*(t.length/2)));
+				text.setAttribute("font-size", (w*0.02));
+			}
 			text.textContent = t;
 			svg.append(text);
 		}
@@ -390,6 +396,11 @@ class DashboardPage extends Page {
 			text.setAttribute("x", (gLeft*0.8)-((gLeft*0.1)*t.length));
 			text.setAttribute("y", h1+(h*0.01));
 			text.setAttribute("font-size", (w*0.01));
+
+			if (isMobile) {
+				text.setAttribute("x", (gLeft*0.5)-((gLeft*0.22)*t.length));
+				text.setAttribute("font-size", (w*0.025));
+			}
 			text.textContent = t;
 			svg.append(text);
 		}

@@ -1,0 +1,39 @@
+* {
+	margin: 0;
+	padding: 0;
+	user-select: none;
+	-webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  cursor: default;
+}
+
+@font-face {
+  font-family: open;
+  src: url('../assets/fonts/OpenSans/OpenSans-Regular.ttf');
+}
+@font-face {
+  font-family: openMedium;
+  src: url('../assets/fonts/OpenSans/OpenSans-Medium.ttf');
+}
+@font-face {
+  font-family: openSemiBold;
+  src: url('../assets/fonts/OpenSans/OpenSans-SemiBold.ttf');
+}
+@font-face {
+  font-family: openBold;
+  src: url('../assets/fonts/OpenSans/OpenSans-Bold.ttf');
+}
+@font-face {
+  font-family: fugaz;
+  src: url('../assets/fonts/FugazOne/FugazOne-Regular.ttf');
+}
+
+:root {
+  --focusOld: rgb(15, 132, 242);
+  --focus: rgb(7, 102, 245);
+  --bg: rgb(25, 25, 25);
+  --bgGrad:  rgb(25, 25, 25, 0.95);
+  --fg: rgb(90, 90, 90);
+}
+
+body {background-color: var(--bg);}

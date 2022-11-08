@@ -42,7 +42,13 @@ public class CoreServer {
 		RewritePatternRule rule = new RewritePatternRule();
 		rule.setPattern("/webapp");
 		rule.setReplacement("/webapp.html");
-		rule.setTerminating(true); // this will stop Jetty from chaining the rewrites
+		rule.setTerminating(true);
+		rewriteHandler.addRule(rule);
+		
+		rule = new RewritePatternRule();
+		rule.setPattern("/login");
+		rule.setReplacement("/login.html");
+		rule.setTerminating(true);
 		rewriteHandler.addRule(rule);
 		
 
@@ -50,9 +56,7 @@ public class CoreServer {
 		ResourceHandler staticHandler = new ResourceHandler();
 		staticHandler.setResourceBase(webappPath);
 		staticHandler.setDirAllowed(false);
-		//rewriteHandler.setHandler(staticHandler);
-		//staticHandler.setHandler(rewriteHandler);
-		//staticHandler.setWelcomeFiles(new String[]{"webapp.html"});
+		//staticHandler.setWelcomeFiles(new String[]{"index.html"});
 		ResourceHandler reportsHandler = new ResourceHandler();
 		reportsHandler.setResourceBase(reportsPath);
 		WebAppContext dynamicHandler = new WebAppContext();

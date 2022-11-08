@@ -1,18 +1,17 @@
 /*Dashboard page*/
 #rtCont { /*Real-time module container*/
 	position: absolute;
-	width: 40vw;
-	height: 30vh;
-	margin-left: 12vw;
-	margin-top: 6vh;
+	width: 100vw;
+	margin-top: 8vh;
 	z-index: 20;
 	overflow: visible;
 }
 .rtN { /*Real time node*/
-	display: inline-block;
 	position: relative;
-	width: 15vw;
-	height: 15vw;
+	display: inline-block;
+	width: 45vw;
+	height: 45vw;
+	margin-left: 2.5vw;
 	background-color: var(--fg);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
@@ -28,7 +27,7 @@
 	background-repeat: no-repeat;
 	background-size: 80%;
 	background-position: 50% 45%;
-	background-image: url("../assets/icons/windw.png");
+	background-image: url("/assets/icons/windw.png");
 }
 #rtSpeed1 { /*Actual speed*/
 	position: absolute;
@@ -36,7 +35,7 @@
 	top: 10%;
 	text-align: right;
 	font-family: openBold;
-	font-size: 3.8vw;
+	font-size: 12vw;
 	color: rgb(255, 255, 255);
 }
 #rtSpeed2 { /*Units*/
@@ -45,7 +44,7 @@
 	top: 42%;
 	text-align: right;
 	font-family: open;
-	font-size: 1.2vw;
+	font-size: 3vw;
 	color: rgb(255, 255, 255);
 }
 #rtSpeed3 { /*Last updated*/
@@ -55,7 +54,7 @@
 	left: 10%;
 	text-align: left;
 	font-family: openSemiBold;
-	font-size: 0.9vw;
+	font-size: 2.5vw;
 	color: rgb(255, 255, 255);
 }
 #rtSpeed4 { /*Time ago*/
@@ -65,12 +64,12 @@
 	left: 10%;
 	text-align: left;
 	font-family: openBold;
-	font-size: 1.2vw;
+	font-size: 3.5vw;
 	color: rgb(255, 255, 255);
 }
 
 #rtDir {
-	margin-left: 3vw;
+	margin-top: 5vh;
 	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
 }
 #rtDirIcon { /*Direction icon*/
@@ -82,7 +81,7 @@
 	background-repeat: no-repeat;
 	background-size: 200%;
 	background-position: 50% 65%;
-	background-image: url("../assets/icons/compass.svg");
+	background-image: url("/assets/icons/compass.svg");
 }
 #rtDir1 { /*Direction name*/
 	position: absolute;
@@ -91,7 +90,7 @@
 	left: 10%;
 	text-align: right;
 	font-family: openBold;
-	font-size: 3.8vw;
+	font-size: 12vw;
 	color: rgb(255, 255, 255);
 }
 #rtDir2 { /*Degrees*/
@@ -101,7 +100,7 @@
 	left: 10%;
 	text-align: right;
 	font-family: open;
-	font-size: 1.2vw;
+	font-size: 3vw;
 	color: rgb(255, 255, 255);
 }
 #rtDirIndicator { /*Direction indicator*/
@@ -113,22 +112,20 @@
 	background-repeat: no-repeat;
 	background-size: 100%;
 	background-position: 0% 0%;
-	background-image: url("../assets/icons/direction.svg");
+	background-image: url("/assets/icons/direction.svg");
 	transform: rotate(0deg);
 	transition: all 1s;
 }
 
 #gCont { /*Graph module container*/
 	position: absolute;
-	width: 85vw;
-	height: 85vh;
-	margin-left: 4vw;
-	margin-top: 23vh;
+	width: 100vw;
+	height: 65vh;
+	margin-top: 38vh;
 }
 #graph {
 	width: 100%;
 	height: 88%;
-	margin-top: 5%;
 	opacity: 0;
 	z-index: -100;
 }
@@ -213,10 +210,10 @@
 
 #slider {
 	position: absolute;
-	width: 23%;
+	width: 45%;
 	height: 6%;
-	top: 2vh;
-	margin-left: 65%;
+	top: 2.5vh;
+	margin-left: 50%;
 	opacity: 0;
 	z-index: 100;
 	cursor: pointer;
@@ -225,13 +222,13 @@
 	position: relative;
 	display: inline-block;
 	top: 50%;
-	width: 18%;
+	width: 16%;
 	margin-left: 7%;
 	transform: translateY(-50%);
 	text-align: center;
 	color: rgb(255, 255, 255);
 	font-family: openSemiBold;
-	font-size: 2vh;
+	font-size: 1.6vh;
 	opacity: 0.2;
 	transition: all 0.5s;
 	cursor: pointer;
@@ -247,12 +244,12 @@
 	position: absolute;
 	left: 0;
 	top: 90%;
-	width: 18%;
+	width: 16%;
 	height: 8%;
 	background-color: var(--focus);
-  border-radius: 10px;
-  box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
-  transition: all 1s;
+  	border-radius: 10px;
+  	box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
+  	transition: all 1s;
 }
 
 #cCont { /*Alert level circles container*/
@@ -262,6 +259,7 @@
 	margin-left: 87vw;
 	margin-top: 32vh;
 	opacity: 0;
+	display: none;
 }
 #cM { /*Alert level circles module*/
 	width: 100%;

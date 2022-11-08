@@ -14,32 +14,82 @@ var sessionKey;
 var responseRecieved; //Used for delayed fuse loading screens after requests
 var loadingWait = 500; //Time to delay a loading screen for
 
+//Mobile
+var isMobile;
+var sideBarOpen;
+
 function load() {
+	//Configure for mobile first
+	if (screen.width<600) mobileConfiguration();
+
 	//deleteCookie();
+	hideAllComponents(); //Hide to avoid component flash
 
-	//Check cookies for stored session keys
+	//Check cookies and params for stored session keys
 	var cookie = getCookie("wTXsK");
-	if (cookie=="") openLogin(); //No stored session key
-	else { //Check to see if stored key is still a valid key
-		sessionKey = cookie;
-		responseRecieved = false;
-		var req = new XMLHttpRequest();
-		req.open('GET', 'data/?sK='+sessionKey+'&m=7&t='+Math.random(), true);
-		req.onreadystatechange = function() {
-			if (req.readyState!=4) return;
-			responseRecieved = true;
-			removeLoading();
-			if (req.status==200) { //Key is still valid
-				unit = req.responseText;
-				setTimeout(switchSections, 0, 1);
-			}
-			else openLogin(); //Key is not still valid
-		}
-		req.send();
+	var urlParam = new URLSearchParams(window.location.search).get('s');
+	if (cookie==""&&urlParam==null) gotoLogin(); //No stored session key
+ 	if (urlParam!=null) sessionKey = urlParam;
+ 	if (cookie!="") sessionKey = cookie;
 
-		//Initiate loading
-		setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, true);}, loadingWait);
+ 	//Check to see if stored key is still a valid key
+	responseRecieved = false;
+	var req = new XMLHttpRequest();
+	req.open('GET', 'data/?sK='+sessionKey+'&m=7&t='+Math.random(), true);
+	req.onreadystatechange = function() {
+		if (req.readyState!=4) return;
+		responseRecieved = true;
+		removeLoading();
+		if (req.status==200) { //Key is still valid
+			showAllComponents();
+			unit = req.responseText;
+			setTimeout(switchSections, 0, 1);
+		}
+		else gotoLogin(); //Key is not still valid
 	}
+	req.send();
+
+	//Initiate loading
+	setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, true);}, loadingWait);
+
+}
+
+function mobileConfiguration() {
+	isMobile = true;
+
+	//Side bar tap open
+	$("#sbLogo").click(function(event) { 
+		toggleSideBar();
+	});
+}
+
+function toggleSideBar() {
+	if (sideBarOpen) {
+		$('#sbCont').css("margin-left", "-75vw");
+		sideBarOpen = false;
+	}
+	else {
+		$('#sbCont').css("margin-left", "0vw");
+		sideBarOpen = true;
+	}
+}
+
+function hideAllComponents() {
+	$('#effCont').css("display", "none");
+	$('#sbCont').css("display", "none");
+	$('#sc').css("display", "none");
+	$('#sICont').css("display", "none");
+}
+
+function showAllComponents() {
+	$('#effCont').css("display", "block");
+	$('#sbCont').css("display", "block");
+	$('#sc').css("display", "block");
+	$('#sICont').css("display", "block");
+}
+
+function gotoLogin() {
+	window.location.replace("/login");
 }
 
 function preset() {
@@ -52,6 +102,9 @@ function switchSections(i) {
 	unhoverSB();
 	var a = document.getElementById("sbCont").getBoundingClientRect().top;
 	$('#sbS').css("top", document.getElementById("sbN"+(i+1)).getBoundingClientRect().top-a);
+
+	//Close sidebar if mobile and open
+	if (isMobile&&sideBarOpen) toggleSideBar();
 
 	//Check sections
 	if (animatingOut||animatingOut||activeSection==i) return;
@@ -96,6 +149,9 @@ function switchSections(i) {
 			page = new ForecastPage("forecast");
 			break;
 	}
+
+	//Run page mobile configuration
+	if (screen.width<600&&typeof page.mobileConfiguration==="function") page.mobileConfiguration();
 
 	//Swap section indicator elements
 	$("#sICont").css("animation", "none");
@@ -146,163 +202,6 @@ function unhoverSB() {
 	}
 }
 
-//Login actions
-
-function openLogin() {
-	//Add login elements
-	//Container
-	var c = document.createElement("div");
-	c.setAttribute("id", 'lCont');
-	//Logo
-	var d = document.createElement("div");
-	d.setAttribute("id", 'lLogo');
-	c.append(d);
-	//Username Icon
-	d = document.createElement("div");
-	d.setAttribute("class", 'lInputIcon');
-	d.setAttribute("id", 'lUnitIcon');
-	d.style.backgroundImage = 'url("../assets/icons/device.svg")';
-	d.style.marginTop = "4vh";
-	c.append(d);
-	//Username
-	d = document.createElement("input");
-	d.setAttribute("class", 'lInput');
-	d.setAttribute("id", 'lUID');
-	d.placeholder = "Unit ID";
-	d.style.marginTop = "4vh";
-	c.append(d);
-	//Password Icon
-	d = document.createElement("div");
-	d.setAttribute("class", 'lInputIcon');
-	d.setAttribute("id", 'lPassIcon');
-	d.style.backgroundImage = 'url("../assets/icons/lock.svg")';
-	c.append(d);
-	//Password
-	d = document.createElement("input");
-	d.setAttribute("class", 'lInput');
-	d.setAttribute("id", 'lPass');
-	//d.type = "password";
-	d.placeholder = "Password";
-	c.append(d);
-	//Login button
-	d = document.createElement("div");
-	d.setAttribute("id", 'lButton');
-	//Login button text
-	var t = document.createElement("div");
-	t.setAttribute("id", 'lButtonT');
-	t.innerHTML = "Login";
-	d.append(t);
-	c.append(d);
-
-	$('body').append(c);
-	
-	//Listeners
-	document.getElementById('lButton').addEventListener('mousedown', (event) => {
-		validateLogin();
-	});
-	document.getElementById('lButton').addEventListener('mouseover', (event) => {
-		$('#lButton').css('opacity', '1');
-		$('#lButtonT').css('opacity', '1');
-	});
-	document.getElementById('lButton').addEventListener('mouseout', (event) => {
-		$('#lButton').css('opacity', '0.9');
-		$('#lButtonT').css('opacity', '0.9');
-	});
-	document.getElementById('lPass').addEventListener("keyup", event => {
-    	loginKeyPress(event);
-	});
-
-	//Input focus style listeners
-	$('#lUID').on("focus", function() {
-		$('#lUnitIcon').css("background-color", "rgb(100, 100, 100)");
-	});
-	$('#lUID').on("focusout", function() {
-		$('#lUnitIcon').css("background-color", "rgb(60, 60, 60)");
-	});
-	$('#lPass').on("focus", function() {
-		$('#lPassIcon').css("background-color", "rgb(100, 100, 100)");
-	});
-	$('#lPass').on("focusout", function() {
-		$('#lPassIcon').css("background-color", "rgb(60, 60, 60)");
-	});
-}
-
-function closeLogin() {
-	$('#lCont').css('opacity', '0');
-	setTimeout(function() {$('#lCont').remove()}, 500);
-	setTimeout(switchSections, 0, 0);
-}
-
-function validateLogin() {
-	//Check inputs are filled
-	if ($('#lUID').val()=="") $('#lUID').css('border-color', 'rgb(255, 20, 20)');
-	else $('#lUID').css('border-color', 'rgb(60, 60, 60)');
-	if ($('#lPass').val()=="") $('#lPass').css('border-color', 'rgb(255, 20, 20)');
-	else $('#lPass').css('border-color', 'rgb(60, 60, 60)');
-	if ($('#lUID').val()==""||$('#lPass').val()=="") return;
-
-
-	//Create authentication session on server and get salts
-	responseRecieved = false;
-	var req = new XMLHttpRequest();
-	req.open('GET', 'data/?m=8&user='+$('#lUID').val()+'&t='+Math.random(), true);
-	req.onreadystatechange = function() {
-		if (req.readyState!=4) return;
-		responseRecieved = true;
-		if (req.status==500) serverErrorResp();
-		if (req.status==400) clientErrorResp();
-		if (req.status==401) badLogin();
-		if (req.status==200) { //Successfully retrieved an authorisation session
-			var authSesh = JSON.parse(req.responseText);
-			
-			//Hash password with both auth salts
-			var p = hash(passwordField, authSesh.s1);
-			p = hash(p, authSesh.s2);
-
-			responseRecieved = false;
-			var req1 = new XMLHttpRequest();
-			req1.open('GET', 'data/?m=5&user='+$('#lUID').val()+'&p='+p+'&asID='+authSesh.id+'&t='+Math.random(), true);
-			req1.onreadystatechange = function() {
-				if (req1.readyState!=4) return;
-				responseRecieved = true;
-				removeLoading();
-				if (req1.status==200) { //Success
-					//Set session key and default unit
-					var jObj = JSON.parse(req1.responseText);
-					sessionKey = jObj.sK;
-					unit = jObj.defunit;
-					//Add cookie
-					var d = new Date();
-					d.setTime(d.getTime()+3.6e+6);
-					document.cookie = "wTXsK="+sessionKey+"; expires="+d.toGMTString()+"; path=/";
-					//Finish up
-					closeLogin();
-				}
-				else badLogin(); //Fail
-			}
-			req1.send();
-		}
-	}
-	req.send();
-
-	//Initiate loading
-	setTimeout(function() {if (!responseRecieved) insertLoading(screen.width/2, screen.height/2, true);}, loadingWait);
-}
-
-var passwordField = "";
-
-function loginKeyPress(event) {
-	//Simulate password field style value hiding
-	if (event.key=="Backspace") passwordField = passwordField.substring(0, passwordField.length-1);
-	else if (event.key.length==1) passwordField+=event.key;
-	var bullets = "";
-	for (i=0; i<passwordField.length; i++) bullets += '\u2022';
-	$('#lPass').val(bullets);
-
-	if (event.key!=="Enter") return;
-	validateLogin();
-}
-
 function logout() {
 	closeSettings();
 	$('#effCont').empty();
@@ -310,18 +209,10 @@ function logout() {
 	activeSection = null;
 	passwordField = "";
 	deleteCookie();
-	openLogin();
+	//TODO need to send code to server to invalidate session
+	gotoLogin();
 }
 
-function badLogin() {
-	//Let user know by shaking the password box
-	$('#lPass').css("animation", "shake 0.3s forwards");
-	$('#lPassIcon').css("animation", "shake 0.3s forwards");
-	setTimeout(function() {
-		$('#lPass').css("animation", "none");
-		$('#lPassIcon').css("animation", "none");
-	}, 300);
-}
 
 //Generic functions
 
@@ -339,7 +230,6 @@ function getCookie(cname) {
 	let name = cname + "=";
 	let decodedCookie = decodeURIComponent(document.cookie);
 	let ca = decodedCookie.split(';');
-
   	for (let i = 0; i <ca.length; i++) {
     	let c = ca[i];
    		while (c.charAt(0) == ' ') {

@@ -1,0 +1,531 @@
+/*Units page*/
+#uSlider {
+	position: absolute;
+	width: 35%;
+	height: 5%;
+	margin-top: 80vh;
+	margin-left: 5vw;
+	z-index: 100;
+	cursor: pointer;
+}
+.uSliderN { /*A slider node*/
+	position: relative;
+	display: inline-block;
+	top: 50%;
+	width: 50%;
+	margin-left: 0%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: openSemiBold;
+	font-size: 2vh;
+	opacity: 0.6;
+	transition: all 0.5s;
+	cursor: pointer;
+}
+.uSliderN:hover {
+	opacity: 1;
+}
+#uSliderS { /*The sliding element*/
+	position: absolute;
+	left: 0;
+	top: 90%;
+	width: 50%;
+	height: 8%;
+	background-color: var(--focus);
+  	border-radius: 10px;
+  	box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
+  	transition: all 1s;
+}
+
+
+.uRow { /*Units row*/
+	position: absolute;
+	height: 70vw;
+	width: 100vw;
+	top: 25vh;
+	z-index: 20;
+	overflow: visible;
+}
+.uN { /*Unit node*/
+	position: absolute;
+	width: 70vw;
+	height: 70vw;
+	left: 0;
+	background-image: linear-gradient(to bottom right, rgb(140, 140, 140) 0%, var(--fg) 50%);
+	border-radius: 20px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	opacity: 0;
+	z-index: 100;
+	cursor: pointer;
+	transform: none;
+	transition: all 0.2s;
+}
+.uNIcon { /*Unit node icon*/
+	width: 30%;
+	height: 25%;
+	margin-top: 8%;
+	margin-left: 35%;
+	background-image: url("/assets/icons/device.svg");
+	background-size: 80%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.7;
+	cursor: inherit;
+}
+.uNTitle { /* Unit node title*/
+	position: relative;
+	width: 100%;
+	margin-top: 0.5%;
+	text-align: center;
+	font-family: openSemiBold;
+	color: white;
+	font-size: 7.5vw;
+	cursor: inherit;
+}
+.uNLocationText { /*Location indicator*/
+	position: relative;
+	width: 100%;
+	margin-top: 0%;
+	margin-left: 0%;
+	text-align: center;
+	font-family: openMedium;
+	color: rgb(255, 255, 255, 0.5);
+	font-size: 3.5vw;
+	cursor: inherit;
+	opacity: 0;
+	transition: all 0.2s;
+}
+.uNText { /* Unit node version text*/
+	position: absolute;
+	width: 100%;
+	top: 81%;
+	margin-left: 32%;
+	text-align: center;
+	font-family: openMedium;
+	color: rgb(255, 255, 255, 0.5);
+	font-size: 3.5vw;
+	cursor: inherit;
+}
+.uNStatusCont { /*Status icon and text container*/
+	position: relative;
+	width: 32%;
+	height: 6vw;
+	margin-top: 4%;
+	margin-left: 35%;
+}
+.uNStatusIcon { /*Blob which shows status*/
+	position: absolute;
+	width: 6vw;
+	height: 100%;
+	border-radius: 25px;
+	background-image: url("/assets/icons/wifi.svg");
+	background-size: 80%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .3);
+	cursor: inherit;
+}
+.uNStatusText { /*Status text*/
+	position: absolute;
+	top: 50%;
+	margin-left: 8vw;
+	transform: translateY(-50%);
+	text-align: right;
+	font-family: openBold;
+	color: white;
+	font-size: 3.5vw;
+	cursor: inherit;
+}
+.uNBatteryCont { /*Battery icon and text container*/
+	position: absolute;
+	width: 50%;
+	height: 10vw;
+	top: 81%;
+	margin-left: 6%;
+}
+.uNBatteryIcon { /*Blob which shows battery*/
+	position: absolute;
+	width: 10vw;
+	height: 100%;
+	border-radius: 25px;
+	background-size: 90%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	background-color: rgb(110, 110, 110);
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .3);
+	cursor: inherit;
+}
+.uNBatteryText { /*Battery text*/
+	position: absolute;
+	top: 50%;
+	margin-left: 12vw;
+	transform: translateY(-50%);
+	text-align: left;
+	font-family: openBold;
+	color: white;
+	font-size: 4vw;
+	cursor: inherit;
+}
+.uBatSVG { /*Battery SVG*/
+	width: 80%;
+	height: 80%;
+	margin-top: 10%;
+	margin-left: 10%;
+}
+.uBatSVGRect { /*Battery SVG*/
+	fill: none;
+	stroke: rgb(255, 255, 255);
+	stroke-width: 1;
+}
+.uBatSVGPRect { /*Battery SVG*/
+	fill: rgb(255, 255, 255);
+}
+#uAdd { /*Add new unit button*/
+	position: absolute;
+	width: 10vh;
+	height: 10vh;
+	margin-left: 4%;
+	margin-top: 25%;
+	left: 0;
+	border-radius: 50px;
+	background-color: rgb(150, 150, 150, 0.1);
+	cursor: pointer;
+	opacity: 0;
+	transition: all 0.3s;
+}
+#uAddIcon {
+	height: 100%;
+	width: 100%;
+	background-image: url("/assets/icons/plus.svg");
+	background-size: 70%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.2;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+#uAddIcon:hover {
+	opacity: 0.8;
+}
+
+#regCont { /*Register unit dialog container*/
+	position: absolute;
+	display: none;
+	width: 90vw;
+	height: 48vh;
+	margin-left: 5vw;
+	margin-top: 20vh;
+	border-radius: 15px;
+	z-index: 200;
+	opacity: 0;
+	background-color: rgb(20, 20, 20);
+	background-image: linear-gradient(to bottom right, rgb(40, 40, 40) 0%, rgb(20, 20, 20) 50%);
+	box-shadow: 5px 5px 20px rgba(0, 0, 0, .8);
+}
+@keyframes openRegister {
+	0% {opacity: 0;}
+	100% {opacity: 1;}
+}
+@keyframes closeRegister {
+	0% {opacity: 1;}
+	100% {opacity: 0;}
+}
+#regTitleIcon { /*Register box title icon*/
+	position: relative;
+	width: 10vw;
+	height: 10vw;
+	margin-top: 10%;
+	margin-left: 46%;
+	border-radius: 50px;
+	background-color: var(--focus);
+	background-image: url('/assets/icons/device.svg');
+	background-size: 70%;
+	background-position: 50% 50%;
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .6);
+	background-repeat: no-repeat;
+}
+#regTitle { /*Register box title*/
+	position: relative;
+	width: 75%;
+	margin-top: 3%;
+	margin-left: 12.5%;
+	color: rgb(220, 220, 220);
+	font-family: openBold;
+	font-size: 6vw;
+	text-align: center;
+	padding-bottom: 1%;
+	border-bottom: 0.5px solid rgb(220, 220, 220, 0.2);
+}
+.regEBox { /*Register entry box*/
+	position: relative;
+	width: 80%;
+	height: 13%;
+	margin-top: 5%;
+	margin-left: 10%;
+	border-radius: 10px;
+	background-color: rgb(40, 40, 40);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .2);
+	border: none;
+	text-align: center;
+	color: rgb(160, 160, 160);
+	font-family: open;
+	font-size: 4vw;
+	user-select: text;
+	-webkit-touch-callout: text; /* iOS Safari */
+  	-webkit-user-select: text; /* Safari */
+  	overflow: hidden;
+  	cursor: pointer;
+  	outline: none;
+}
+#regIP {
+	margin-top: 10%;
+}
+
+.regEBoxIcon { /*Icon in an entry box*/
+	position: absolute;
+	width: 12%;
+	height: 13%;
+	margin-top: 5%;
+	margin-left: 10%;
+	border-radius: 10px 0px 0px 10px;
+	background-color: rgb(40, 40, 40);
+	background-position: 50% 52%;
+	background-repeat: no-repeat;
+	opacity: 0.7;
+	z-index: 200;
+}
+#regIPIcon {
+	margin-top: 10%;
+}
+.regButton {
+	position: relative;
+	width: 70%;
+	height: 11%;
+	margin-top: 5%;
+	margin-left: 15%;
+	border-radius: 10px;
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+	cursor: pointer;
+	opacity: 0.9;
+	transition: all 0.5s;
+}
+.regButton:hover {
+	opacity: 1;
+}
+#regPair { /*Pair button*/
+	background-image: linear-gradient(130deg, var(--focus) 50%, rgb(0, 50, 180) 100%);
+}
+.regButtonT { /*Settings button text*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: openSemiBold;
+	font-size: 4vw;
+	cursor: pointer;
+}
+#regClose { /*Register container close button*/
+	position: absolute;
+	width: 7%;
+	height: 10%;
+	left: 88%;
+	top: 5%;
+	background-repeat: no-repeat;
+	background-size: 70%;
+	background-position: 55% 50%;
+	background-image: url("/assets/icons/cross.svg");
+	opacity: 0.4;
+	cursor: pointer;
+	transition: all 0.5s;
+}
+#regClose:hover {
+	opacity: 1;
+}
+#regInfo { /*Register container close button*/
+	position: absolute;
+	width: 12%;
+	height: 12%;
+	left: 84%;
+	top: 79%;
+	background-repeat: no-repeat;
+	background-size: 80%;
+	background-position: 50% 50%;
+	background-image: url("/assets/icons/info.svg");
+	opacity: 0.3;
+	cursor: pointer;
+	transition: all 0.5s;
+}
+#regInfo:hover {
+	opacity: 1;
+}
+
+#progSVG { /*Animated progress svg*/
+	position: relative;
+	height: 90%;
+	width: 90%;
+	margin-top: 2.5%;
+	margin-left: 5%;
+}
+#progText {
+	position: absolute;
+	width: 100%;
+	top: 60%;
+	color: rgb(255, 255, 255, 0.8);
+	font-family: openMedium;
+	font-size: 1.8vw;
+	text-align: center;
+	opacity: 0;
+	transition: all 0.7s;
+}
+.progCircle { /*A progress circle in the svg*/
+	fill: rgb(50, 50, 50);
+	r: 4%;
+	opacity: 0;
+	transition: all 0.7s;
+}
+.progCircleIcon { /*Icon in each progress circle*/
+	position: absolute;
+	height: 18%;
+	width: 10%;
+	margin-left: 18%;
+	top: 33%;
+	background-repeat: no-repeat;
+	background-size: 30%;
+	background-position: 50% 55%;
+	background-image: url("../assets/icons/key.svg");
+	opacity: 0;
+	filter: invert(20%);
+	z-index: 200;
+	transition: all 0.7s;
+}
+#progLine { /*The gradient progress line in the svg*/
+	width: 0;
+	fill: url(#progGrad);
+	opacity: 0;
+	transition: all 0.7s;
+}
+#stop1 {stop-color: rgb(50, 50, 50);}
+#stop2 {stop-color: rgb(255, 255, 255);}
+
+.progWindPattern { /*The wind loading animation path*/
+	fill: none;
+	stroke: url(#windPatternGrad);
+	stroke-width: 1;
+	stroke-dasharray: 200, 1000;
+	stroke-dashoffset:  1400;
+	transition: all 1s;
+}
+#stop3 {stop-color: rgb(255, 255, 255, 0);}
+#stop4 {stop-color: rgb(255, 255, 255);}
+
+@keyframes windPattern {
+	0% {stroke-dashoffset: 1400;}
+	100% {stroke-dashoffset: 250;}
+}
+
+
+#mapCont { /*Map container*/
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	margin-left: 0vw;
+	margin-top: 0vh;
+	background-color: white;
+	display: none;
+	transition: all 1s;
+}
+.mMarker { /*Unit marker on map*/
+	width: 6vw;
+	height: 6vw;
+	background-color: var(--focus);
+	border-radius: 50px;
+	background-repeat: no-repeat;
+	background-size: 70%;
+	background-position: 50% 50%;
+	background-image: url("/assets/icons/device.svg");
+	cursor: pointer;
+}
+.mapboxgl-popup-content {
+	background-color: var(--bg);
+	width: 120%;
+	border-radius: 10px;
+	opacity: 0.9;
+}
+.mapboxgl-popup-tip {
+	border-top-color: green;
+}
+.mpHeader {
+	color: rgb(255, 255, 255);
+	font-family: openBold;
+	font-size: 5vw;
+	text-align: center;
+}
+.mpSubHeader {
+	color: rgb(180, 180, 180);
+	font-family: open;
+	font-size: 3vw;
+	text-align: center;
+	margin-top: 1%;
+}
+.mpIcon {
+	position: absolute;
+	width: 20%;
+	height: 5vh;
+	margin-top: 5%;
+	margin-left: 0%;
+	background-repeat: no-repeat;
+	background-size: 80%;
+	background-position: 50% 50%;
+	border-radius: 50px ;
+}
+.mpStatusIcon {
+	position: absolute;
+	width: 6vw;
+	height: 6vw;
+	margin-left: 20%;
+	margin-top: 6%;
+	background-color: rgb(3, 220, 15);
+	background-repeat: no-repeat;
+	background-size: 75%;
+	background-position: 50% 50%;
+	background-image: url("/assets/icons/wifi.svg");
+	border-radius: 50px;
+}
+.mpStatusText {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	color: white;
+	text-align: center;
+	font-family: openBold;
+	font-size: 3.2vw;
+	text-align: left;
+}
+.mpFeatureCol {
+	width: 65%;
+	height: 5vh;
+	margin-left: 35%;
+}
+.mpTitle {
+	color: rgb(180, 180, 180);
+	font-family: openMedium;
+	font-size: 3.2vw;
+	margin-top: 3%;
+}
+.mpText {
+	color: white;
+	font-family: openMedium;
+	font-size: 3.8vw;
+	margin-top: 1%;
+}
+.mpDivider {
+	width: 100%;
+	height: 0.1vh;
+	margin-top: 0.5vh;
+	background-color: rgb(255, 255, 255, 0.5);
+	border-radius: 5px;
+}
+

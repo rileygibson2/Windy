@@ -131,6 +131,7 @@ public class WebServlet extends HttpServlet {
 			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving session key check request --- "+CLI.reset);
 			//Validation has already taken place at the top, just send back default unit to be nice
 			data = AccountUtils.getDefaultUnit(session.getUser());
+			CLI.debug(Loc.HTTP, "Session key valid");
 			break;
 
 		case authenticationLogin:

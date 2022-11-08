@@ -37,7 +37,8 @@ public class SessionManager {
 		CLI.debug(Loc.SESSION, "Created Auth Session: "+auth.formatInJSON());
 		return auth.formatInJSON();
 	}
-
+	
+	//TODO Periodically clean sessions
 	public AuthenticationSession getAuthSession(int id) {
 		//Take chance to clean expired sessions
 		Set<Integer> toRemove = new HashSet<>();
@@ -105,13 +106,8 @@ public class SessionManager {
 			sessions.add(sK);
 			CLI.debug(Loc.SESSION, "Valid authentication - issuing session key "+sK.getKey());
 
-			//Get default unit from highest level account
-			String defunit = AccountUtils.getDefaultUnit(user);
-
-			//Send session key and default unit
-			JSONObject toSend = new JSONObject();
-			toSend.put("sK", sK.getKey()).put("defunit", defunit);
-			return toSend.toString(1);
+			//Send session key
+			return sK.getKey();
 		}
 
 		CLI.debug(Loc.SESSION, "Invalid.");

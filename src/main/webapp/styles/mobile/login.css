@@ -1,0 +1,120 @@
+html {
+overflow: hidden;
+}
+
+#lCont { /*Login container*/
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	z-index: 500;
+	background-color: rgb(20, 20, 20);
+	/*background-image: linear-gradient(300deg, rgb(0, 0, 0) 50%, rgb(50, 50, 200, 0.2) 100%);*/
+	transition: all 0.7s;
+}
+#lLogo { /*Login logo*/
+	position: relative;
+	width: 90vw;
+	height: 20vh;
+	margin-left: 5vw;
+	margin-top: 12vh;
+	background-image: url("/assets/images/blogow.png");
+	background-size: 90%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+}
+#lUID {
+	margin-top: 10vh;
+}
+#lUnitIcon {
+	margin-top: 10vh;
+}
+.lInput { /*Login input*/
+	position: relative;
+	width: 70vw;
+	height: 7vh;
+	margin-top: 3vh;
+	margin-left: 15vw;
+	border-radius: 12px;
+	background-color: rgb(25, 25, 25);
+	box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.4);
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: open;
+	font-size: 4.5vw;
+	user-select: text;
+	-webkit-touch-callout: text; /* iOS Safari */
+  	-webkit-user-select: text; /* Safari */
+  	cursor: pointer;
+	border: 1.5px solid rgb(60, 60, 60);
+	overflow: hidden;
+	outline: none;
+}
+.lInput:focus {
+	border-color: rgb(100, 100, 100);
+}
+.lInputIcon { /*Login input icon*/
+	position: absolute;
+	width: 15vw;
+	height: 7.25vh;
+	margin-top: 3vh;
+	margin-left: 15vw;
+	z-index: 501;
+	border-radius: 12px 0 0 12px;
+	background-color: rgb(60, 60, 60);
+	background-size: 70%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	opacity: 0.6;
+}
+#lButton { /*Login button*/
+	position: relative;
+	width: 70vw;
+	height: 7vh;
+	margin-top: 3vh;
+	margin-left: 15vw;
+	border-radius: 12px;
+	cursor: pointer;
+	background-color: white;
+	/*background-image: linear-gradient(90deg, rgb(15, 132, 242, 1) 0%, var(--focus) 40%, var(--focus) 60%, rgb(15, 132, 242, 0.92) 100%);*/
+	background-image: linear-gradient(90deg, var(--focus) 40%, rgb(15, 132, 242, 0.92) 100%);
+	opacity: 0.9;
+	transition: all 0.5s;
+}
+#lButtonT { /*Login button text*/
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: openSemiBold;
+	font-size: 4.5vw;
+	cursor: pointer;
+	opacity: 0.9;
+	transition: all 0.5s;
+}
+
+#helpCont { /*Help popup*/
+	position: absolute;
+	padding: 1vw;
+	display: none;
+	width: 10vw;
+	background-color: rgb(50, 50, 50);
+	border-radius: 10px;
+	text-align: center;
+	color: rgb(255, 255, 255);
+	font-family: open;
+	font-size: 0.8vw;
+	z-index: 500;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+@keyframes shake {
+	0% {margin-left: 13vw}
+	20% {margin-left: 17vw}
+	40% {margin-left: 13vw}
+	60% {margin-left: 17vw}
+	80% {margin-left: 13vw}
+	100% {margin-left: 17vw}
+}
