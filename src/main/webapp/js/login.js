@@ -2,6 +2,8 @@
 var loadingWait = 500; //Time to delay a loading screen for
 
 function setupLogin() {
+	setUpBackground();
+
 	//Listeners
 	document.getElementById('lButton').addEventListener('mousedown', (event) => {
 		validateLogin();
@@ -31,6 +33,33 @@ function setupLogin() {
 	$('#lPass').on("focusout", function() {
 		$('#lPassIcon').css("background-color", "rgb(60, 60, 60)");
 	});
+}
+
+function setUpBackground() {
+	//Dynamic background
+	if (Math.floor(Math.random()*2)==1) { //Spots
+		var spots = 15;
+		for (y=0; y<spots; y++) {
+			for (x=0; x<spots; x++) {
+				makeSpot(x*(screen.width/spots)+"px", y*(screen.height/spots)+"px");
+			}
+		}
+	}
+	else { //Swipe
+		var d = document.createElement("div");
+		d.id = "dynBgGrad";
+		$("#lCont").prepend(d);
+	}
+}
+
+function makeSpot(left, top) {
+	setTimeout(function() {
+		var d = document.createElement("div");
+		d.className = "dynBgSpot";
+		d.style.left = left;
+		d.style.top = top
+		$("#dynBgSpotCont").append(d);
+	}, Math.floor(Math.random()*(6000)));
 }
 
 function gotoWebApp(sessionKey) {
