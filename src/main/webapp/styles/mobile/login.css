@@ -1,5 +1,5 @@
 html {
-overflow: hidden;
+	overflow: hidden;
 }
 
 #lCont { /*Login container*/
@@ -21,6 +21,13 @@ overflow: hidden;
 	background-size: 100%;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
+	overflow: hidden;
+}
+#dynBgGradCont { /*Used to control overflow of gradient and stop inputs moving on mobile*/
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
 }
 #dynBgGrad {
 	position: absolute;
@@ -30,11 +37,12 @@ overflow: hidden;
 	background-image: linear-gradient(70deg, rgb(0, 0, 0, 0) 45%, rgb(50, 50, 50) 50%, rgb(0, 0, 0, 0) 55%);
 	background-size: 200% 200%;
 	background-position: 100% 100%;
-	animation: dynBgGradAni 10s ease infinite;
+	animation: dynBgGradAni 7s ease infinite;
+	overflow: hidden;
 }
 @keyframes dynBgGradAni {
     0% {background-position: 100% 100%}
-    40% {background-position: 0% 0%}
+    50% {background-position: 0% 0%}
     100% {background-position: 0% 0%}
 }
 
@@ -44,6 +52,7 @@ overflow: hidden;
 	position: absolute;
 	width: 100vw;
 	height: 100vh;
+	overflow: hidden;
 }
 .dynBgSpot {
 	position: absolute;

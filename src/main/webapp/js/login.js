@@ -33,6 +33,12 @@ function setupLogin() {
 	$('#lPass').on("focusout", function() {
 		$('#lPassIcon').css("background-color", "rgb(60, 60, 60)");
 	});
+
+	//Check for message
+	var urlParam = new URLSearchParams(window.location.search).get('m');
+	if (urlParam==1) {
+		insertMessage("You have been logged out.", 1, 0);
+	}
 }
 
 function setUpBackground() {
@@ -46,9 +52,14 @@ function setUpBackground() {
 		}
 	}
 	else { //Swipe
+		//Gradient container
 		var d = document.createElement("div");
-		d.id = "dynBgGrad";
+		d.id = "dynBgGradCont";
 		$("#lCont").prepend(d);
+		//Gradient
+		d = document.createElement("div");
+		d.id = "dynBgGrad";
+		$("#dynBgGradCont").prepend(d);
 	}
 }
 
@@ -164,15 +175,15 @@ function checkResponse(req) {
 }
 
 function unauthorisedResp() {
-	insertMessage("There was an authorisation error.", 0);
+	insertMessage("There was an authorisation error.", 0, 0);
 }
 
 function clientErrorResp() {
-	insertMessage("There was an error on your side.", 0);
+	insertMessage("There was an error on your side.", 0, 0);
 }
 
 function serverErrorResp() {
-	insertMessage("There was an error on the other end.", 0);
+	insertMessage("There was an error on the other end.", 0, 0);
 }
 
 //Add login elements

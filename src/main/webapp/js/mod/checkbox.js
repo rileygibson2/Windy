@@ -1,15 +1,16 @@
 class CheckBox {
 
-	constructor(id, parent, color, implementToggle) {
+	constructor(id, parent, color, implementToggle, name) {
 		this.id = id;
-		this.parent = parent;
+		this.parent = document.getElementById(parent);
 		this.isChecked = false;
 		this.color = color;
 		this.implementToggle = implementToggle;
+		this.name = name;
 		this.buildCheckBox();
 	}
 
-	buildCheckBox() {
+	buildCheckBox(listeningElement) {
 		//Make SVG
 		var svg = document.createElementNS(nS, "svg");
 		svg.setAttribute("class", 'cbCont');
@@ -37,9 +38,15 @@ class CheckBox {
 		svg.append(inner);
 	}
 
-	toggleCheckBox() {
+	setDependancy(dependancy) {
+		this.dependancy = dependancy;
+	}
+
+	toggleCheckBox(ignoreDependants) {
 		if (this.isChecked) $("#cbInnerCircle"+this.id).css("r", "0%");
 		else $("#cbInnerCircle"+this.id).css("r", "35%");
 		this.isChecked = !this.isChecked;
+
+		if (this.dependancy!=undefined&&ignoreDependants==undefined) this.dependancy.enforceDependancy(this);
 	}
 }

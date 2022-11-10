@@ -208,132 +208,174 @@
         .stop1 { stop-color: rgb(50, 255, 50, 0.5); }
         .stop2 { stop-color: rgb(50, 255, 50, 0);}
 
-#slider {
+#filter {
 	position: absolute;
-	width: 45%;
-	height: 6%;
-	top: 2.5vh;
-	margin-left: 50%;
-	opacity: 0;
+	border-radius: 18px;
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
+	cursor: pointer;
+	transition: all 0.3s;
+}
+.filterHome { /*Full screen filter*/
+	width: 19vw;
+	height: 4vh;
+	top: 39vh;
+	left: 75vw;
 	z-index: 100;
-	cursor: pointer;
-}
-.sliderN { /*A slider node*/
-	position: relative;
-	display: inline-block;
-	top: 50%;
-	width: 16%;
-	margin-left: 7%;
-	transform: translateY(-50%);
-	text-align: center;
-	color: rgb(255, 255, 255);
-	font-family: openSemiBold;
-	font-size: 1.6vh;
-	opacity: 0.2;
-	transition: all 0.5s;
-	cursor: pointer;
-}
-.sliderN:hover {
-	opacity: 1;
-}
-.sliderNF { /*Used so js doesn't destruct the hover*/
-	opacity: 1;
-	text-shadow: 3px 3px 5px rgba(0, 0, 0, 1);
-}
-#sliderS { /*The sliding element*/
-	position: absolute;
-	left: 0;
-	top: 90%;
-	width: 16%;
-	height: 8%;
 	background-color: var(--focus);
-  	border-radius: 10px;
-  	box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
-  	transition: all 1s;
 }
-
-#cCont { /*Alert level circles container*/
+.filterExp { /*Full screen filter*/
+	width: 80vw;
+	height: 80vh;
+	top: 10vh;
+	left: 10vw;
+	z-index: 1000!important;
+	background-image: linear-gradient(to bottom right, rgb(40, 40, 40) 0%, rgb(20, 20, 20) 70%);
+}
+#filterHeader {
 	position: absolute;
-	width: 11vw;
-	height: 68vh;
-	margin-left: 87vw;
-	margin-top: 32vh;
-	opacity: 0;
-	display: none;
-}
-#cM { /*Alert level circles module*/
 	width: 100%;
 	height: 100%;
 }
-.cSVG { /*The alert circle svg*/
-	position: relative;
-	width: 80%;
-	height: 28%;
-	margin-top: 9%;
-	margin-left: 10%;
-	overflow: visible;
+.filterHeaderExp {
+	top: 1%;
+	height: 8%!important;
 }
-.cSVGC { /*An alert circle*/
-	r: 50%;
-	cy: 50%;
-	cx: 50%;
-	stroke: rgb(150, 150, 150);
-	fill: none;
-	stroke-width: 0.9vw;
-	stroke-linecap: round;
-	stroke-dasharray: 1, 10000;
-	transform-origin: center;
-	transform: rotate(-90deg);
-	filter: url(#shadow);
-	z-index: 11;
-	opacity: 1;
-	transition: stroke-dasharray 1.5s;
-}
-#cSVGC1 {stroke: rgb(0, 200, 0);}
-#cSVGC2 {stroke: rgb(252, 179, 8);}
-#cSVGC3 {stroke: rgb(200, 0, 0);}
-.cSVGF { /*Full alert circle*/
-	opacity: 0.3;
-	stroke-dasharray: 0, 0;
-	z-index: 10;
-}
-.cT { /*Box containg text for each circle*/
+#filterArrow {
 	position: absolute;
-	height: 28%;
-	width: 100%;
-	margin-top: 10.5%;
-	opacity: 0;
-	transition: opacity 3s;
-	/*background-color: rgb(0, 0, 255, 0.2);*/
+	width: 50%;
+	height: 100%;
+	left: 50%;
+	background-repeat: no-repeat;
+	background-size: 75%;
+	background-position: 50% 50%;
+	background-image: url("/assets/icons/downarrow.svg");
+	transition: all 0.3s;
 }
-.cTB { /*Center circle big text*/
-	position: relative;
-	display: inline-block;
-	padding-left: 28%;
-	margin-top: 27%;
+.filterArrowExp {
+	width: 10%!important;
+	left: 85%!important;
+	background-image: url("/assets/icons/cross.svg")!important;
+	background-size: 50%!important;
+}
+#filterLabel {
+	position: absolute;
+	width: 70%;
+	top: 50%;
+	left: 0%;
+	transform: translateY(-50%);
 	color: rgb(255, 255, 255);
-	text-align: right;
-	font-family: openBold;
-	font-size: 2.2vw;
+	text-align: center;
+	font-family: openSemiBold;
+	font-size: 3vw;
 }
-.cTM { /*Center circle medium text*/
+.filterLabelExp {
+	width: 30%!important;
+	font-family: openBold!important;
+	font-size: 5vw!important;
+}
+#filterContent {
+	display: none;
 	position: relative;
-	display: inline-block;
-	text-align: left;
-	font-family: openMedium;
-	font-size: 1vw;
-	color: rgb(255, 255, 255, 0.5);
+	height: 90%;
+	width: 100%;
+	top: 10%;
 }
-.cTS { /*Center circle small text*/
+#filterDivider {
+	position: relative;
+	width: 90%;
+	left: 5%;
+	height: 1px;
+	border-radius: 10px;
+	background-color: white;
+	opacity: 0.2;
+}
+.filterRow {
 	position: relative;
 	width: 100%;
-	color: rgb(180, 180, 180);
-	text-align: center;
+	margin-top: 5%;
+}
+.filterRowTitle {
+	position: relative;
+	width: 95%;
+	left: 5%;
+	color: rgb(255, 255, 255);
+	text-align: left;
+	font-family: openSemiBold;
+	font-size: 4vw;
+}
+.fCBCont {
+	position: relative;
+	width: 40%;
+	height: 5vw;
+	left: 15%;
+	margin-top: 5%;
+}
+.fCBHolder {
+	float: left;
+	width: 5vw;
+	height: 5vw;
+	z-index: 500;
+}
+.fCBLabelCont {
+	float: left;
+	height: 100%;
+	top: 0;
+	margin-left: 10%;
+}
+.fCBLabel {
+	position: relative;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	color: rgb(255, 255, 255);
+	text-align: left;
 	font-family: open;
-	font-size: 0.9vw;
+	font-size: 3.5vw;
+}
+
+#filterElemRowOuter {
+	position: absolute;
+	width: 70vw;
+	height: 6vh;
+	top: 38vh;
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+#filterElemRowInner {
+	position: absolute;
+	width: 200vw;
+	height: 100%;
+}
+.filterElem {
+	position: relative;
+	display: inline-block;
+	width: 15vw;
+	height: 4vh;
+	top: 50%;
+	margin-left: 3%;
+	transform: translateY(-50%);
+	z-index: 100;
+	border-radius: 18px;
+	box-shadow: 3px 3px 12px rgba(0, 0, 0, .8);
+	background-color: rgb(100, 100, 100);
 	opacity: 0.8;
 }
-#cDS { /*Alert circle drop shadow*/
-	flood-color: rgb(0, 0, 0);
-	flood-opacity: 0.5;
+.filterElemLabel {
+	position: relative;
+	width: 100%;
+	top: 50%;
+	left: 15%;
+	transform: translateY(-50%);
+	color: rgb(255, 255, 255);
+	text-align: left;
+	font-family: open;
+	font-size: 3vw;
+	background-repeat: no-repeat;
+	background-size: 15%;
+	background-position: 65% 70%;
+	background-image: url("/assets/icons/cross.svg");
+}
+
+#cCont {
+	display: none;
 }

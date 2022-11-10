@@ -34,6 +34,9 @@ class DashboardPage extends Page {
 		this.redAlarmAniKill = false;
 		this.redAlarmAniOp = 100;
 		this.redAlarmAniDir = -1;
+
+		//Mobile
+		this.filterOpen;
 	}
 
 	//Required actions
@@ -85,6 +88,9 @@ class DashboardPage extends Page {
 		this.alarmLevelTimes = [jArr[2].level1, jArr[2].level2, jArr[2].level3];
 
 		this.implementData();
+
+		//Configure for mobile
+		if (isMobile) page.mobileConfigure();
 	}
 
 	implementData() {
@@ -185,6 +191,12 @@ class DashboardPage extends Page {
 		});
 
 		this.setupLive();
+	}
+
+	mobileConfigure() {
+		//Swap slider components
+		$("#slider").remove();
+		addComponent('effCont', 'mobilecomponents/filter.html');
 	}
 
 	updateLiveValues() {
@@ -298,11 +310,72 @@ class DashboardPage extends Page {
 		$('#rtDirIndicator').css('transform', 'rotate('+this.rtDegrees+'deg');
 	}
 
-	//Graph module slider actions
+	//Graph module slider and filter actions
+
+	toggleFilter() {
+		if (!page.filterOpen) {
+			$("#filterContent").css("display", "block");
+			//Lazy initialise filter checkboxes if first time open
+			//CB initialisation must be done once bounding div is display:block as some browsers don't give width of unrendered block
+			if (page.filterOpen==undefined) {
+				var color = "rgb(180, 180, 180)";
+
+				//View mode checkboxes
+				page.vmCB = new DependantCheckBoxes();
+				for (var i=1; i<5; i++) {
+					page.vmCB.add(new CheckBox(i, "fCB"+i, color, true, "Hour"));
+				}
+				page.vmCB.get(0).toggleCheckBox();
+
+				page.cb5 = new CheckBox(5, "fCB5", color, true);
+				page.cb6 = new CheckBox(6, "fCB6", color, true);
+				page.cb7 = new CheckBox(7, "fCB7", color, true);
+				page.cb8 = new CheckBox(8, "fCB8", color, true);
+			}
+
+			$("#filter").removeClass("filterHome");
+			$("#filter").addClass("filterExp");
+			$("#filterHeader").addClass("filterHeaderExp");
+			$("#filterArrow").addClass("filterArrowExp");
+			$("#filterLabel").addClass("filterLabelExp");
+			//blurComponents();
+			addBlocker(page.toggleFilter);
+			page.filterOpen = true;
+		}
+		else {
+			//Update graph with chosen values
+			var vm = page.vmCB.getChecked();
+			page.gViewMode = vm.id;
+			page.updatePageData();
+			page.addFilterElement(vm.name);
+
+			$("#filter").removeClass("filterExp");
+			$("#filter").addClass("filterHome");
+			$("#filterHeader").removeClass("filterHeaderExp");
+			$("#filterArrow").removeClass("filterArrowExp");
+			$("#filterLabel").removeClass("filterLabelExp");
+			$("#filterContent").css("display", "none");
+			//unblurComponents();
+			removeBlocker();
+			page.filterOpen = false;
+		}
+	}
+
+	addFilterElement(name) {
+		var e = document.createElement("div");
+		e.className = "filterElem";
+		var l = document.createElement("div");
+		l.className = "filterElemLabel";
+		l.innerHTML = name;
+		e.append(l);
+		$('#filterElemRowInner').append(e);
+	}
 
 	lastObj;
 
 	moveSlider(obj, updated) {
+		if (isMobile) return;
+
 		var a = document.getElementById("slider").getBoundingClientRect().left;
 		$('#sliderS').css("left", obj.getBoundingClientRect().left-a);
 		
@@ -335,13 +408,19 @@ class DashboardPage extends Page {
 		var gTop = h*0.06;
 		var gLeft = w*0.05;
 		var gRight = w*0.95;
+		if (isMobile) {
+			gLeft = 0;
+			gRight = w;
+		}
 
 		//Axis lines
-		var path = document.createElementNS(nS, "path");
-		var d = "M "+gLeft+" "+gBot+" L "+gLeft+" "+gTop;
-		path.setAttribute("d", d);
-		path.setAttribute("class", 'gAxisLine');
-		svg.append(path);
+		if (!isMobile) {
+			var path = document.createElementNS(nS, "path");
+			var d = "M "+gLeft+" "+gBot+" L "+gLeft+" "+gTop;
+			path.setAttribute("d", d);
+			path.setAttribute("class", 'gAxisLine');
+			svg.append(path);
+		}
 
 		path = document.createElementNS(nS, "path");
 		d = "M "+gLeft+" "+gBot+" L "+gRight+" "+gBot;
@@ -400,6 +479,7 @@ class DashboardPage extends Page {
 			if (isMobile) {
 				text.setAttribute("x", (gLeft*0.5)-((gLeft*0.22)*t.length));
 				text.setAttribute("font-size", (w*0.025));
+				if (i==0) continue; //Dont show '100' marking
 			}
 			text.textContent = t;
 			svg.append(text);
@@ -687,7 +767,7 @@ class DashboardPage extends Page {
 	 	this.redAlarmAniDir = -1;
 
 		if (!this.alertMessageShown) {
-			insertMessage("Warning - Extremely high wind speeds", 0);
+			insertMessage("Warning - Extremely high wind speeds", 0, 1);
 			this.alertMessageShown = true;
 		}
 
@@ -704,7 +784,7 @@ class DashboardPage extends Page {
 
 	initiateAmberAlarm() {
 		if (!this.alertMessageShown) {
-			insertMessage("Caution - Wind speeds are higher than normal", 0);
+			insertMessage("Caution - Wind speeds are higher than normal", 0, 0);
 			this.alertMessageShown = true;
 		}
 	}

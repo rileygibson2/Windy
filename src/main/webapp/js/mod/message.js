@@ -1,9 +1,11 @@
-function insertMessage(message, mode) {
-	//Block screen
-	var blocker = document.createElement("div");
-	blocker.id = "messageBlocker";
-	$('body').append(blocker);
-
+function insertMessage(message, iconCode, blockScreen, time) {
+	if (blockScreen) {
+		//Block screen
+		var blocker = document.createElement("div");
+		blocker.id = "messageBlocker";
+		$('body').append(blocker);
+		blocker.addEventListener("click", removeMessage);
+	}
 	//Message container
 	var div = document.createElement("div");
 	div.id = 'message';
@@ -19,7 +21,7 @@ function insertMessage(message, mode) {
 	//Icon
 	icon = document.createElement("div");
 	icon.id = 'messageIcon';
-	if (mode==0) { //Bad message
+	if (iconCode==0) {
 		icon.style.backgroundImage = 'url("../assets/icons/warning.svg")';
 	}
 	else icon.style.backgroundImage = 'url("../assets/icons/tick.svg")';
@@ -27,20 +29,24 @@ function insertMessage(message, mode) {
 
 	//Event listeners
 	close.addEventListener("click", removeMessage);
-	blocker.addEventListener("click", removeMessage);
 	$('body').append(div);
 
+	//Animate message in
 	setTimeout(function() {
-		//Animate message in
 		$('#message').css('top', '4vh');
-		$('#messageBlocker').css('opacity', '0.6');
-		
-		//Blur stuff out
-		$('#sc').css('filter', 'blur(10px)');
-		$('#effCont').css('filter', 'blur(10px)');
-		$('#sbCont').css('filter', 'blur(10px)');
-		$('#sICont').css('filter', 'blur(10px)');
 	}, 500);
+
+	//Blur stuff out
+	if (blockScreen) {
+		setTimeout(function() {
+			$('#messageBlocker').css('opacity', '0.6');
+			blurComponents();
+		}, 500);
+	}
+
+	//Remove timer
+	if (time==undefined) time = 5000;
+	setTimeout(function() {removeMessage();}, 5000);
 }
 
 function removeMessage() {
@@ -54,8 +60,5 @@ function removeMessage() {
 	}, 1000);
 
 	//Unblur stuff
-	$('#sc').css('filter', 'none');
-	$('#effCont').css('filter', 'none');
-	$('#sbCont').css('filter', 'none');
-	$('#sICont').css('filter', 'none');
+	unblurComponents();
 }

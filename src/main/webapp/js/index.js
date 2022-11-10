@@ -2,6 +2,8 @@
 var nS = "http://www.w3.org/2000/svg";
 var page;
 var activeSection; //Which side bar section we are on
+var descriptions = ["Real time data and stats", "Check status and add/remove units", "See historical records", "Formatted information for different events", "Predicted wind and weather data"];
+var persComps = ["sc", "effCont", "sICont", "sbCont"]; //Persistant components
 
 //Synchronisation booleans
 var animatingOut;
@@ -18,6 +20,7 @@ var loadingWait = 500; //Time to delay a loading screen for
 var isMobile;
 var sideBarOpen;
 
+
 function load() {
 	//Configure for mobile first
 	if (screen.width<600) mobileConfiguration();
@@ -28,7 +31,7 @@ function load() {
 	//Check cookies and params for stored session keys
 	var cookie = getCookie("wTXsK");
 	var urlParam = new URLSearchParams(window.location.search).get('s');
-	if (cookie==""&&urlParam==null) gotoLogin(); //No stored session key
+	if (cookie==""&&urlParam==null) gotoLogin(0); //No stored session key
  	if (urlParam!=null) sessionKey = urlParam;
  	if (cookie!="") sessionKey = cookie;
 
@@ -43,9 +46,9 @@ function load() {
 		if (req.status==200) { //Key is still valid
 			showAllComponents();
 			unit = req.responseText;
-			setTimeout(switchSections, 0, 1);
+			setTimeout(switchSections, 0, 0);
 		}
-		else gotoLogin(); //Key is not still valid
+		else gotoLogin(0); //Key is not still valid
 	}
 	req.send();
 
@@ -57,39 +60,53 @@ function load() {
 function mobileConfiguration() {
 	isMobile = true;
 
-	//Side bar tap open
-	$("#sbLogo").click(function(event) { 
-		toggleSideBar();
+	//Get mobile sidebar
+	var req = new XMLHttpRequest();
+	req.open('GET', 'mobilecomponents/sidebar.html', true);
+	req.onreadystatechange = function() {
+		if (!checkResponse(req)) return;
+		$('#sbCont').empty(); //Empty container
+		$('#sbCont').html(req.responseText); //Load new elements into container
+	}
+	req.send();
+	
+
+	//Sidebar swipe open action
+	var hammertime = new Hammer(document.getElementById('effCont'));
+	hammertime.on('swipe', function(ev) {
+		if (ev.direction==4&&!sideBarOpen) {
+			var finalX = ev.srcEvent.pageX || ev.srcEvent.screenX || 0;
+  			start = finalX - ev.deltaX;
+
+			if (start<(screen.width*0.2)) {
+				//Only open if swip started in first 20% of screen
+				toggleSideBar();
+			}
+		}
+		if (ev.direction==2&&sideBarOpen) toggleSideBar();
 	});
 }
 
 function toggleSideBar() {
 	if (sideBarOpen) {
-		$('#sbCont').css("margin-left", "-75vw");
+		$('#sbCont').css("margin-left", "-60vw");
+		$('#sbLogo').css("opacity", "1");
+		unblurComponents("sbCont");
+		removeBlocker();
 		sideBarOpen = false;
 	}
 	else {
 		$('#sbCont').css("margin-left", "0vw");
+		$('#sbLogo').css("opacity", "0");
+		blurComponents("sbCont");
+		addBlocker(toggleSideBar);
 		sideBarOpen = true;
 	}
 }
 
-function hideAllComponents() {
-	$('#effCont').css("display", "none");
-	$('#sbCont').css("display", "none");
-	$('#sc').css("display", "none");
-	$('#sICont').css("display", "none");
-}
-
-function showAllComponents() {
-	$('#effCont').css("display", "block");
-	$('#sbCont').css("display", "block");
-	$('#sc').css("display", "block");
-	$('#sICont').css("display", "block");
-}
-
-function gotoLogin() {
-	window.location.replace("/login");
+function gotoLogin(m) {
+	if (m==0) window.location.replace("/login");
+	else window.location.replace("/login?m=1");
 }
 
 function preset() {
@@ -100,11 +117,16 @@ function preset() {
 function switchSections(i) {
 	//Move the tab indicator
 	unhoverSB();
-	var a = document.getElementById("sbCont").getBoundingClientRect().top;
-	$('#sbS').css("top", document.getElementById("sbN"+(i+1)).getBoundingClientRect().top-a);
-
-	//Close sidebar if mobile and open
-	if (isMobile&&sideBarOpen) toggleSideBar();
+	if (!isMobile) {
+		var a = document.getElementById("sbCont").getBoundingClientRect().top;
+		$('#sbS').css("top", document.getElementById("sbN"+(i+1)).getBoundingClientRect().top-a);
+	}
+	if (isMobile) {
+		if (sideBarOpen) toggleSideBar(); //Close sidebar if open
+		var a = $("#sbCont").offset().top;
+		var t = $("#sbNCont"+(i+1)).offset().top;
+		$('#sbS').css("top", t-a);
+	}
 
 	//Check sections
 	if (animatingOut||animatingOut||activeSection==i) return;
@@ -115,36 +137,31 @@ function switchSections(i) {
 
 	//Load new section
 	var title;
-	var text;
+	var text = descriptions[activeSection];
 	var unitText;
 	switch (activeSection) {
 		case 0: 
 			if (unitName==undefined) title = "Dashboard";
 			else title = unitName;
-			text = "Real time data and stats";
 			page = new DashboardPage("dashboard");
 			break;
 		case 1:
 			title = "Devices";
-			text = "Check status and add/remove units";
 			unitText = "";
 			page = new UnitsPage("units");
 			break;
 		case 2:
 			title = "Records";
-			text = "See historical records";
 			unitText = "";
 			page = new HistoryPage("history");
 			break;
 		case 3:
 			title = "Reports";
-			text = "Professionally formatted information for different events";
 			unitText = "";
 			page = new ReportsPage("reports");
 			break;
 		case 4:
 			title = "Forecast";
-			text = "Predicted wind and weather data";
 			unitText = "";
 			page = new ForecastPage("forecast");
 			break;
@@ -180,6 +197,8 @@ function switchSections(i) {
 //Sidebar actions
 
 function hoverSB(i) {
+	if (isMobile) return; //No hover effect for mobile
+
 	//Dim all others and set this to full
 	$('.sbN').eq(i).css('opacity', '1');
 	for (z=0; z<5; z++) {
@@ -194,6 +213,8 @@ function hoverSB(i) {
 }
 
 function unhoverSB() {
+	if (isMobile) return; //No hover effect for mobile
+
 	//Reset all
 	for (i=0; i<5; i++) {
 		$('.sbN').eq(i).css('opacity', '1');
@@ -210,11 +231,50 @@ function logout() {
 	passwordField = "";
 	deleteCookie();
 	//TODO need to send code to server to invalidate session
-	gotoLogin();
+	gotoLogin(1);
 }
 
 
 //Generic functions
+
+function blurComponents(omit) {
+	for (i=0; i<persComps.length; i++) {
+		if (persComps[i]!=omit) $('#'+persComps[i]).css('filter', 'blur(10px)');
+	}
+}
+
+function unblurComponents(omit) {
+	for (i=0; i<persComps.length; i++) {
+		if (persComps[i]!=omit) $('#'+persComps[i]).css('filter', 'none');
+	}
+}
+
+function hideAllComponents() {
+	for (i=0; i<persComps.length; i++) {
+		$('#'+persComps[i]).css('display', 'none');
+	}
+}
+
+function showAllComponents() {
+	for (i=0; i<persComps.length; i++) {
+		$('#'+persComps[i]).css('display', 'block');
+	}
+}
+
+//Element needs to be z>300 to be above blocker
+function addBlocker(callback) {
+	var blocker = document.createElement("div");
+	blocker.id = "genericBlocker";
+	$('body').append(blocker);
+	blocker.addEventListener("click", callback);
+}
+
+function removeBlocker() {
+	$('#genericBlocker').css('opacity', '0');
+	setTimeout(function() {
+		$('#genericBlocker').remove();
+	}, 200);
+}
 
 function fadeIn(obj) {obj.css("animation", "fadeIn 0.8s ease-out forwards");}
 
@@ -258,6 +318,16 @@ function closeHelp() {
 	setTimeout(function() {$('#helpCont').css('display', 'none');}, 100);
 }
 
+function addComponent(container, location) {
+	var req = new XMLHttpRequest();
+	req.open('GET', location, true);
+	req.onreadystatechange = function() {
+		if (!checkResponse(req)) return;
+		$('#'+container).append(req.responseText); //Load new elements into container
+	}
+	req.send();
+}
+
 function animateExit(start) {
 	//Animate elements out - nested for loop used because first element is a container for visible modules
 	animatingOut = true;
@@ -286,15 +356,15 @@ function checkResponse(req) {
 }
 
 function unauthorisedResp() {
-	insertMessage("There was an authorisation error.", 0);
+	insertMessage("There was an authorisation error.", 0, 0);
 }
 
 function clientErrorResp() {
-	insertMessage("There was an error on your side.", 0);
+	insertMessage("There was an error on your side.", 0, 0);
 }
 
 function serverErrorResp() {
-	insertMessage("There was an error on the other end.", 0);
+	insertMessage("There was an error on the other end.", 0, 0);
 }
 
 

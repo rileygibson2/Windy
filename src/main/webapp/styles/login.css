@@ -23,7 +23,7 @@
 	width: 400vw;
 	height: 100vh;
 	left: -100vw;
-	background-image: linear-gradient(90deg, rgb(0, 0, 0, 0) 45%, rgb(40, 40, 40) 50%, rgb(0, 0, 0, 0) 55%);
+	background-image: linear-gradient(90deg, rgb(0, 0, 0, 0) 45%, rgb(50, 50, 50) 50%, rgb(0, 0, 0, 0) 55%);
 	background-size: 200% 200%;
 	background-position: 100% 100%;
 	animation: dynBgGradAni 15s ease infinite;
@@ -45,7 +45,7 @@
 	position: absolute;
 	width: 12vw;
 	height: 12vw;
-	background-image: radial-gradient(rgb(40, 40, 40) 0%, rgb(0, 0, 0, 0) 80%);
+	background-image: radial-gradient(rgb(50, 50, 50) 0%, rgb(0, 0, 0, 0) 80%);
 	animation: dynBgSpotAni 8s ease infinite;
 }
 @keyframes dynBgSpotAni {
@@ -81,9 +81,9 @@
 	font-size: 1.4vw;
 	user-select: text;
 	-webkit-touch-callout: text; /* iOS Safari */
-  -webkit-user-select: text; /* Safari */
-  cursor: pointer;
-  border: 1px solid rgb(60, 60, 60);
+  	-webkit-user-select: text; /* Safari */
+  	cursor: pointer;
+  	border: 1px solid rgb(60, 60, 60);
 	overflow: hidden;
 	outline: none;
 }
