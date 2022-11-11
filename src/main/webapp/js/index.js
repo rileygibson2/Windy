@@ -72,14 +72,14 @@ function mobileConfiguration() {
 	
 
 	//Sidebar swipe open action
-	var hammertime = new Hammer(document.getElementById('effCont'));
+	var hammertime = new Hammer(document.body);
 	hammertime.on('swipe', function(ev) {
 		if (ev.direction==4&&!sideBarOpen) {
 			var finalX = ev.srcEvent.pageX || ev.srcEvent.screenX || 0;
   			start = finalX - ev.deltaX;
 
+  			//Only open if swip started in first 20% of screen
 			if (start<(screen.width*0.2)) {
-				//Only open if swip started in first 20% of screen
 				toggleSideBar();
 			}
 		}
@@ -198,7 +198,7 @@ function switchSections(i) {
 
 function hoverSB(i) {
 	if (isMobile) return; //No hover effect for mobile
-
+	
 	//Dim all others and set this to full
 	$('.sbN').eq(i).css('opacity', '1');
 	for (z=0; z<5; z++) {

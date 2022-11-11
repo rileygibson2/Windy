@@ -1,0 +1,16 @@
+.caroselCircle {
+	position: relative;
+	display: inline-block;
+	width: 2.5vw;
+	height: 2.5vw;
+	margin-left: 2vw;
+	border-radius: 50px;
+	background-color: white;
+	opacity: 0.5;
+	transform: scale(0.8);
+	transition: all 0.2s;
+}
+.caroselCircleSelected {
+	opacity: 1!important;
+	transform: scale(1)!important;
+}

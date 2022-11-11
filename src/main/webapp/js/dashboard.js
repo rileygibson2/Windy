@@ -37,6 +37,7 @@ class DashboardPage extends Page {
 
 		//Mobile
 		this.filterOpen;
+		this.caroselLoaded = false;
 	}
 
 	//Required actions
@@ -197,6 +198,16 @@ class DashboardPage extends Page {
 		//Swap slider components
 		$("#slider").remove();
 		addComponent('effCont', 'mobilecomponents/filter.html');
+		
+		//Build c
+		if (!this.caroselLoaded) {
+			var c = new Carosel(0.9, $('#rtCaroselDotCont'));
+			c.add(document.getElementById('rtSpeed'));
+			c.add(document.getElementById('rtDir'));
+			c.add(document.getElementById('rtGusts'));
+			c.add(document.getElementById('rtCircles'));
+			this.caroselLoaded = true;
+		}
 	}
 
 	updateLiveValues() {
@@ -294,6 +305,8 @@ class DashboardPage extends Page {
 		setTimeout(removeLoading, start);
 		setTimeout(fadeIn, start, $("#rtSpeed"));
 		setTimeout(fadeIn, start+50, $("#rtDir"));
+		setTimeout(fadeIn, start+50, $("#rtGusts"));
+		setTimeout(fadeIn, start+50, $("#rtCircles"));
 		setTimeout(fadeIn, start+100, $("#cCont"));
 		setTimeout(fadeIn, start+150, $("#graph"));
 		setTimeout(fadeIn, start+200, $("#slider"));
