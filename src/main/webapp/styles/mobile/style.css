@@ -106,14 +106,14 @@ html {
 #sbLogo { /*Logo on side bar*/
 	position: absolute;
 	width: 32%;
-	height: 11%;
+	height: 8%;
 	top: 0%;
 	transform: none;
 	left: 95%;
 	margin-top: 0;
 	opacity: 1;
 	background-image: url("/assets/images/logow.png");
-	background-size: 75%;
+	background-size: 70%;
 	background-position: 80% 50%;
 	background-repeat: no-repeat;
 	background-color: var(--focus);

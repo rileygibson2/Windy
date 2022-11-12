@@ -4,6 +4,7 @@ var page;
 var activeSection; //Which side bar section we are on
 var descriptions = ["Real time data and stats", "Check status and add/remove units", "See historical records", "Formatted information for different events", "Predicted wind and weather data"];
 var persComps = ["sc", "effCont", "sICont", "sbCont"]; //Persistant components
+var alertLevels = [50, 80];
 
 //Synchronisation booleans
 var animatingOut;
@@ -323,7 +324,7 @@ function addComponent(container, location) {
 	req.open('GET', location, true);
 	req.onreadystatechange = function() {
 		if (!checkResponse(req)) return;
-		$('#'+container).append(req.responseText); //Load new elements into container
+		container.append(req.responseText); //Load new elements into container
 	}
 	req.send();
 }

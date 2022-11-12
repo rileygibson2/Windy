@@ -29,6 +29,10 @@ class DashboardPage extends Page {
 		this.gVisualData = []; //Used for initial graph animation
 		this.gViewMode = 1;
 		this.alarmLevelTimes = [];
+		this.graphModes = ["Hour", "Day", "Week", "Month"];
+
+		//Graph extras
+		this.gAlertLines = false;
 
 		//Red alarm animation
 		this.redAlarmAniKill = false;
@@ -92,6 +96,7 @@ class DashboardPage extends Page {
 
 		//Configure for mobile
 		if (isMobile) page.mobileConfigure();
+		else page.desktopConfigure();
 	}
 
 	implementData() {
@@ -127,21 +132,42 @@ class DashboardPage extends Page {
 			this.gPointsOnX = 48; //2 readings an hour - every 30 mins
 			var d = Date.now()+3600000; //Add one increment
 
-			for (i=0; i<24; i++) {
-				var date = new Date(d-((i)*3600000));
-				var h = date.getHours();
-				if (h==0) { //New day so add day format
-					this.gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
-				}
-				else { //Add hour formula
-					var t = 'am';
-					if (h>12) {
-						t = 'pm';
-						h -= 12;
+			if (isMobile) { //Half as may markings for mobile
+				for (i=0; i<12; i++) {
+					var date = new Date(d-((i)*7.2e+6));
+					var h = date.getHours();
+					if (h==0) { //New day so add day format
+						this.gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
 					}
-					if (h==12) t = 'pm';
-					if (h==0) h = 12;
-					this.gXMarkings[i] = h+t;
+					else { //Add hour formula
+						var t = 'am';
+						if (h>12) {
+							t = 'pm';
+							h -= 12;
+						}
+						if (h==12) t = 'pm';
+						if (h==0) h = 12;
+						this.gXMarkings[i] = h+t;
+					}
+				}
+			}
+			else {
+				for (i=0; i<24; i++) {
+					var date = new Date(d-((i)*3600000));
+					var h = date.getHours();
+					if (h==0) { //New day so add day format
+						this.gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
+					}
+					else { //Add hour formula
+						var t = 'am';
+						if (h>12) {
+							t = 'pm';
+							h -= 12;
+						}
+						if (h==12) t = 'pm';
+						if (h==0) h = 12;
+						this.gXMarkings[i] = h+t;
+					}
 				}
 			}
 			break;
@@ -172,10 +198,19 @@ class DashboardPage extends Page {
 			date.setMilliseconds(0);
 			var d = date.getTime()+4.32e+7; //Add one increment
 
-			for (i=0; i<30; i++) {
-				date = new Date(d-((i)*8.64e+7));
-				if (date.getDate()==1) this.gXMarkings[i] = date.toLocaleString('default', {month: 'long'})
-				else this.gXMarkings[i] = date.getDate()+this.dateSuffix(date.getDate());
+			if (isMobile) { //Half as may markings for mobile
+				for (i=0; i<15; i++) {
+					date = new Date(d-((i)*1.728e+8));
+					if (date.getDate()==1||date.getDate()==2) this.gXMarkings[i] = date.toLocaleString('default', {month: 'short'})
+					else this.gXMarkings[i] = date.getDate()+this.dateSuffix(date.getDate());
+				}
+			}
+			else {
+				for (i=0; i<30; i++) {
+					date = new Date(d-((i)*8.64e+7));
+					if (date.getDate()==1) this.gXMarkings[i] = date.toLocaleString('default', {month: 'short'})
+					else this.gXMarkings[i] = date.getDate()+this.dateSuffix(date.getDate());
+				}
 			}
 			break;
 		}
@@ -197,7 +232,7 @@ class DashboardPage extends Page {
 	mobileConfigure() {
 		//Swap slider components
 		$("#slider").remove();
-		addComponent('effCont', 'mobilecomponents/filter.html');
+		addComponent($('body'), 'mobilecomponents/filter.html');
 		
 		//Build c
 		if (!this.caroselLoaded) {
@@ -208,6 +243,12 @@ class DashboardPage extends Page {
 			c.add(document.getElementById('rtCircles'));
 			this.caroselLoaded = true;
 		}
+	}
+
+	desktopConfigure() {
+		$('#filterElemRow').remove();
+		$('#filterElemGrad').remove();
+		$('#filterIcon').remove();
 	}
 
 	updateLiveValues() {
@@ -327,48 +368,43 @@ class DashboardPage extends Page {
 
 	toggleFilter() {
 		if (!page.filterOpen) {
-			$("#filterContent").css("display", "block");
+			$("#filter").css("display", "block");
+
 			//Lazy initialise filter checkboxes if first time open
 			//CB initialisation must be done once bounding div is display:block as some browsers don't give width of unrendered block
 			if (page.filterOpen==undefined) {
 				var color = "rgb(180, 180, 180)";
 
 				//View mode checkboxes
-				page.vmCB = new DependantCheckBoxes();
+				page.vmCB = new DependantCheckBoxes(); //View mode checkboxes
 				for (var i=1; i<5; i++) {
-					page.vmCB.add(new CheckBox(i, "fCB"+i, color, true, "Hour"));
+					page.vmCB.add(new CheckBox(i, "fCB"+i, color, true, page.graphModes[i-1]));
 				}
 				page.vmCB.get(0).toggleCheckBox();
 
-				page.cb5 = new CheckBox(5, "fCB5", color, true);
-				page.cb6 = new CheckBox(6, "fCB6", color, true);
-				page.cb7 = new CheckBox(7, "fCB7", color, true);
-				page.cb8 = new CheckBox(8, "fCB8", color, true);
+				page.voCB = Array(3); //View options checkboxes
+				page.voCB[0] = new CheckBox(5, "fCB5", color, true, "Alert lines");
+				page.voCB[1] = new CheckBox(6, "fCB6", color, true, "Min speeds");
+				page.voCB[2] = new CheckBox(7, "fCB7", color, true, "Gust speeds");
 			}
 
-			$("#filter").removeClass("filterHome");
-			$("#filter").addClass("filterExp");
-			$("#filterHeader").addClass("filterHeaderExp");
-			$("#filterArrow").addClass("filterArrowExp");
-			$("#filterLabel").addClass("filterLabelExp");
-			//blurComponents();
+			//Open filter
+			setTimeout(function() {
+				$("#filter").css("opacity", "1");
+			}, 1);
+			blurComponents();
 			addBlocker(page.toggleFilter);
 			page.filterOpen = true;
 		}
 		else {
-			//Update graph with chosen values
-			var vm = page.vmCB.getChecked();
-			page.gViewMode = vm.id;
-			page.updatePageData();
-			page.addFilterElement(vm.name);
+			page.applyFilter();
 
-			$("#filter").removeClass("filterExp");
-			$("#filter").addClass("filterHome");
-			$("#filterHeader").removeClass("filterHeaderExp");
-			$("#filterArrow").removeClass("filterArrowExp");
-			$("#filterLabel").removeClass("filterLabelExp");
-			$("#filterContent").css("display", "none");
-			//unblurComponents();
+			//Close filter
+			$("#filter").css("opacity", "0");
+			setTimeout(function() {
+				$("#filter").css("display", "none");
+			}, 300);
+			unblurComponents();
 			removeBlocker();
 			page.filterOpen = false;
 		}
@@ -377,11 +413,44 @@ class DashboardPage extends Page {
 	addFilterElement(name) {
 		var e = document.createElement("div");
 		e.className = "filterElem";
+		e.id = "filterElem"+name;
+		e.onclick = function() {
+			e.remove();
+			page.applyFilter();
+		};
 		var l = document.createElement("div");
 		l.className = "filterElemLabel";
 		l.innerHTML = name;
 		e.append(l);
-		$('#filterElemRowInner').append(e);
+		var c = document.createElement("div");
+		c.className = "filterElemCross";
+		e.append(c);
+		$('#filterElemRow').append(e);
+	}
+
+	applyFilter() {
+		//Reset
+		$('#filterElemRow').empty();
+		page.gAlertLines = false;
+
+		//Selected view mode
+		var vm = page.vmCB.getChecked();
+		page.gViewMode = vm.id;
+		page.addFilterElement(vm.name);
+		
+		//View options
+		$('#filterElemRow').empty();
+		page.addFilterElement(vm.name);
+		for (var i in page.voCB) {
+			if (page.voCB[i].isChecked) {
+				var name = page.voCB[i].name;
+				page.addFilterElement(page.voCB[i].name);
+				if (name=="Alert lines") page.gAlertLines = true;
+			}
+		}
+
+		//Update graph
+		page.updatePageData();
 	}
 
 	lastObj;
@@ -508,6 +577,18 @@ class DashboardPage extends Page {
 			path.setAttribute("d", d);
 			path.setAttribute("class", 'gThinLine');
 			svg.append(path);
+		}
+
+		//Alert lines
+		if (this.gAlertLines) {
+			for (i=0; i<2; i++) {
+				var h = ((gBot-gTop)*(1-(alertLevels[i]/100)))+gTop;
+				path = document.createElementNS(nS, "path");
+				d = "M "+gLeft+" "+h+" L "+gRight+" "+h;
+				path.setAttribute("d", d);
+				path.id = 'gAlertLine'+(i+1);
+				svg.append(path);
+			}
 		}
 
 		//Data line and gradient
