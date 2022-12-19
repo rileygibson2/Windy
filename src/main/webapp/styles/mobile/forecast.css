@@ -1,69 +1,49 @@
-#fPoweredBy { /*Attribution text*/
-	position: absolute;
-	width: 97%;
-	margin-top: 95vh;
-	text-align: right;
-	color: rgb(180, 180, 180);
-	font-family: open;
-	font-size: 1vw;
-	opacity: 0;
+#fCaroselHolder {
+	width: 500vw;
+	height: 40vh;
+	margin-top: 12vh;
+	overflow: visible;
 }
-
-#fMCont1 { /*Top row module container*/
-	width: 80vw;
-	height: 22vw;
-	margin-left: 11vw;
-	margin-top: 6vh;
-}
-#fMCont2 { /*Second row module container*/
-	width: 90vw;
-	height: 25vw;
-	margin-left: 11vw;
-	margin-top: 5vh;
+#fCaroselDotCont {
+	position: relative;
+	width: 100vw;
+	height: 5vw;
+	margin-top: 3vh;
+	margin-left: 0vw;
+	display: flex;
+  	justify-content: center;
 }
 
 .fM { /*A forecast element module*/
 	position: relative;
-	display: inline-block;
-	width: 20vw;
-	height: 100%;
-	margin-left: 2.5vw;
+	float: left;
+	height: 40vh;
+	width: 80vw;
+	top: 0;
 	background-color: var(--fg);
 	border-radius: 20px;
 	box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
 	opacity: 0;
-}
-.fM:first-child {
-	margin-left: 0;
+	transition: all 0.2s;
 }
 #fWindM { /*Wind module*/
-	width: 35vw;
+	margin-left: 10vw;
 	background-image: linear-gradient(to bottom right, rgb(90, 90, 90) 0%, rgb(30, 30, 30) 50%);
 }
 #fTempM { /*Temperature module*/
-	width: 22vw;
 	background-image: linear-gradient(130deg, rgb(255, 180, 0) 0%, rgb(255, 100, 50) 60%);
 }
 #fRainM { /*Rain module*/
-	margin-left: 0;
-	width: 25vw;
 	background-image: linear-gradient(130deg, rgb(98, 172, 254) 0%, rgb(11, 107, 225) 60%);
 	background-image: linear-gradient(130deg, #9400F9 0%, #12217F 50%);
 }
 #fSnowM { /*Snow module*/
-	top: -30%;
-	height: 70%;
 	background-image: linear-gradient(130deg, rgb(110, 110, 110) 0%, rgb(230, 230, 230) 60%);
 }
 #fPrecipM { /*Precipitation module*/
-	top: -30%;
-	height: 70%;
 	background-image: linear-gradient(to bottom right, rgb(120, 120, 120) 0%, rgb(60, 60, 60) 50%);
 }
 #fSunsetM { /*Sunrise/Sunset module*/
-	top: -30%;
-	width: 14vw;
-	height: 70%;
 	background-image: linear-gradient(to bottom right, rgb(80, 80, 80) 0%, rgb(30, 30, 30) 50%);
 	background-image: linear-gradient(110deg, rgb(180, 110, 80) 0%, rgb(15, 15, 40) 65%);
 }
@@ -71,52 +51,44 @@
 	width: 100%;
 	height: 20%;
 	margin-top: 4%;
+	display: flex;
+  	align-items: center;
+  	flex-direction: row;
 }
 .fMHeaderBar:first-child {
 	margin-top: 0;
 }
 .fMIcon { /*Forecast module icon*/
-	position: absolute;
-	height: 3vw;
-	width: 3vw;
-	margin-left: 0.7vw;
-	margin-top: 1vh;
+	position: relative;
+	display: inline-block;
+	height: 12vw;
+	width: 12vw;
+	margin-left: 2vw;
 	background-repeat: no-repeat;
-	background-size: 80%;
+	background-size: 90%;
 	background-position: 50% 50%;
 }
 .fMIconInline { /*Used for the modules which are just lots of headers*/
 	margin-left: 0.5%;
 }
-.fMTitleCont { /*Module title container to allow text inside to be in line with icon*/
-	position: absolute;
-	height: 3vw;
-	width: 80%;
-	margin-left: 4vw;
-	margin-top: 1vh;
-}
-.fMTitleContInline { /*Used for the modules which are just lots of headers*/
-	margin-left: 16%;
-}
 .fMTitle { /*Module title*/
 	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
+	display: inline-block;
+	margin-left: 1vw;
 	color: rgb(255, 255, 255);
 	font-family: openBold;
-	font-size: 1vw;
+	font-size: 3vw;
 }
 .fMText {
-	position: relative;
-	display: inline-block;
-	width: 45%;
-	top: 50%;
-	left: 50%;
-	transform: translateY(-40%);
+	position: absolute;
+	width: 92%;
+	left: 0;
+	margin-left: 0;
 	color: rgb(255, 255, 255);
 	text-align: right;
 	font-family: openMedium;
-	font-size: 1.3vw;
+	text-align: right;
+	font-size: 4.5vw;
 }
 
 .fMSVG {
@@ -191,22 +163,22 @@
 	position: absolute;
 	width: 40%;
 	height: 100%;
-	margin-left: 8%;
-	background-image: url('../assets/icons/sunrise.svg');
+	margin-left: 12%;
+	background-image: url('/assets/icons/sunrise.svg');
 	background-repeat: no-repeat;
-	background-size: 65%;
+	background-size: 60%;
 	background-position: 50% 50%;
 	opacity: 0.9;
 }
 .fMTextSunset { /*Text used in sunset node*/
 	position: absolute;
-	width: 80%;
+	width: 75%;
 	top: 50%;
 	transform: translateY(-50%);
 	color: rgb(255, 255, 255, 0.7);
 	text-align: right;
 	font-family: open;
-	font-size: 1.3vw;
+	font-size: 5.2vw;
 }
 
 #fMcSVG { /*Circles SVG*/
@@ -285,11 +257,11 @@
 }
 
 #fDailyM { /*Daily forecast container*/
-	position: absolute;
-	width: 59%;
-	height: 8%;
-	margin-left: 28%;
-	top: 84%;
+	position: relative;
+	width: 95vw;
+	height: 15vh;
+	margin-left: 2.5vw;
+	margin-top: 5vh;
 	background-image: linear-gradient(180deg, rgb(50, 50, 50) 0%, rgb(30, 30, 30) 80%);
 	border-radius: 15px;
 	/*box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);*/
@@ -299,7 +271,7 @@
 .fDN { /*Daily forecast node*/
 	position: relative;
 	display: inline-block;
-	width: 19%;
+	width: 18.5%;
 	height: 100%;
 	border-right: 2px solid rgb(20, 20, 20);
 	opacity: 1;
@@ -312,48 +284,52 @@
 	opacity: 1;
 }
 .fDNIcon { /*Daily forecast node icon*/
-	position: absolute;
+	position: relative;
 	width: 50%;
-	height: 50%;
-	margin-top: 4%;
-	margin-left: 5%;
+	height: 32%;
+	margin-top: 8%;
+	margin-left: 25%;
 	background-repeat: no-repeat;
-	background-size: 40%;
+	background-size: 100%;
 	background-position: 50% 50%;
 }
 .fDNTitle { /*Daily forecast node title*/
-	position: absolute;
-	width: 50%;
-	margin-top: 25%;
-	margin-left: 5%;
+	position: relative;
+	width: 100%;
 	color: rgb(255, 255, 255);
 	text-align: center;
 	font-family: openBold;
-	font-size: 1vw;
+	font-size: 3.8vw;
 }
 .fDNTempCont { /*Daily forecast node temperature container to allow text to be vertically centered*/
-	position: absolute;
-	height: 100%;
-	width: 50%;
-	margin-left: 50%;
-}
-.fDNTempHi { /*Daily forecast node temperature*/
 	position: relative;
-	width: 100%;
 	margin-top: 10%;
+	height: 50%;
+	width: 100%;
+}
+.fDNTempHi { /*Daily forecast node temperature*/ 
 	color: rgb(255, 255, 255);
 	text-align: center;
 	font-family: openMedium;
-	font-size: 1.2vw;
+	font-size: 3vw;
 }
 .fDNTempLo { /*Daily forecast node temperature*/
-	position: relative;
-	width: 100%;
-	margin-top: 5%;
 	color: rgb(255, 255, 255, 0.5);
 	text-align: center;
 	font-family: openMedium;
-	font-size: 1.2vw;
+	font-size: 2.8vw;
+}
+
+#fPoweredBy { /*Attribution text*/
+	position: absolute;
+	width: 100vw;
+	top: 85%;
+	margin-left: 5%;
+	text-align: left;
+	color: rgb(180, 180, 180);
+	font-family: open;
+	font-size: 2.5vw;
+	opacity: 0;
 }
 
 

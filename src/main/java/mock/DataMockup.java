@@ -15,14 +15,43 @@ import main.java.debug.CLI.Loc;
 
 public class DataMockup {
 
-	public static void makeRecords(long start, String id, String name, String battery, String lat, String lon) {
-		long d = new Date().getTime()-start;
+	public static void makeUnit(String id, String name, String battery, String lat, String lon) {
 		try {
-			//Make files if don't already exist
+			//Make associated unit file structure
 			new File("units/"+id).mkdirs();
 			new File("units/"+id+"/records.log").createNewFile();
 			new File("units/"+id+"/unit.info").createNewFile();
 
+			//Generate ip
+			String ip = "";
+			for (int i=0; i<4; i++) {
+				if (i>0) ip += ".";
+				ip += (int) (Math.random()*254);
+			}
+			
+			//Write to unit info file
+			FileWriter out = new FileWriter("units/"+id+"/unit.info");
+			JSONObject jObj = new JSONObject();
+			jObj.put("id", id);
+			jObj.put("name", name);
+			jObj.put("status", 1);
+			jObj.put("ip", ip);
+			jObj.put("power", 1);
+			jObj.put("battery", battery);
+			jObj.put("direction", "180");
+			jObj.put("version", "1.0.0");
+			jObj.put("lat", lat);
+			jObj.put("lon", lon);
+			out.write(jObj.toString(1));
+			out.close();
+			CLI.debug(Loc.MOCK,  "Successfully created unit "+id+".");
+		} catch (IOException e) {CLI.error(Loc.MOCK, "An error occurred - "+e.toString());}
+	}
+	
+	public static void mockRecords(long start, String id) {
+		long d = new Date().getTime()-start;
+		try {
+			
 			//Write to files
 			FileWriter out = new FileWriter("units/"+id+"/records.log");
 			for (int i=0; i<525600; i++) {
@@ -37,28 +66,7 @@ public class DataMockup {
 				d -= DataManager.msInMinute*5;
 			}
 			out.close();
-
-			String ip = "";
-			for (int i=0; i<4; i++) {
-				if (i>0) ip += ".";
-				ip += (int) (Math.random()*254);
-			}
-			
-			out = new FileWriter("units/"+id+"/unit.info");
-			JSONObject jObj = new JSONObject();
-			jObj.put("id", id);
-			jObj.put("name", name);
-			jObj.put("status", 1);
-			jObj.put("ip", ip);
-			jObj.put("power", 1);
-			jObj.put("battery", battery);
-			jObj.put("direction", "180");
-			jObj.put("version", "1.0.0");
-			jObj.put("lat", lat);
-			jObj.put("lon", lon);
-			out.write(jObj.toString(1));
-			out.close();
-			CLI.debug(Loc.MOCK,  "Successfully created records for "+id+".");
+			CLI.debug(Loc.MOCK,  "Successfully mocked records for "+id+".");
 		} catch (IOException e) {CLI.error(Loc.MOCK, "An error occurred - "+e.toString());}
 	}
 

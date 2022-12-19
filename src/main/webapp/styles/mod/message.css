@@ -50,7 +50,7 @@
 	background-repeat: no-repeat;
 	background-size: 40%;
 	background-position: 50% 60%;
-	background-image: url("../assets/icons/cross.svg");
+	background-image: url("/assets/icons/cross.svg");
 	cursor: pointer;
 	opacity: 0.4;
 	transition: all 0.4s;

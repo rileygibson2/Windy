@@ -1,12 +1,13 @@
 class ForecastPage extends Page {
 
-	constructor(contentName) {
-		super(contentName);
+	constructor() {
+		super("Forecast", "forecast", true);
 
 		//Add styles
 		var link = document.createElement('link');
 		link.setAttribute('rel', 'stylesheet');
-		link.setAttribute('href', '../styles/forecast.css');
+		if (isMobile) link.setAttribute('href', '../styles/mobile/forecast.css');
+		else link.setAttribute('href', '../styles/forecast.css');
 		document.head.appendChild(link);
 
 		//Class vars
@@ -91,7 +92,21 @@ class ForecastPage extends Page {
 		this.implementData();
 	}
 
+	mobileConfigure() {
+		//Build carosel
+		var c = new Carosel(0.8, $('#fCaroselDotCont'));
+		c.add(document.getElementById('fWindM'));
+		c.add(document.getElementById('fTempM'));
+		c.add(document.getElementById('fRainM'));
+		c.add(document.getElementById('fSnowM'));
+		c.add(document.getElementById('fPrecipM'));
+		c.add(document.getElementById('fSunsetM'));
+	}
+
 	implementData() {
+		if (isMobile) page.mobileConfigure();
+
+
 		//Update DOM text elements for different modules
 		var d = new Date(this.sunTimes[0]);
 		var mins = d.getMinutes();

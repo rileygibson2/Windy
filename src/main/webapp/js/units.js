@@ -1,7 +1,7 @@
 class UnitsPage extends Page {
 
-	constructor(contentName) {
-		super(contentName);
+	constructor() {
+		super("Devices", "units");
 
 		//Add styles
 		var link = document.createElement('link');

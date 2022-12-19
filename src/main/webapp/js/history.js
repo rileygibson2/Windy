@@ -1,7 +1,7 @@
 class HistoryPage extends Page {
 
-	constructor(contentName) {
-		super(contentName);
+	constructor() {
+		super("History", "history");
 
 		//Add styles
 		var link = document.createElement('link');

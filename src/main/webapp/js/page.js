@@ -1,6 +1,8 @@
 class Page {
-	constructor(contentName) {
+	constructor(title, contentName, hasMobileContent) {
+		this.title = title;
 		this.contentName = contentName;
+		this.hasMobileContent = hasMobileContent;
 	}
 
 	updatePageData() {}

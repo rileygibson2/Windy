@@ -349,9 +349,9 @@
 	height: 8%;
 	top: 1%;
 	background-repeat: no-repeat;
-	background-size: 11%;
-	background-position: 90% 55%;
-	background-image: url("/assets/icons/options.svg");
+	background-size: 6%;
+	background-position: 90% 65%;
+	background-image: url("/assets/icons/cross.svg");
 }
 #filterLabel {
 	position: absolute;

@@ -1,7 +1,7 @@
 class DashboardPage extends Page {
 
-	constructor(contentName) {
-		super(contentName);
+	constructor() {
+		super("Dashboard", "dashboard");
 		
 		//Add styles
 		var link = document.createElement('link');
@@ -234,7 +234,7 @@ class DashboardPage extends Page {
 		$("#slider").remove();
 		addComponent($('body'), 'mobilecomponents/filter.html');
 		
-		//Build c
+		//Build carosel
 		if (!this.caroselLoaded) {
 			var c = new Carosel(0.9, $('#rtCaroselDotCont'));
 			c.add(document.getElementById('rtSpeed'));

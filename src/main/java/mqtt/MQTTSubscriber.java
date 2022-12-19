@@ -60,15 +60,17 @@ class MQTTSubscriberCallback implements MqttCallback {
 		String data[] = message.split("\\|")[1].split(",");
 		if (unit==null||data==null) return;
 		
+		
 		switch(topic) {
 		case Log:
-			if (data.length!=7) return;
-			String log = "["+data[0]+","+data[1]+","+data[6]+",";
-			if (Integer.parseInt(data[1])>=DataManager.redAlarm) log += "3";
-			else if (Integer.parseInt(data[1])>=DataManager.amberAlarm) log += "2";
-			else log += "1";
+			//if (data.length!=7) return;
+			String log = "["+data[0].substring(data[0].length()-2)+","+data[1].substring(data[1].length()-2)+","+data[5].substring(data[5].length()-2)+",";
+			//if (Integer.parseInt(data[1])>=DataManager.redAlarm) log += "3";
+			//else if (Integer.parseInt(data[1])>=DataManager.amberAlarm) log += "2";
+			log += "1";
 			log += "]";
-			//CLI.debug(Loc.MQTT, "Unit: "+unit+" log: "+log);
+			CLI.debug(Loc.MQTT, "Unit: "+unit+" log: "+log);
+			System.out.println("hello3");
 			UnitUtils.addLogToUnit(unit, log);
 			break;
 		case StatusUpdate:

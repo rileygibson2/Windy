@@ -1,6 +1,4 @@
-<div id="fPoweredBy">Forecast data by Open-Meteo ©</div>
-
-<div id="fMCont1">
+<div id="fCaroselHolder">
 	<div class="fM" id="fWindM">
 		<div class="fMHeaderBar">
 			<div class="fMIcon" style="background-image: url('../assets/icons/wind.svg');"></div>
@@ -9,6 +7,7 @@
 		</div>
 		<svg class="fMSVGWide" id="fMSVG1"></svg>
 	</div>
+
 	<div class="fM" id="fTempM">
 		<div class="fMHeaderBar">
 			<div class="fMIcon" style="background-image: url('../assets/icons/temperature.svg'); background-size: 80%; background-position: 45% 80%;"></div>
@@ -16,51 +15,6 @@
 			<div class="fMText" id="fMTempText">--°</div>
 		</div>
 		<svg class="fMSVG" id="fMSVG2"></svg>
-	</div>
-</div>
-
-<div id="fMCont2">
-	<div id="fDailyM">
-		<div class="fDN">
-			<div class="fDNIcon" id="fDNIcon1"></div>
-			<div class="fDNTitle" id="fDNT1">---</div>
-			<div class="fDNTempCont">
-				<div class="fDNTempHi" id="fDNTempHi1">--°</div>
-				<div class="fDNTempLo" id="fDNTempLo1">--°</div>
-			</div>
-		</div>
-		<div class="fDN">
-			<div class="fDNIcon" id="fDNIcon2"></div>
-			<div class="fDNTitle" id="fDNT2">---</div>
-			<div class="fDNTempCont">
-				<div class="fDNTempHi" id="fDNTempHi2">--°</div>
-				<div class="fDNTempLo" id="fDNTempLo2">--°</div>
-			</div>
-		</div>
-		<div class="fDN">
-			<div class="fDNIcon" id="fDNIcon3"></div>
-			<div class="fDNTitle" id="fDNT3">---</div>
-			<div class="fDNTempCont">
-				<div class="fDNTempHi" id="fDNTempHi3">--°</div>
-				<div class="fDNTempLo" id="fDNTempLo3">--°</div>
-			</div>
-		</div>
-		<div class="fDN">
-			<div class="fDNIcon" id="fDNIcon4"></div>
-			<div class="fDNTitle" id="fDNT4">---</div>
-			<div class="fDNTempCont">
-				<div class="fDNTempHi" id="fDNTempHi4">--°</div>
-				<div class="fDNTempLo" id="fDNTempLo4">--°</div>
-			</div>
-		</div>
-		<div class="fDN">
-			<div class="fDNIcon" id="fDNIcon5"></div>
-			<div class="fDNTitle" id="fDNT5">---</div>
-			<div class="fDNTempCont">
-				<div class="fDNTempHi" id="fDNTempHi5">--°</div>
-				<div class="fDNTempLo" id="fDNTempLo5">--°</div>
-			</div>
-		</div>
 	</div>
 
 	<div class="fM" id="fRainM">
@@ -72,6 +26,7 @@
 		</div>
 		<svg class="fMSVG" id="fMSVG3"></svg>
 	</div>
+
 	<div class="fM" id="fSnowM">
 		<div class="fMHeaderBar">
 			<div class="fMIcon" class="fMIcon" style="background-image: url('../assets/icons/snow.svg'); background-size: 75%;"></div>
@@ -81,6 +36,7 @@
 		</div>
 		<svg class="fMSVG" id="fMSVG4"></svg>
 	</div>
+
 	<div class="fM" id="fPrecipM">
 		<div class="fMHeaderBar">
 			<div class="fMIcon fMIconInline" style="background-image: url('../assets/icons/dropper.svg'); background-size: 60%;"></div>
@@ -105,20 +61,6 @@
 			<div class="fMTitle">Moisture</div>
 			<svg class="fMSVG fMSVGSmall" id="fMSVG8"></svg>
 		</div>
-
-        <!--<svg id='fMcSVG'>
-      	    <defs>
-      			<filter id="fMShadow" ><feDropShadow id="fMcDS" dx="-3" dy="3" stdDeviation="8"/></filter>
-      		</defs>
-      		<circle class='fMcSVGC fMcSVGF' id="fMcSVGF3"></circle>
-      		<circle class='fMcSVGC' id="fMcSVGC3"></circle>
-
-      		<circle class='fMcSVGC fMcSVGF' id="fMcSVGF2"></circle>
-      		<circle class='fMcSVGC' id="fMcSVGC2"></circle>
-
-      		<circle class='fMcSVGC fMcSVGF' id="fMcSVGF1"></circle>
-      		<circle class='fMcSVGC' id="fMcSVGC1"></circle>
-        </svg>-->
 	</div>
 
 	<div class="fM" id="fSunsetM">
@@ -138,3 +80,49 @@
 		</div>
 	</div>
 </div>
+<div id="fCaroselDotCont"></div>
+
+<div id="fDailyM">
+	<div class="fDN">
+		<div class="fDNIcon" id="fDNIcon1"></div>
+		<div class="fDNTitle" id="fDNT1">---</div>
+		<div class="fDNTempCont">
+			<div class="fDNTempHi" id="fDNTempHi1">--°</div>
+			<div class="fDNTempLo" id="fDNTempLo1">--°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" id="fDNIcon2"></div>
+		<div class="fDNTitle" id="fDNT2">---</div>
+		<div class="fDNTempCont">
+			<div class="fDNTempHi" id="fDNTempHi2">--°</div>
+			<div class="fDNTempLo" id="fDNTempLo2">--°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" id="fDNIcon3"></div>
+		<div class="fDNTitle" id="fDNT3">---</div>
+		<div class="fDNTempCont">
+			<div class="fDNTempHi" id="fDNTempHi3">--°</div>
+			<div class="fDNTempLo" id="fDNTempLo3">--°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" id="fDNIcon4"></div>
+		<div class="fDNTitle" id="fDNT4">---</div>
+		<div class="fDNTempCont">
+			<div class="fDNTempHi" id="fDNTempHi4">--°</div>
+			<div class="fDNTempLo" id="fDNTempLo4">--°</div>
+		</div>
+	</div>
+	<div class="fDN">
+		<div class="fDNIcon" id="fDNIcon5"></div>
+		<div class="fDNTitle" id="fDNT5">---</div>
+		<div class="fDNTempCont">
+			<div class="fDNTempHi" id="fDNTempHi5">--°</div>
+			<div class="fDNTempLo" id="fDNTempLo5">--°</div>
+		</div>
+	</div>
+</div>
+
+<div id="fPoweredBy">Forecast data by Open-Meteo ©</div>

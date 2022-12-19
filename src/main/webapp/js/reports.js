@@ -1,7 +1,7 @@
 class ReportsPage extends Page {
 
-	constructor(contentName) {
-		super(contentName);
+	constructor() {
+		super("Reports", "reports");
 
 		//Add styles
 		var link = document.createElement('link');

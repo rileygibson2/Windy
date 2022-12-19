@@ -137,35 +137,16 @@ function switchSections(i) {
 	if (page!=undefined) page.onExit();
 
 	//Load new section
-	var title;
-	var text = descriptions[activeSection];
-	var unitText;
+	var unitText = "";
 	switch (activeSection) {
 		case 0: 
-			if (unitName==undefined) title = "Dashboard";
-			else title = unitName;
-			page = new DashboardPage("dashboard");
+			if (unitName!=undefined) var titleOverride = unitName;
+			page = new DashboardPage();
 			break;
-		case 1:
-			title = "Devices";
-			unitText = "";
-			page = new UnitsPage("units");
-			break;
-		case 2:
-			title = "Records";
-			unitText = "";
-			page = new HistoryPage("history");
-			break;
-		case 3:
-			title = "Reports";
-			unitText = "";
-			page = new ReportsPage("reports");
-			break;
-		case 4:
-			title = "Forecast";
-			unitText = "";
-			page = new ForecastPage("forecast");
-			break;
+		case 1: page = new UnitsPage(); break;
+		case 2: page = new HistoryPage();break;
+		case 3: page = new ReportsPage(); break;
+		case 4: page = new ForecastPage(); break;
 	}
 
 	//Run page mobile configuration
@@ -174,8 +155,9 @@ function switchSections(i) {
 	//Swap section indicator elements
 	$("#sICont").css("animation", "none");
 	setTimeout(function() {
-		$("#sITitle").html(title);
-		$("#sIText").html(text);
+		if (titleOverride!=undefined) $("#sITitle").html(titleOverride);
+		else $("#sITitle").html(page.title);
+		$("#sIText").html(descriptions[activeSection]);
 		$("#sIUnit").html(unitText);
 		$("#sICont").css("animation", "sIMoveIn 0.5s ease-in forwards");
 	}, 100);
@@ -185,7 +167,9 @@ function switchSections(i) {
 
 		//Make request for content
 		var req = new XMLHttpRequest();
-		req.open('GET', page.contentName+'.html', true);
+		var location = page.contentName+'.html';
+		if (isMobile&&page.hasMobileContent) location = "mobilecomponents/"+page.contentName+'.html';
+		req.open('GET', location, true);
 		req.onreadystatechange = function() {
 			if (!checkResponse(req)) return;
 			$('#effCont').html(req.responseText); //Load new elements into container
@@ -328,6 +312,16 @@ function addComponent(container, location) {
 	}
 	req.send();
 }
+
+/*function getResource(location, onstatechange) {
+	var req = new XMLHttpRequest();
+	req.open('GET', location, true);
+	req.onreadystatechange = function() {
+		if (!checkResponse(req)) return;
+		container.append(req.responseText); //Load new elements into container
+	}
+	req.send();
+}*/
 
 function animateExit(start) {
 	//Animate elements out - nested for loop used because first element is a container for visible modules
