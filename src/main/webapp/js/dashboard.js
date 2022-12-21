@@ -23,16 +23,22 @@ class DashboardPage extends Page {
 		this.gYTopVal;
 		this.gYBotVal;
 		this.gPointsOnX;
-		this.gXMarkings = [];
 		this.gYMarkings = [];
 		this.gData = [];
 		this.gVisualData = []; //Used for initial graph animation
 		this.gViewMode = 1;
-		this.alarmLevelTimes = [];
 		this.graphModes = ["Hour", "Day", "Week", "Month"];
+		this.gWindowStart; //Time at left edge of graph
+		this.gWindowEnd; //Time at right edge of graph
+		this.gAxisGran = 5; //X axis granularity
+		this.granModes = [1, 5, 10, 60]; //Possible granularity modes in minutes
+		this.gAxisSpread; //Space between X axis nodes
 
-		//Graph extras
+		//Graph extra options
 		this.gAlertLines = false;
+		
+		//Alert circles
+		this.alarmLevelTimes = [];
 
 		//Red alarm animation
 		this.redAlarmAniKill = false;
@@ -72,7 +78,6 @@ class DashboardPage extends Page {
 		//Reset graph axis
 		this.gYTopVal = 100;
 		this.gYBotVal = 0;
-		this.gXMarkings = [];
 		this.gYMarkings = [20, 40, 60, 80, 100];
 
 		var jArr = JSON.parse(req.responseText);
@@ -84,10 +89,21 @@ class DashboardPage extends Page {
 		this.rtAlarmLevel = jArr[0].rtAlarmLevel;
 
 		//Load graph data
-		this.gData = jArr[1].gData.slice(1, -1).split(",");
+		var tmpData = jArr[1].gData.slice(1, -1).split(",");
+		for (var i=0; i<tmpData.length; i++) {
+			var tmpLog = tmpData[i].slice(1, -1).split("_");
+			this.gData[i] = tmpLog;
+		}
 		this.gData.reverse();
+
+		//Clone for visual data structure
 		this.gVisualData = [];
-		for (i=0; i<this.gData.length; i++) this.gVisualData[i] = 0; //Copy incase no animation is run
+		for (i=0; i<this.gData.length; i++) {
+			var tmpLog = [];
+			tmpLog[0] = this.gData[i][0];
+			tmpLog[1] = 0;
+			this.gVisualData[i] = tmpLog;
+		}
 
 		//Load alert level circle data
 		this.alarmLevelTimes = [jArr[2].level1, jArr[2].level2, jArr[2].level3];
@@ -104,118 +120,7 @@ class DashboardPage extends Page {
 		this.updateLiveValues();
 
 		//Graph module
-		//Find y axis markings based on graph view mode and current time
-		var ms = 1000*60*5; //Num ms in 5 minutes for rounding
-
-		switch (this.gViewMode) {
-		case 1: //Hour mode
-			this.gPointsOnX = 12; //12 readings an hour - every 5 mins
-			var d = Math.floor(Date.now()/ms)*ms+300000; //Round up to nearest 5 mins and add one increment
-			
-			for (i=0; i<12; i++) {
-				var date = new Date(d-((i)*300000));
-
-				if (date.getHours()==0&&date.getMinutes()==0) { //New day so add day format
-					this.gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
-				}
-				else { //Add hour formula
-					var h = date.getHours();
-					if (h<10) h = '0'+h;
-					var m = date.getMinutes();
-					if (m<10) m = '0'+m;
-					this.gXMarkings[i] = h+':'+m;
-				}
-			}
-			break;
-
-		case 2: //Day mode
-			this.gPointsOnX = 48; //2 readings an hour - every 30 mins
-			var d = Date.now()+3600000; //Add one increment
-
-			if (isMobile) { //Half as may markings for mobile
-				for (i=0; i<12; i++) {
-					var date = new Date(d-((i)*7.2e+6));
-					var h = date.getHours();
-					if (h==0) { //New day so add day format
-						this.gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
-					}
-					else { //Add hour formula
-						var t = 'am';
-						if (h>12) {
-							t = 'pm';
-							h -= 12;
-						}
-						if (h==12) t = 'pm';
-						if (h==0) h = 12;
-						this.gXMarkings[i] = h+t;
-					}
-				}
-			}
-			else {
-				for (i=0; i<24; i++) {
-					var date = new Date(d-((i)*3600000));
-					var h = date.getHours();
-					if (h==0) { //New day so add day format
-						this.gXMarkings[i] = date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
-					}
-					else { //Add hour formula
-						var t = 'am';
-						if (h>12) {
-							t = 'pm';
-							h -= 12;
-						}
-						if (h==12) t = 'pm';
-						if (h==0) h = 12;
-						this.gXMarkings[i] = h+t;
-					}
-				}
-			}
-			break;
-
-		case 3: //Week mode
-			this.gPointsOnX = 168; //24 readings a day - every 1 hour
-			//Round date to nearest day
-			var date = new Date();
-			date.setHours(0);
-			date.setMinutes(0);
-			date.setSeconds(0);
-			date.setMilliseconds(0);
-			var d = date.getTime()+3.6e+6; //Add one increment
-
-			for (i=0; i<8; i++) {
-				date = new Date(d-((i)*8.64e+7));
-				this.gXMarkings[i] = date.toLocaleDateString('default', {weekday: 'short'})+" "+date.getDate()+this.dateSuffix(date.getDate());
-			}
-			break;
-
-		case 4: //Month mode
-			this.gPointsOnX = 60; //2 readings a day - every 6 hours
-			//Round date to nearest day
-			var date = new Date();
-			date.setHours(0);
-			date.setMinutes(0);
-			date.setSeconds(0);
-			date.setMilliseconds(0);
-			var d = date.getTime()+4.32e+7; //Add one increment
-
-			if (isMobile) { //Half as may markings for mobile
-				for (i=0; i<15; i++) {
-					date = new Date(d-((i)*1.728e+8));
-					if (date.getDate()==1||date.getDate()==2) this.gXMarkings[i] = date.toLocaleString('default', {month: 'short'})
-					else this.gXMarkings[i] = date.getDate()+this.dateSuffix(date.getDate());
-				}
-			}
-			else {
-				for (i=0; i<30; i++) {
-					date = new Date(d-((i)*8.64e+7));
-					if (date.getDate()==1) this.gXMarkings[i] = date.toLocaleString('default', {month: 'short'})
-					else this.gXMarkings[i] = date.getDate()+this.dateSuffix(date.getDate());
-				}
-			}
-			break;
-		}
-
-		this.gXMarkings.reverse();
+		this.calibrateAxis();
 		this.animateGraph().then(result => page.animateCircleGraphs());
 		
 		//Other listeners to be added on this page load
@@ -227,6 +132,39 @@ class DashboardPage extends Page {
 		});
 
 		this.setupLive();
+
+		//Setup listeners
+		document.getElementById('gSVG').addEventListener('mousewheel', (event) => {
+			page.graphOnScroll(event);
+		});
+	}
+
+	calibrateAxis() {
+		switch (this.gViewMode) {
+		case 1: //Hour mode
+			this.gWindowStart = new Date(Date.now()-(12*minsToMs(5)));
+			this.gWindowEnd = new Date(Date.now());
+			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/12; //1 reading every 5 mins for an hour
+			break;
+
+		case 2: //Day mode
+			this.gWindowStart = new Date(Date.now()-(12*minsToMs(60)));
+			this.gWindowEnd = new Date(Date.now());
+			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/12; //1 reading every hour
+			break;
+
+		case 3: //Week mode
+			this.gWindowStart = new Date(Date.now()-(168*minsToMs(60)));
+			this.gWindowEnd = new Date(Date.now());
+			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/168; //24 readings a day - 1 every hour
+			break;
+
+		case 4: //Month mode
+			this.gWindowStart = new Date(Date.now()-(730*minsToMs(60)));
+			this.gWindowEnd = new Date(Date.now());
+			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/60; //2 readings a day - every 12 hours
+			break;
+		}
 	}
 
 	mobileConfigure() {
@@ -476,6 +414,70 @@ class DashboardPage extends Page {
 
 	//Graph module actions
 
+	graphOnScroll(event) {
+		//Get mouse point relative to graph 
+		var svg = $("#gSVG");
+		var mX = event.pageX-svg.offset().left-parseFloat(svg.css("width"))*0.05; //Mouse x
+
+		//Find time relative to mouse location on graph
+		var axisDiff = mX/this.gAxisSpread;
+		var mTime = this.gWindowStart.getTime()+(axisDiff*minsToMs(this.gAxisGran));
+
+		/*
+		Update spread and if over a bound then shift granularity
+		up or down. If granularity change fails then stop at bound.
+		*/
+		this.gAxisSpread += -(event.deltaY/8);
+		if (this.gAxisSpread<100) {
+			if (!this.changeGranularity(1)) this.gAxisSpread = 100;
+		}
+		if (this.gAxisSpread>300) {
+			if (!this.changeGranularity(-1)) this.gAxisSpread = 300;
+		}
+
+		/*
+		Time at mouse pointer must stay the same (so graph expands out
+		from mouse pointer), so re-calculate gWindowStart and gWindowEnd
+		by extraploating to extremes with new spread from mouse pointer
+		time.
+		 */
+		this.gWindowStart = new Date(mTime-((mX/this.gAxisSpread)*minsToMs(this.gAxisGran)));
+		this.gWindowEnd = new Date(mTime+(((parseFloat(svg.css("width"))*0.9-mX)/this.gAxisSpread)*minsToMs(this.gAxisGran)));
+
+		page.buildGraph();
+	}
+
+	changeGranularity(dir) {
+		//Get current granularity index
+		var index;
+		for (var i=0; i<this.granModes.length; i++) {
+			if (this.gAxisGran==this.granModes[i]) index = i;
+		}
+
+		if (dir==1) { //Change gran up
+			if (index>=this.granModes.length-1) return false;
+			var newGran = this.granModes[index+1];
+			//Spread needs to change up (eg if moving from 1 to 5 then spread needs to be x5 what it was before)
+			this.gAxisSpread = this.gAxisSpread*(newGran/this.gAxisGran);
+			this.gAxisGran = newGran;
+
+		}
+		if (dir==-1) { //Change gran down
+			if (index<=0) return false;
+			var newGran = this.granModes[index-1];
+			//Spread needs to change down (eg if moving from 5 to 1 then spread needs to be 1/5 what it was before)
+			this.gAxisSpread = this.gAxisSpread/(this.gAxisGran/newGran);
+			this.gAxisGran = newGran;
+		}
+		return true;
+	}
+
+	timeToX(time) {
+		//Find how many gran units there are in diff between graph start time and given time
+		var spaceDiff = (time-this.gWindowStart.getTime())/minsToMs(this.gAxisGran);
+		return spaceDiff*this.gAxisSpread; //X pos is that number of gran units * space of one gran unit
+	}
+
 	buildGraph() {
 		var svg = $("#gSVG");
 		svg.empty();
@@ -511,31 +513,38 @@ class DashboardPage extends Page {
 		svg.append(path);	
 
 		//X Axis Markings
-		var split = (gRight-gLeft)/this.gXMarkings.length;
-		for (i=0; i<this.gXMarkings.length; i++) {
-			var w1 = (split*i)+gLeft;
-			//Line
+		
+		//Round to nearest granularity unit from window start
+		var granMS = minsToMs(this.gAxisGran);
+		var t = Math.floor(this.gWindowStart.getTime()/granMS)*granMS;
+
+		//Find use the diff between this gran and start time to calculate starting offset
+		var offX = ((t-this.gWindowStart.getTime())/granMS)*this.gAxisSpread;
+		var i = 0;
+
+		//Add all graph labels by counting up till window end
+		while (t<this.gWindowEnd.getTime()) {
+			var label = this.formatTime(t, 1);
+
+			var x1 = gLeft+offX+(this.gAxisSpread*i);
 			path = document.createElementNS(nS, "path");
-			d = "M "+w1+" "+(gBot-(gLeft*0.1))+" L "+w1+" "+(gBot+(gLeft*0.1));
+			d = "M "+x1+" "+(gBot-(gLeft*0.1))+" L "+x1+" "+(gBot+(gLeft*0.1));
 			path.setAttribute("d", d);
 			path.setAttribute("class", 'gMarkingLine');
 			svg.append(path);
 
 			//Text
-			var t = String(this.gXMarkings[i]);
 			var text = document.createElementNS(nS, "text");
 			text.setAttribute("class", 'gMarkingText');
 			//X value accounts for length of string
-			text.setAttribute("x", w1-((gLeft*0.1)*(t.length/2)));
+			text.setAttribute("x", x1-((gLeft*0.1)*(label.length/2)));
 			text.setAttribute("y", (gBot*1.05));
 			text.setAttribute("font-size", (w*0.01));
-			
-			if (isMobile) {
-				text.setAttribute("x", w1-((gLeft*0.1)*(t.length/2)));
-				text.setAttribute("font-size", (w*0.02));
-			}
-			text.textContent = t;
+			text.textContent = label;
 			svg.append(text);
+
+			t+=granMS;
+			i++;
 		}
 
 		//Y Axis Markings
@@ -599,13 +608,13 @@ class DashboardPage extends Page {
 
 		var i = 0;
 		while (i<this.gVisualData.length) {
-			if (this.gVisualData[i]==0) {i++; continue;}
+			if (this.gVisualData[i][1]==0) {i++; continue;}
 
 			//Search forward to find next non-zero data point
 			var end = true;
 			var next;
 			for (var z=i+1; z<this.gVisualData.length; z++) {
-				if (this.gVisualData[z]>0) {
+				if (this.gVisualData[z][1]>0) {
 					end = false;
 					next = z;
 					break;
@@ -613,8 +622,8 @@ class DashboardPage extends Page {
 			}
 
 			//Add data point to path
-			var y = (this.gYTopVal-this.gVisualData[i])*ySplit+gTop;
-			var x = i*xSplit+gLeft;
+			var y = (this.gYTopVal-this.gVisualData[i][1])*ySplit+gTop;
+			var x = gLeft+this.timeToX(this.gVisualData[i][0]);
 			if (d==null) {
 				d = "M"+x+" "+y;
 				xStart = x;
@@ -625,8 +634,8 @@ class DashboardPage extends Page {
 			quater of way, then terminate at d+1, other control
 			point will be infered.*/
 			if (!end&&i<this.gVisualData.length) {
-				var y1 = (this.gYTopVal-this.gVisualData[next])*ySplit+gTop;
-				var x1 = next*xSplit+gLeft;
+				var y1 = (this.gYTopVal-this.gVisualData[next][1])*ySplit+gTop;
+				var x1 = gLeft+this.timeToX(this.gVisualData[next][0]);
 				var midY;
 				if (y1>y) midY = y1-(y1-y)/2;
 				else midY = y-(y-y1)/2;
@@ -655,7 +664,7 @@ class DashboardPage extends Page {
 			svg.append(path);
 
 			//Close gradient path back to start of path
-			d +=" L "+(i*xSplit+gLeft)+" "+gBot+" L "+xStart+" "+gBot+" Z";
+			d +=" L "+(gLeft+this.timeToX(this.gVisualData[i][0]))+" "+gBot+" L "+xStart+" "+gBot+" Z";
 			//Gradient
 			path = document.createElementNS(nS, "path");
 			path.setAttribute("class", 'gDataGrad');
@@ -680,8 +689,8 @@ class DashboardPage extends Page {
 	animateGraph() {
 		//Reset visual data
 		for (i=0; i<this.gVisualData.length; i++) {
-			this.gVisualData[i] = this.gData[i]*0.8;
-			if (this.gVisualData[i]<0) this.gVisualData[i] = 0;
+			this.gVisualData[i][1] = this.gData[i][1]*0.8;
+			if (this.gVisualData[i][1]<0) this.gVisualData[i][1] = 0;
 		}
 
 		var self = this;
@@ -695,7 +704,7 @@ class DashboardPage extends Page {
 				}
 				else {
 					for (i=0; i<self.gVisualData.length; i++) {
-						if (self.gVisualData[i]<self.gData[i]) self.gVisualData[i]++;
+						if (self.gVisualData[i][1]<self.gData[i][1]) self.gVisualData[i][1]++;
 					}
 					self.buildGraph();
 				}
@@ -777,7 +786,7 @@ class DashboardPage extends Page {
 
 	graphSlideFinished() {
 		for (i=0; i<this.gData.length; i++) {
-			if (this.gVisualData[i]<this.gData[i]) return false;
+			if (this.gVisualData[i][1]<this.gData[i][1]) return false;
 		}
 		return true;
 	}
@@ -843,6 +852,58 @@ class DashboardPage extends Page {
 		if (degree>=270) d = "W"; 
 		if (degree>=315) d = "NW";
 		return d; 
+	}
+
+	/*
+	Format modes:
+		1 = minute
+		2 = hour
+		3 = day
+		4 = month
+	*/
+	formatTime(time, mode) {
+		var date = new Date(time);
+		var h = date.getHours();
+		var m = date.getMinutes();
+
+		switch (mode) {
+		case 1: //Hour:minute
+			if (h==0&&m==0) { //New day so add day format
+				return date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
+			}
+			else { //Add hour formula
+				if (h<10) h = '0'+h;
+				if (m<10) m = '0'+m;
+				return h+':'+m;
+			}
+		case 2: //Hour with text suffix 
+			if (h==0) { //New day so day format
+				return date.getDate()+" "+date.toLocaleString('default', {month: 'short'});
+			}
+			else { //Add hour formula
+				var t = 'am';
+				if (h>12) {
+					t = 'pm';
+					h -= 12;
+				}
+				if (h==12) t = 'pm';
+				if (h==0) h = 12;
+				return h+t;
+			}
+		case 3:  //Day of week with date
+			date.setHours(0);
+			date.setMinutes(0);
+			date.setSeconds(0);
+			date.setMilliseconds(0);
+			return date.toLocaleDateString('default', {weekday: 'short'})+" "+date.getDate()+this.dateSuffix(date.getDate());
+		case 4: //Month title and regular date
+			date.setHours(0);
+			date.setMinutes(0);
+			date.setSeconds(0);
+			date.setMilliseconds(0);
+			if (date.getDate()==1) return date.toLocaleString('default', {month: 'short'})
+			else return date.getDate()+this.dateSuffix(date.getDate());
+		}
 	}
 
 	dateSuffix(i) {

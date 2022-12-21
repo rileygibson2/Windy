@@ -273,8 +273,10 @@ class ForecastPage extends Page {
 				text.style.fill = col2;
 				//X value accounts for length of string
 				text.setAttribute("x", w1-((gLeft*0.1)*(t.length/2)));
-				text.setAttribute("y", (gBot*1.1));
-				if (wide) text.setAttribute("font-size", (w*0.016));
+				if (isMobile) text.setAttribute("y", (gBot*1.07));
+				else text.setAttribute("y", (gBot*1.1));
+				if (isMobile) text.setAttribute("font-size", (w*0.022));
+				else if (wide) text.setAttribute("font-size", (w*0.016));
 				else text.setAttribute("font-size", (w*0.021));
 				text.textContent = t;
 				svg.append(text);
@@ -292,7 +294,8 @@ class ForecastPage extends Page {
 				text.style.opacity = 0.5;
 				text.setAttribute("x", (gLeft*0.5)-((gLeft*0.1)*t.length));
 				text.setAttribute("y", h1+(h*0.01));
-				if (wide) text.setAttribute("font-size", (w*0.016));
+				if (isMobile) text.setAttribute("font-size", (w*0.032));
+				else if (wide) text.setAttribute("font-size", (w*0.016));
 				else text.setAttribute("font-size", (w*0.021));
 				text.textContent = t;
 				svg.append(text);

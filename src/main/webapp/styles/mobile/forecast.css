@@ -321,9 +321,9 @@
 }
 
 #fPoweredBy { /*Attribution text*/
-	position: absolute;
+	position: relative;
 	width: 100vw;
-	top: 85%;
+	margin-top: 1vh;
 	margin-left: 5%;
 	text-align: left;
 	color: rgb(180, 180, 180);

@@ -268,7 +268,6 @@ public class DataManager {
 
 	/**
 	 * Averages records by increments over a period.
-	 * Guarentees an array with the correct number of holes.
 	 * 
 	 * @param records - the records to average
 	 * @param increment - the size of one of the averaging buckets
@@ -276,9 +275,8 @@ public class DataManager {
 	 * @param period - the whole period being averaged over
 	 * @return
 	 */
-	public static List<Integer> averageRecords(List<List<Long>> records, long increment, long start, long period) {
-		List<Integer> recordsA = new ArrayList<>();
-		List<Long> recordsTS = new ArrayList<>();
+	public static List<Record> averageRecords(List<List<Long>> records, long increment, long start, long period) {
+		List<Record> recordsA = new ArrayList<>();
 		long currentInc = start;
 		int averageWS = 0, count = 0;
 
@@ -286,9 +284,8 @@ public class DataManager {
 		for (int i=0; i<records.size(); i++) {
 			if (records.get(i).get(0)<currentInc-increment) {
 				//In next increment below
-				if (count==0) recordsA.add(0); //Avoid number format exception
-				else recordsA.add(averageWS/count);
-				recordsTS.add(currentInc);
+				if (count==0) recordsA.add(new Record(currentInc, 0)); //Avoid number format exception
+				else recordsA.add(new Record(currentInc, averageWS/count));
 
 				averageWS = 0;
 				count = 0;
@@ -304,20 +301,17 @@ public class DataManager {
 				count++;
 			}
 		}
-		if (count>0) {
-			recordsA.add(averageWS/count); //Catch last
-			recordsTS.add(currentInc);
-		}
+		if (count>0) recordsA.add(new Record(currentInc, averageWS/count)); //Catch last
 
 		//Top up array if not correct size
-		if (recordsA.size()<(period/increment)) {
+		/*if (recordsA.size()<(period/increment)) {
 			int topUp = (int) Math.abs((period/increment)-recordsA.size());
 			CLI.debug(Loc.HTTP,  "TOPPING UP WITH "+topUp);
 			for (int i=0; i<topUp; i++) {
 				recordsA.add(0);
 				recordsTS.add((long) 0);
 			}
-		}
+		}*/
 
 		/*CLI.debug(Loc.HTTP,  "end "+recordsA.size());
 		for (int i=0; i<recordsTS.size(); i++) {
@@ -328,7 +322,7 @@ public class DataManager {
 
 	public static JSONObject getRealTimeGraphData(String unit, int mode) {
 		List<List<Long>> records;
-		List<Integer> recordsA = null;
+		List<Record> recordsA = null;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		long d;
@@ -341,7 +335,7 @@ public class DataManager {
 			cal.set(Calendar.MILLISECOND, 0);
 			d = cal.getTimeInMillis();
 			d -= (d%(msInMinute*5));
-
+			
 			/*
 			 * Note the getRecordsFromPeriod call parameters specify the
 			 * earliest time and latest time records should be pulled from.
@@ -399,7 +393,7 @@ public class DataManager {
 
 		//Format in JSON
 		JSONObject jObj = new JSONObject();
-		jObj.put("gData", recordsA.toString());
+		jObj.put("gData", recordsA.toString().replace(" ", ""));
 		return jObj;
 	}
 

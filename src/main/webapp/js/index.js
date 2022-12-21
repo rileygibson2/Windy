@@ -70,7 +70,6 @@ function mobileConfiguration() {
 		$('#sbCont').html(req.responseText); //Load new elements into container
 	}
 	req.send();
-	
 
 	//Sidebar swipe open action
 	var hammertime = new Hammer(document.body);
@@ -79,7 +78,7 @@ function mobileConfiguration() {
 			var finalX = ev.srcEvent.pageX || ev.srcEvent.screenX || 0;
   			start = finalX - ev.deltaX;
 
-  			//Only open if swip started in first 20% of screen
+  			//Only open if swipe started in first 20% of screen
 			if (start<(screen.width*0.2)) {
 				toggleSideBar();
 			}
@@ -221,6 +220,10 @@ function logout() {
 
 
 //Generic functions
+
+function minsToMs(mins) {
+		return mins*60000;
+}
 
 function blurComponents(omit) {
 	for (i=0; i<persComps.length; i++) {
