@@ -36,10 +36,10 @@ public class DataManager {
 	public static String getDashboardData(String unit, int graphMode) {
 		JSONArray jArr = new JSONArray();
 		JSONObject rTD = getRealTimeData(unit);
-		JSONObject rTDG = getRealTimeGraphData(unit, graphMode);
+		JSONObject rTDG = getDashboardGraphData(unit, graphMode);
 		JSONObject rTM = getMinutesAtAlertLevels(unit, graphMode);
 		if (rTD==null||rTD==null||rTM==null) return null;
-
+		
 		jArr.put(rTD);
 		jArr.put(rTDG);
 		jArr.put(rTM);
@@ -93,8 +93,8 @@ public class DataManager {
 	 * @param dE - period end date
 	 * @return all records in this period
 	 */
-	public static List<List<Long>> getRecordsFromPeriod(String unit, long dS, long dE) {
-		List<List<Long>> records = new ArrayList<>();
+	public static List<Record> getRecordsFromPeriod(String unit, long dS, long dE) {
+		List<Record> records = new ArrayList<>();
 
 		//Get log scanner
 		Scanner s = UnitUtils.getLogScanner(unit);
@@ -107,12 +107,11 @@ public class DataManager {
 			long ts = Long.parseLong(a[0]);
 
 			if (ts>dS&&ts<dE) { //If in specified period
-				List<Long> l = new ArrayList<>();
-				l.add(ts);
-				l.add(Long.parseLong(a[1]));
-				l.add(Long.parseLong(a[2]));
-				l.add(Long.parseLong(a[3]));
-				records.add(l);
+				Record log = new Record("_");
+				log.setTS(ts);
+				log.setWS(Double.parseDouble(a[1]));
+				log.setDir(Double.parseDouble(a[2]));
+				records.add(log);
 			}
 			if (ts<dS) break;
 		}
@@ -205,29 +204,27 @@ public class DataManager {
 	 * @return
 	 */
 	public static JSONObject getRealTimeData(String unit) {
-		long record[] = new long[4];
+		Record log = new Record(",");
 
 		//Get log scanner
 		Scanner s = UnitUtils.getLogScanner(unit);
 		if (s==null) return null;
 		
-		if (s.hasNext()) {
+		if (s.hasNext()) { //First log in file should be most recent
 			String r = s.next();
 			String[] a = r.substring(0, r.length()-1).split(",");
-			record[0] = Long.parseLong(a[0]);
-			record[1] = Long.parseLong(a[1]);
-			record[2] = Long.parseLong(a[2]);
-			record[3] = Long.parseLong(a[3]);
+			log.setTS(Long.parseLong(a[0]));
+			log.setWS(Double.parseDouble(a[1]));
+			log.setDir(Double.parseDouble(a[2]));
 		}
-
 		s.close();
 
 		JSONObject jObj = new JSONObject();
 		jObj.put("name", "realtime");
-		jObj.put("rtLastUpdateTime", record[0]);
-		jObj.put("rtWindSpeed", record[1]);
-		jObj.put("rtDegrees", record[2]);
-		jObj.put("rtAlarmLevel", record[3]);
+		jObj.put("rtLastUpdateTime", log.ts);
+		jObj.put("rtWindSpeed", log.ws);
+		jObj.put("rtDegrees", log.dir);
+		jObj.put("rtAlarmLevel", log.al);
 		return jObj;
 	}
 
@@ -262,7 +259,7 @@ public class DataManager {
 		s.close();
 
 		JSONObject jObj = new JSONObject();
-		jObj.put("level1", mins[0]).put("level2", mins[1]).put("level3", mins[2]);
+		jObj.put("l1", mins[0]).put("l2", mins[1]).put("l3", mins[2]);
 		return jObj;
 	}
 
@@ -275,17 +272,17 @@ public class DataManager {
 	 * @param period - the whole period being averaged over
 	 * @return
 	 */
-	public static List<Record> averageRecords(List<List<Long>> records, long increment, long start, long period) {
+	public static List<Record> averageRecords(List<Record> records, long increment, long start, long period) {
 		List<Record> recordsA = new ArrayList<>();
 		long currentInc = start;
 		int averageWS = 0, count = 0;
 
 		//Average records
 		for (int i=0; i<records.size(); i++) {
-			if (records.get(i).get(0)<currentInc-increment) {
+			if (records.get(i).ts<currentInc-increment) {
 				//In next increment below
-				if (count==0) recordsA.add(new Record(currentInc, 0)); //Avoid number format exception
-				else recordsA.add(new Record(currentInc, averageWS/count));
+				if (count==0) recordsA.add(new Record(currentInc, 0d, "_")); //Avoid number format exception
+				else recordsA.add(new Record(currentInc, (double) (averageWS/count), "_"));
 
 				averageWS = 0;
 				count = 0;
@@ -295,13 +292,13 @@ public class DataManager {
 				continue;
 			}
 
-			if (records.get(i).get(0)>=currentInc-increment&&records.get(i).get(0)<currentInc) {
+			if (records.get(i).ts>=currentInc-increment&&records.get(i).ts<currentInc) {
 				//Within increment
-				averageWS += records.get(i).get(1);
+				averageWS += records.get(i).ws;
 				count++;
 			}
 		}
-		if (count>0) recordsA.add(new Record(currentInc, averageWS/count)); //Catch last
+		if (count>0) recordsA.add(new Record(currentInc, (double) (averageWS/count), "_")); //Catch last
 
 		//Top up array if not correct size
 		/*if (recordsA.size()<(period/increment)) {
@@ -320,8 +317,8 @@ public class DataManager {
 		return recordsA;
 	}
 
-	public static JSONObject getRealTimeGraphData(String unit, int mode) {
-		List<List<Long>> records;
+	public static JSONObject getDashboardGraphData(String unit, int mode) {
+		List<Record> records;
 		List<Record> recordsA = null;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -346,8 +343,8 @@ public class DataManager {
 			 */
 			records = getRecordsFromPeriod(unit, (long) (d-msInHour+(msInMinute*5)), (long) (d+(msInMinute*5)));
 			if (records==null) return null;
-			recordsA = averageRecords(records, (long) (msInMinute*5), (long) (d+(msInMinute*5)), (long) (msInHour));
-			CLI.debug(Loc.HTTP,  recordsA.toString());
+			recordsA = records;
+			//recordsA = averageRecords(records, (long) (msInMinute*5), (long) (d+(msInMinute*5)), (long) (msInHour));
 			break;
 
 		case 2: //Day 
@@ -360,7 +357,6 @@ public class DataManager {
 			records = getRecordsFromPeriod(unit, (long) (d-msInDay+(msInHour/2)), (long) (d+(msInHour/2)));
 			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInHour/2), (long) (d+(msInHour/2)), (long) (msInDay));
-			CLI.debug(Loc.HTTP,  recordsA.toString());
 			break;
 
 		case 3: //Week
@@ -374,7 +370,6 @@ public class DataManager {
 			records = getRecordsFromPeriod(unit, (long) (d-msInWeek+msInHour), (long) (d+msInHour));
 			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInHour), (long) (d+msInHour), (long) (msInWeek));
-			CLI.debug(Loc.HTTP,  recordsA.toString());
 			break;
 
 		case 4: //Month
@@ -388,9 +383,14 @@ public class DataManager {
 			records = getRecordsFromPeriod(unit, (long) (d-msInMonth+(msInDay/2)), d);
 			if (records==null) return null;
 			recordsA = averageRecords(records, (long) (msInDay/2), (long) (d+(msInDay/2)), (long) (msInMonth));
-			CLI.debug(Loc.HTTP,  recordsA.toString());
 		}
 
+		//Clean records so only ws and ts left
+		for (Record r : recordsA) {
+			r.dir = null;
+			r.al = null;
+		}
+		CLI.debug(Loc.HTTP, recordsA.toString());
 		//Format in JSON
 		JSONObject jObj = new JSONObject();
 		jObj.put("gData", recordsA.toString().replace(" ", ""));

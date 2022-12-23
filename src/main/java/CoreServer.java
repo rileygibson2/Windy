@@ -24,6 +24,7 @@ public class CoreServer {
 	private static Server server;
 	public static SessionManager sessionManager;
 	public static MQTTManager mqttManager;
+	public static boolean mockRecords = true;
 
 	public static void main(String[] args) {
 		//Initialise
@@ -125,8 +126,10 @@ public class CoreServer {
 		DataMockup.makeUnit(id[0], "LAB Stage", "10", "-41.29158", "174.78594");
 		DataMockup.makeUnit(id[1], "Rock Stage", "38", "-41.28952", "174.77992");
 		DataMockup.makeUnit(id[2], "Frank Kitts", "100", "-41.28720", "174.77863");
-		DataMockup.mockRecords(0, id[0]);
-		DataMockup.mockRecords(0, id[1]);
-		DataMockup.mockRecords(0, id[2]);
+		if (mockRecords) {
+			DataMockup.mockRecords(0, id[0]);
+			DataMockup.mockRecords(0, id[1]);
+			DataMockup.mockRecords(0, id[2]);
+		}
 	}
 }

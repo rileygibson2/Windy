@@ -31,7 +31,7 @@ class DashboardPage extends Page {
 		this.gWindowStart; //Time at left edge of graph
 		this.gWindowEnd; //Time at right edge of graph
 		this.gAxisGran = 5; //X axis granularity
-		this.granModes = [1, 5, 10, 60]; //Possible granularity modes in minutes
+		this.granModes = [1, 5, 10, 60, 360, 1440]; //Possible granularity modes in minutes
 		this.gAxisSpread; //Space between X axis nodes
 
 		//Graph extra options
@@ -88,25 +88,31 @@ class DashboardPage extends Page {
 		this.rtLastUpdateTime = jArr[0].rtLastUpdateTime;
 		this.rtAlarmLevel = jArr[0].rtAlarmLevel;
 
-		//Load graph data
-		var tmpData = jArr[1].gData.slice(1, -1).split(",");
-		for (var i=0; i<tmpData.length; i++) {
-			var tmpLog = tmpData[i].slice(1, -1).split("_");
-			this.gData[i] = tmpLog;
+		if (jArr[1].gData=="[]") {
+			this.gData = [];
+			this.gVisualData = [];
 		}
-		this.gData.reverse();
+		else {
+			//Load graph data
+			var tmpData = jArr[1].gData.slice(1, -1).split(",");
+			for (var i=0; i<tmpData.length; i++) {
+				var tmpLog = tmpData[i].slice(1, -1).split("_");
+				this.gData[i] = tmpLog;
+			}
+			this.gData.reverse();
 
-		//Clone for visual data structure
-		this.gVisualData = [];
-		for (i=0; i<this.gData.length; i++) {
-			var tmpLog = [];
-			tmpLog[0] = this.gData[i][0];
-			tmpLog[1] = 0;
-			this.gVisualData[i] = tmpLog;
+			//Clone for visual data structure
+			this.gVisualData = [];
+			for (i=0; i<this.gData.length; i++) {
+				var tmpLog = [];
+				tmpLog[0] = this.gData[i][0];
+				tmpLog[1] = 0;
+				this.gVisualData[i] = tmpLog;
+			}
 		}
 
 		//Load alert level circle data
-		this.alarmLevelTimes = [jArr[2].level1, jArr[2].level2, jArr[2].level3];
+		this.alarmLevelTimes = [jArr[2].l1, jArr[2].l2, jArr[2].l3];
 
 		this.implementData();
 
@@ -123,20 +129,18 @@ class DashboardPage extends Page {
 		this.calibrateAxis();
 		this.animateGraph().then(result => page.animateCircleGraphs());
 		
-		//Other listeners to be added on this page load
+		//Setup listeners
 		$("#gSVG").mouseout(function(event) { 
 			if (typeof page.unfocusGraph==="function") page.unfocusGraph();
 		});
 		$("#gSVG").mousemove(function(event) { 
 			if (typeof page.moveOnGraph==="function") page.moveOnGraph(event);
 		});
-
-		this.setupLive();
-
-		//Setup listeners
 		document.getElementById('gSVG').addEventListener('mousewheel', (event) => {
 			page.graphOnScroll(event);
 		});
+
+		this.setupLive();
 	}
 
 	calibrateAxis() {
@@ -145,24 +149,28 @@ class DashboardPage extends Page {
 			this.gWindowStart = new Date(Date.now()-(12*minsToMs(5)));
 			this.gWindowEnd = new Date(Date.now());
 			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/12; //1 reading every 5 mins for an hour
+			this.gAxisGran = 5;
 			break;
 
 		case 2: //Day mode
-			this.gWindowStart = new Date(Date.now()-(12*minsToMs(60)));
+			this.gWindowStart = new Date(Date.now()-(24*minsToMs(60)));
 			this.gWindowEnd = new Date(Date.now());
-			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/12; //1 reading every hour
+			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/24; //1 reading every hour
+			this.gAxisGran = 60;
 			break;
 
 		case 3: //Week mode
-			this.gWindowStart = new Date(Date.now()-(168*minsToMs(60)));
+			this.gWindowStart = new Date(Date.now()-minsToMs(10080));
 			this.gWindowEnd = new Date(Date.now());
-			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/168; //24 readings a day - 1 every hour
+			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/14; //2 XAxis nodes a day
+			this.gAxisGran = 360;
 			break;
 
 		case 4: //Month mode
-			this.gWindowStart = new Date(Date.now()-(730*minsToMs(60)));
+			this.gWindowStart = new Date(Date.now()-minsToMs(43800));
 			this.gWindowEnd = new Date(Date.now());
-			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/60; //2 readings a day - every 12 hours
+			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/30; //1 XAxis node a day
+			this.gAxisGran = 1440;
 			break;
 		}
 	}
@@ -481,8 +489,8 @@ class DashboardPage extends Page {
 	buildGraph() {
 		var svg = $("#gSVG");
 		svg.empty();
+		console.log(document.getElementById("gSVG").innerHTML);
 		svg.html('<defs><linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient></defs>');
-
 		//SVG dimensions
 		var w = parseFloat(svg.css("width"));
 		var h = parseFloat(svg.css("height"));
@@ -524,7 +532,7 @@ class DashboardPage extends Page {
 
 		//Add all graph labels by counting up till window end
 		while (t<this.gWindowEnd.getTime()) {
-			var label = this.formatTime(t, 1);
+			var label = this.formatTime(t);
 
 			var x1 = gLeft+offX+(this.gAxisSpread*i);
 			path = document.createElementNS(nS, "path");
@@ -601,6 +609,7 @@ class DashboardPage extends Page {
 		}
 
 		//Data line and gradient
+		if (this.gVisualData.length==0) return;
 		var ySplit = (gBot-gTop)/(this.gYTopVal-this.gYBotVal);
 		var xSplit = (gRight-gLeft)/this.gPointsOnX;
 		var d = null;
@@ -687,13 +696,22 @@ class DashboardPage extends Page {
 	}
 
 	animateGraph() {
+		var self = this;
+		if (this.gVisualData.length==0) {
+			//Build graph once so you can see axis
+			let promise = new Promise(function (resolve, reject) {
+				self.buildGraph();
+				resolve();
+			});
+			return promise;
+		}
+
 		//Reset visual data
 		for (i=0; i<this.gVisualData.length; i++) {
 			this.gVisualData[i][1] = this.gData[i][1]*0.8;
 			if (this.gVisualData[i][1]<0) this.gVisualData[i][1] = 0;
 		}
 
-		var self = this;
 		let promise = new Promise(function (resolve, reject) {
 			//Animate points on graph sliding up
 			let slide = setInterval(function() {
@@ -704,7 +722,11 @@ class DashboardPage extends Page {
 				}
 				else {
 					for (i=0; i<self.gVisualData.length; i++) {
-						if (self.gVisualData[i][1]<self.gData[i][1]) self.gVisualData[i][1]++;
+						//Add 1 untill within 1 then jump to full (avoids inaccurate point values)
+						if (self.gVisualData[i][1]<self.gData[i][1]) {
+							if (self.gVisualData[i][1]>=self.gData[i][1]-1) self.gVisualData[i][1] = self.gData[i][1];
+							else self.gVisualData[i][1]++
+						}
 					}
 					self.buildGraph();
 				}
@@ -768,7 +790,7 @@ class DashboardPage extends Page {
 		}
 
 		//Update
-		$("#gFocusCircle").attr("cx", mX);
+		/*$("#gFocusCircle").attr("cx", mX);
 		$("#gFocusCircle").attr("cy", mY);
 
 		var t = Math.floor(this.gVisualData[i])+" km/h";
@@ -781,7 +803,7 @@ class DashboardPage extends Page {
 
 		$("#gFocusCircle").css("display", "block");
 		$("#gFocusText").css("display", "block");
-		$("#gFocusLine").css("display", "block");
+		$("#gFocusLine").css("display", "block");*/
 	}
 
 	graphSlideFinished() {
@@ -801,10 +823,12 @@ class DashboardPage extends Page {
 		//Average off total
 		v = v/(this.alarmLevelTimes[0]+this.alarmLevelTimes[1]+this.alarmLevelTimes[2]);
 		v *= 100;
-
 		//Fudge a zero value to avoid weird looking circle
 		if (v==0) $('#cSVGC'+(i+1)).css("stroke-dasharray", '0, 100000');
 		else $('#cSVGC'+(i+1)).css("stroke-dasharray", (v*(c/100))+', '+c);
+
+		//$("#cSVGC1").css("stroke", "purple");
+		//document.getElementById("cSVGC1").style.stroke = "purple";
 
 		//Update smaller text with units
 		var s = "mins";
@@ -854,14 +878,17 @@ class DashboardPage extends Page {
 		return d; 
 	}
 
-	/*
-	Format modes:
-		1 = minute
-		2 = hour
-		3 = day
-		4 = month
-	*/
-	formatTime(time, mode) {
+	formatTime(time) {
+		var mode = 1;
+		if (this.gAxisGran<=this.granModes[5]) mode = 4;
+		if (this.gAxisGran<=this.granModes[4]) mode = 3;
+		if (this.gAxisGran<=this.granModes[3]) mode = 2;
+		if (this.gAxisGran<=this.granModes[2]) mode = 1;
+
+		console.log(this.gAxisGran+", "+mode);
+
+		//this.granModes = [1, 5, 10, 60, 360, 1440];
+
 		var date = new Date(time);
 		var h = date.getHours();
 		var m = date.getMinutes();
@@ -890,13 +917,23 @@ class DashboardPage extends Page {
 				if (h==0) h = 12;
 				return h+t;
 			}
-		case 3:  //Day of week with date
+		case 3: //Day of week with hour with text suffix
+			var t = 'am';
+			if (h>12) {
+				t = 'pm';
+				h -= 12;
+			}
+			if (h==12) t = 'pm';
+			if (h==0) h = 12;
+			return h+t+" "+date.toLocaleDateString('default', {weekday: 'short'});
+			
+		case 4:  //Day of week with date
 			date.setHours(0);
 			date.setMinutes(0);
 			date.setSeconds(0);
 			date.setMilliseconds(0);
 			return date.toLocaleDateString('default', {weekday: 'short'})+" "+date.getDate()+this.dateSuffix(date.getDate());
-		case 4: //Month title and regular date
+		case 5: //Month title and regular date
 			date.setHours(0);
 			date.setMinutes(0);
 			date.setSeconds(0);
@@ -944,68 +981,3 @@ class DashboardPage extends Page {
 		}
 	}
 }
-
-
-/*for (i=0; i<this.gVisualData.length; i++) {
-			//Search forward to find end of block
-			var end = i;
-			while (end<this.gVisualData.length) {
-				if (this.gVisualData[end]<=0) break;
-				else end++;
-			}
-			if (end==i||end-i==1) continue;
-
-			//Build path for block
-			path = document.createElementNS(nS, "path");
-			path.setAttribute("class", 'gDataLine');
-			var d = '';
-			
-			for (var z=i; z<end; z++) {
-				y1 = (this.gYTopVal-this.gVisualData[z])*ySplit+gTop;
-				x1 = z*xSplit+gLeft;
-				
-				if (z==i) d += " M "+x1+" "+y1;
-				else d +=" L "+x1+" "+y1;
-
-				var circle = document.createElementNS(nS, "circle");
-				circle.setAttribute("class", 'gDataCircle');
-				circle.setAttribute("cx", x1);
-				circle.setAttribute("cy", y1);
-				svg.append(circle);
-			}
-
-			path.setAttribute("d", d);
-			svg.append(path);
-		}
-
-		//Data shape with gradient
-		//Need to build for every set of data points as there could be breaks
-		for (i=0; i<this.gVisualData.length; i++) {
-			//Search forward to find end of block
-			var end = i;
-			while (end<this.gVisualData.length) {
-				if (this.gVisualData[end]<=0) break;
-				else end++;
-			}
-			if (end==i||end-i==1) continue;
-
-			//Build path for block
-			path = document.createElementNS(nS, "path");
-			path.setAttribute("class", 'gDataGrad');
-			var y1 = (this.gYTopVal-this.gVisualData[i])*ySplit+gTop;
-			var x1 = i*xSplit+gLeft;
-			var x2;
-			var d = " M "+x1+" "+y1;
-			
-			for (z=i+1; z<end; z++) {
-				var y2 = (this.gYTopVal-this.gVisualData[z])*ySplit+gTop;
-				x2 = z*xSplit+gLeft;
-				d +=" L "+x2+" "+y2;
-			}
-
-			//Close path back to start of block
-			d +=" L "+x2+" "+gBot+" L "+x1+" "+gBot+" Z";
-			path.setAttribute("d", d);
-			svg.append(path);
-			i = end;
-		}*/

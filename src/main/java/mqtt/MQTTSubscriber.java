@@ -8,7 +8,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import main.java.core.DataManager;
+import main.java.core.Record;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
 import main.java.mqtt.MQTTManager.SubscribeTopic;
@@ -64,14 +64,11 @@ class MQTTSubscriberCallback implements MqttCallback {
 		switch(topic) {
 		case Log:
 			//if (data.length!=7) return;
-			String log = "["+data[0].substring(data[0].length()-2)+","+data[1].substring(data[1].length()-2)+","+data[5].substring(data[5].length()-2)+",";
-			//if (Integer.parseInt(data[1])>=DataManager.redAlarm) log += "3";
-			//else if (Integer.parseInt(data[1])>=DataManager.amberAlarm) log += "2";
-			log += "1";
-			log += "]";
-			CLI.debug(Loc.MQTT, "Unit: "+unit+" log: "+log);
-			System.out.println("hello3");
-			UnitUtils.addLogToUnit(unit, log);
+			//Record log = new Record(Long.parseLong(data[0].substring(0, data[0].length()-3)), ",");
+			Record log = new Record(System.currentTimeMillis(), ",");
+			log.setWS(Double.parseDouble(data[1]));
+			log.setDir(Double.parseDouble(data[2]));
+			UnitUtils.addLogToUnit(unit, log.toString());
 			break;
 		case StatusUpdate:
 			//Split unit from log data

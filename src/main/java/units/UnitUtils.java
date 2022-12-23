@@ -22,7 +22,7 @@ import main.java.debug.CLI.Loc;
 public class UnitUtils {
 
 	public static boolean addLogToUnit(String unit, String log) {
-		System.out.println("hello5");
+		CLI.debug(Loc.UNIT, "Adding log to unit: "+unit+" log: "+log);
 		if (unit==null||log==null||!unitExists(unit)) return false;
 		try {
 			File f = new File("units/"+unit+"/records.log");

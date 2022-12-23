@@ -31,11 +31,11 @@ public class MQTTManager {
 		 * Unit name [|]
 		 * Log epoch time [0]
 		 * Wind speed at time log dispatched [1]
-		 * Peak gust epoch time [2]
-		 * Peak gust [3]
-		 * Min wind speed [4]
-		 * Avg wind speed [5]
-		 * Direction [6]
+		 * Direction [2]
+		 * Peak gust epoch time [3]
+		 * Peak gust [4]
+		 * Min wind speed [5]
+		 * Avg wind speed [6]
 		 */
 		Log,
 		/**

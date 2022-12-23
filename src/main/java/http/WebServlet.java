@@ -13,6 +13,7 @@ import main.java.accounts.AccountUtils;
 import main.java.core.DataManager;
 import main.java.debug.CLI;
 import main.java.debug.CLI.Loc;
+import main.java.core.Record;
 
 public class WebServlet extends HttpServlet {
 
@@ -54,7 +55,7 @@ public class WebServlet extends HttpServlet {
 		String data = "";
 		switch (mode) {
 		case dashboardData:
-			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving real time data request --- "+CLI.reset);
+			CLI.debug(Loc.HTTP, CLI.blue+" --- Recieving dashboard data request --- "+CLI.reset);
 			
 			int graphMode;
 			unit = req.getParameter("u");
@@ -69,7 +70,6 @@ public class WebServlet extends HttpServlet {
 			//Handle MQTT live state
 			CoreServer.mqttManager.sendLiveStart(unit);
 			session.setLiveReading(unit);
-			
 			data = DataManager.getDashboardData(unit, graphMode);
 			if (data==null) {failBadRequest(resp); return;}
 			break;
@@ -113,7 +113,7 @@ public class WebServlet extends HttpServlet {
 			}
 			
 			CLI.debug(Loc.HTTP, "For records from "+new Date(rS).toString()+" to "+new Date(rE).toString());
-			List<List<Long>> records = DataManager.getRecordsFromPeriod(unit, rS, rE);
+			List<Record> records = DataManager.getRecordsFromPeriod(unit, rS, rE);
 			if (records==null) {failBadRequest(resp); return;}
 			data = records.toString();
 			break;

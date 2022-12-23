@@ -137,12 +137,13 @@ var passwordField = "";
 
 function loginKeyPress(event) {
 	//Simulate password field style value hiding
-	if (event.key=="Backspace") passwordField = passwordField.substring(0, passwordField.length-1);
+	/*if (event.key=="Backspace") passwordField = passwordField.substring(0, passwordField.length-1);
 	else if (event.key.length==1) passwordField+=event.key;
 	var bullets = "";
 	for (i=0; i<passwordField.length; i++) bullets += '\u2022';
-	$('#lPass').val(bullets);
+	$('#lPass').val(bullets);*/
 
+	passwordField = document.getElementById("lPass").value;
 	if (event.key!=="Enter") return;
 	validateLogin();
 }

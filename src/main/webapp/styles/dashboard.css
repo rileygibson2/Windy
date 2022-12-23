@@ -148,7 +148,7 @@
 	width: 30%;
 	height: 100%;
 	margin-top: 5%;
-	margin-left: 70%;
+	margin-left: 72.5%;
 	z-index: 10;
 }
 #gSVG {
@@ -295,7 +295,7 @@
 	stroke-dasharray: 1, 10000;
 	transform-origin: center;
 	transform: rotate(-90deg);
-	filter: url(#shadow);
+	/*filter: url(#shadow);*/
 	z-index: 11;
 	opacity: 1;
 	transition: stroke-dasharray 1.5s;
