@@ -36,7 +36,11 @@ public class DataManager {
 	public static String getDashboardData(String unit, int graphMode) {
 		JSONArray jArr = new JSONArray();
 		JSONObject rTD = getRealTimeData(unit);
-		JSONObject rTDG = getDashboardGraphData(unit, graphMode);
+		JSONObject rTDG = new JSONObject();
+		rTDG.put("gData1", getDashboardGraphData(unit, 1));
+		rTDG.put("gData2", getDashboardGraphData(unit, 2));
+		rTDG.put("gData3", getDashboardGraphData(unit, 3));
+		rTDG.put("gData4", getDashboardGraphData(unit, 4));
 		JSONObject rTM = getMinutesAtAlertLevels(unit, graphMode);
 		if (rTD==null||rTD==null||rTM==null) return null;
 		
@@ -317,7 +321,7 @@ public class DataManager {
 		return recordsA;
 	}
 
-	public static JSONObject getDashboardGraphData(String unit, int mode) {
+	public static String getDashboardGraphData(String unit, int mode) {
 		List<Record> records;
 		List<Record> recordsA = null;
 		Calendar cal = Calendar.getInstance();
@@ -390,11 +394,15 @@ public class DataManager {
 			r.dir = null;
 			r.al = null;
 		}
-		CLI.debug(Loc.HTTP, recordsA.toString());
-		//Format in JSON
-		JSONObject jObj = new JSONObject();
-		jObj.put("gData", recordsA.toString().replace(" ", ""));
-		return jObj;
+		double heighest = getHeighestWindSpeed(recordsA);
+		CLI.debug(Loc.HTTP, recordsA.toString()+" Heighest WS: "+heighest);
+		return recordsA.toString().replace(" ", "")+"/"+heighest;
+	}
+	
+	public static double getHeighestWindSpeed(List<Record> logs) {
+		double heighest = 0;
+		for (Record r : logs) if (r.ws>heighest) heighest = r.ws;
+		return heighest;
 	}
 
 	public static String getForecastData() {

@@ -246,7 +246,7 @@
 }
 .gMarkingLine { /*Graph marking lines paths*/
 	stroke: rgb(255, 255, 255);
-	stroke-width: 1px;
+	stroke-width: 2px;
 }
 .gMarkingText { /*Graph marking text*/
 	fill: rgb(180, 180, 180);

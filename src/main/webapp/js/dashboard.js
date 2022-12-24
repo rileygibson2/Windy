@@ -20,19 +20,25 @@ class DashboardPage extends Page {
 		this.redFlashInterval; //Allows control of red flash animation
 
 		//Graph data
+		this.gData1 = []; //Hour data
+		this.gData2 = []; //Day data
+		this.gData3 = []; //Week data
+		this.gData4 = []; //Month data
+		this.gData; //Current data structure
+		this.gVisualData; //Used to allow graph animation
+
 		this.gYTopVal;
 		this.gYBotVal;
 		this.gPointsOnX;
 		this.gYMarkings = [];
-		this.gData = [];
-		this.gVisualData = []; //Used for initial graph animation
 		this.gViewMode = 1;
 		this.graphModes = ["Hour", "Day", "Week", "Month"];
-		this.gWindowStart; //Time at left edge of graph
-		this.gWindowEnd; //Time at right edge of graph
-		this.gAxisGran = 5; //X axis granularity
-		this.granModes = [1, 5, 10, 60, 360, 1440]; //Possible granularity modes in minutes
-		this.gAxisSpread; //Space between X axis nodes
+		this.gXWindowStart; //Time at left edge of graph
+		this.gXWindowEnd; //Time at right edge of graph
+		this.gXAxisGran = 5; //X axis granularity
+		this.gYAxisGran = 20; //Y axis granularity
+		this.gXAxisGranModes = [1, 5, 10, 60, 360, 1440]; //Possible granularity modes in minutes
+		this.gXAxisSpread; //Space between X axis nodes
 
 		//Graph extra options
 		this.gAlertLines = false;
@@ -88,20 +94,51 @@ class DashboardPage extends Page {
 		this.rtLastUpdateTime = jArr[0].rtLastUpdateTime;
 		this.rtAlarmLevel = jArr[0].rtAlarmLevel;
 
-		if (jArr[1].gData=="[]") {
-			this.gData = [];
+		//Load all 4 types of graph data into respective structures
+		this.loadIncomingGraphData(1, jArr[1].gData1);
+		this.loadIncomingGraphData(2, jArr[1].gData2);
+		this.loadIncomingGraphData(3, jArr[1].gData3);
+		this.loadIncomingGraphData(4, jArr[1].gData4);
+		this.gData = this.gData1;
+
+		//Load alert level circle data
+		this.alarmLevelTimes = [jArr[2].l1, jArr[2].l2, jArr[2].l3];
+
+		//Configure for mobile
+		if (isMobile) page.mobileConfigure();
+		else page.desktopConfigure();
+
+		this.implementData();
+	}
+
+	loadIncomingGraphData(i, data) {
+		var dataFin;
+		switch (i) {
+			case 1: dataFin = this.gData1; break;
+			case 2: dataFin = this.gData2; break;
+			case 3: dataFin = this.gData3; break;
+			case 4: dataFin = this.gData4; break;
+		}
+		
+		//Split on / to get heighest log values first
+		var tmpStruct = data.split("/");
+		if (tmpStruct[0]=="[]") dataFin = [];
+		else {
+			var tmpData = tmpStruct[0].slice(1, -1).split(",");
+			for (var i=0; i<tmpData.length; i++) {
+				var tmpLog = tmpData[i].slice(1, -1).split("_");
+				dataFin[i] = tmpLog;
+			}
+			dataFin.reverse();
+		}
+	}
+
+	formatVisualData() {
+		if (this.gData.length==0) {
 			this.gVisualData = [];
 		}
 		else {
-			//Load graph data
-			var tmpData = jArr[1].gData.slice(1, -1).split(",");
-			for (var i=0; i<tmpData.length; i++) {
-				var tmpLog = tmpData[i].slice(1, -1).split("_");
-				this.gData[i] = tmpLog;
-			}
-			this.gData.reverse();
-
-			//Clone for visual data structure
+			//Clone current data for visual data structure
 			this.gVisualData = [];
 			for (i=0; i<this.gData.length; i++) {
 				var tmpLog = [];
@@ -110,15 +147,6 @@ class DashboardPage extends Page {
 				this.gVisualData[i] = tmpLog;
 			}
 		}
-
-		//Load alert level circle data
-		this.alarmLevelTimes = [jArr[2].l1, jArr[2].l2, jArr[2].l3];
-
-		this.implementData();
-
-		//Configure for mobile
-		if (isMobile) page.mobileConfigure();
-		else page.desktopConfigure();
 	}
 
 	implementData() {
@@ -126,6 +154,10 @@ class DashboardPage extends Page {
 		this.updateLiveValues();
 
 		//Graph module
+		if (this.gViewMode==1) this.gData = this.gData1;
+		if (this.gViewMode==2) this.gData = this.gData2;
+		if (this.gViewMode==3) this.gData = this.gData3;
+		if (this.gViewMode==4) this.gData = this.gData4;
 		this.calibrateAxis();
 		this.animateGraph().then(result => page.animateCircleGraphs());
 		
@@ -137,42 +169,61 @@ class DashboardPage extends Page {
 			if (typeof page.moveOnGraph==="function") page.moveOnGraph(event);
 		});
 		document.getElementById('gSVG').addEventListener('mousewheel', (event) => {
-			page.graphOnScroll(event);
+			page.scrollOnGraph(event.deltaY, event.deltaX, event.pageX);
 		});
+
+		var hammertime = new Hammer(document.getElementById('gSVG'));
+		hammertime.on('pinch', function(ev) {
+			var scale = ev.scale;
+			if (scale<1) scale = (1-scale)*4;
+			else scale = -(scale-1);
+			page.scrollOnGraph(scale*80, 0, ev.center.x);
+		});
+		hammertime.on('pan', function(ev) {
+			page.scrollOnGraph(0, -ev.deltaX*0.2, 0);
+		});
+		hammertime.get('pinch').set({ enable: true });
 
 		this.setupLive();
 	}
 
 	calibrateAxis() {
+		//Calibrate X Axis
 		switch (this.gViewMode) {
 		case 1: //Hour mode
-			this.gWindowStart = new Date(Date.now()-(12*minsToMs(5)));
-			this.gWindowEnd = new Date(Date.now());
-			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/12; //1 reading every 5 mins for an hour
-			this.gAxisGran = 5;
+			this.gXWindowStart = new Date(Date.now()-(12*minsToMs(5)));
+			this.gXWindowEnd = new Date(Date.now());
+			this.gXAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/12; //1 reading every 5 mins for an hour
+			this.gXAxisGran = 5;
 			break;
 
 		case 2: //Day mode
-			this.gWindowStart = new Date(Date.now()-(24*minsToMs(60)));
-			this.gWindowEnd = new Date(Date.now());
-			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/24; //1 reading every hour
-			this.gAxisGran = 60;
+			this.gXWindowStart = new Date(Date.now()-(24*minsToMs(60)));
+			this.gXWindowEnd = new Date(Date.now());
+			this.gXAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/24; //1 reading every hour
+			this.gXAxisGran = 60;
 			break;
 
 		case 3: //Week mode
-			this.gWindowStart = new Date(Date.now()-minsToMs(10080));
-			this.gWindowEnd = new Date(Date.now());
-			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/14; //2 XAxis nodes a day
-			this.gAxisGran = 360;
+			this.gXWindowStart = new Date(Date.now()-minsToMs(10080));
+			this.gXWindowEnd = new Date(Date.now());
+			this.gXAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/7; //2 XAxis nodes a day
+			this.gXAxisGran = 1440;
 			break;
 
 		case 4: //Month mode
-			this.gWindowStart = new Date(Date.now()-minsToMs(43800));
-			this.gWindowEnd = new Date(Date.now());
-			this.gAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/30; //1 XAxis node a day
-			this.gAxisGran = 1440;
+			this.gXWindowStart = new Date(Date.now()-minsToMs(43800));
+			this.gXWindowEnd = new Date(Date.now());
+			this.gXAxisSpread = (parseFloat($("#gSVG").css("width"))*0.9)/30; //1 XAxis node a day
+			this.gXAxisGran = 1440;
 			break;
 		}
+
+		//Calibrate Y Axis
+		if (this.gYTopVal>=80) this.gYAxisGran = 20;
+		if (this.gYTopVal<80) this.gYAxisGran = 10;
+		if (this.gYTopVal<=50) this.gYAxisGran = 5;
+		if (this.gYTopVal<=10) this.gYAxisGran = 1;
 	}
 
 	mobileConfigure() {
@@ -283,7 +334,7 @@ class DashboardPage extends Page {
 
 	onConnectionLost(responseObject) {
     	if (responseObject.errorCode !== 0) {
-        	console.log("onConnectionLost:" + responseObject.errorMessage);
+        	console.log("MQTT Connection Lost:" + responseObject.errorMessage);
     	}
  	}
 
@@ -396,7 +447,7 @@ class DashboardPage extends Page {
 		}
 
 		//Update graph
-		page.updatePageData();
+		page.implementData();
 	}
 
 	lastObj;
@@ -417,79 +468,86 @@ class DashboardPage extends Page {
 		if (obj.innerHTML=="Month") this.gViewMode = 4;
 
 		//Get new data and reload graph and circle graphs
-		if (!updated) this.updatePageData();
+		//if (!updated) this.updatePageData();
+		this.implementData();
 	}
 
 	//Graph module actions
 
-	graphOnScroll(event) {
+	scrollOnGraph(scale, swipe, x) {
 		//Get mouse point relative to graph 
 		var svg = $("#gSVG");
-		var mX = event.pageX-svg.offset().left-parseFloat(svg.css("width"))*0.05; //Mouse x
+		var mX = x-svg.offset().left-parseFloat(svg.css("width"))*0.05; //Mouse x
 
 		//Find time relative to mouse location on graph
-		var axisDiff = mX/this.gAxisSpread;
-		var mTime = this.gWindowStart.getTime()+(axisDiff*minsToMs(this.gAxisGran));
+		var axisDiff = mX/this.gXAxisSpread;
+		var mTime = this.gXWindowStart.getTime()+(axisDiff*minsToMs(this.gXAxisGran));
 
 		/*
 		Update spread and if over a bound then shift granularity
 		up or down. If granularity change fails then stop at bound.
 		*/
-		this.gAxisSpread += -(event.deltaY/8);
-		if (this.gAxisSpread<100) {
-			if (!this.changeGranularity(1)) this.gAxisSpread = 100;
+		this.gXAxisSpread += -(scale/8);
+		if (this.gXAxisSpread<100) {
+			if (!this.changeGranularity(1)) this.gXAxisSpread = 100;
 		}
-		if (this.gAxisSpread>300) {
-			if (!this.changeGranularity(-1)) this.gAxisSpread = 300;
+		if (this.gXAxisSpread>300) {
+			if (!this.changeGranularity(-1)) this.gXAxisSpread = 300;
 		}
 
 		/*
 		Time at mouse pointer must stay the same (so graph expands out
-		from mouse pointer), so re-calculate gWindowStart and gWindowEnd
+		from mouse pointer), so re-calculate gXWindowStart and gXWindowEnd
 		by extraploating to extremes with new spread from mouse pointer
 		time.
 		 */
-		this.gWindowStart = new Date(mTime-((mX/this.gAxisSpread)*minsToMs(this.gAxisGran)));
-		this.gWindowEnd = new Date(mTime+(((parseFloat(svg.css("width"))*0.9-mX)/this.gAxisSpread)*minsToMs(this.gAxisGran)));
+		this.gXWindowStart = new Date(mTime-((mX/this.gXAxisSpread)*minsToMs(this.gXAxisGran)));
+		this.gXWindowEnd = new Date(mTime+(((parseFloat(svg.css("width"))*0.9-mX)/this.gXAxisSpread)*minsToMs(this.gXAxisGran)));
 
+
+		//Handle deal x scroll only if no y scroll
+		if (scale==0&&swipe!=0) {
+			var xChange = swipe*(minsToMs(this.gXAxisGran)/100);
+			this.gXWindowStart = new Date(this.gXWindowStart.getTime()+xChange);
+			this.gXWindowEnd = new Date(this.gXWindowEnd.getTime()+xChange);
+		}
 		page.buildGraph();
 	}
 
 	changeGranularity(dir) {
 		//Get current granularity index
 		var index;
-		for (var i=0; i<this.granModes.length; i++) {
-			if (this.gAxisGran==this.granModes[i]) index = i;
+		for (var i=0; i<this.gXAxisGranModes.length; i++) {
+			if (this.gXAxisGran==this.gXAxisGranModes[i]) index = i;
 		}
 
 		if (dir==1) { //Change gran up
-			if (index>=this.granModes.length-1) return false;
-			var newGran = this.granModes[index+1];
+			if (index>=this.gXAxisGranModes.length-1) return false;
+			var newGran = this.gXAxisGranModes[index+1];
 			//Spread needs to change up (eg if moving from 1 to 5 then spread needs to be x5 what it was before)
-			this.gAxisSpread = this.gAxisSpread*(newGran/this.gAxisGran);
-			this.gAxisGran = newGran;
+			this.gXAxisSpread = this.gXAxisSpread*(newGran/this.gXAxisGran);
+			this.gXAxisGran = newGran;
 
 		}
 		if (dir==-1) { //Change gran down
 			if (index<=0) return false;
-			var newGran = this.granModes[index-1];
+			var newGran = this.gXAxisGranModes[index-1];
 			//Spread needs to change down (eg if moving from 5 to 1 then spread needs to be 1/5 what it was before)
-			this.gAxisSpread = this.gAxisSpread/(this.gAxisGran/newGran);
-			this.gAxisGran = newGran;
+			this.gXAxisSpread = this.gXAxisSpread/(this.gXAxisGran/newGran);
+			this.gXAxisGran = newGran;
 		}
 		return true;
 	}
 
 	timeToX(time) {
 		//Find how many gran units there are in diff between graph start time and given time
-		var spaceDiff = (time-this.gWindowStart.getTime())/minsToMs(this.gAxisGran);
-		return spaceDiff*this.gAxisSpread; //X pos is that number of gran units * space of one gran unit
+		var spaceDiff = (time-this.gXWindowStart.getTime())/minsToMs(this.gXAxisGran);
+		return spaceDiff*this.gXAxisSpread; //X pos is that number of gran units * space of one gran unit
 	}
 
 	buildGraph() {
 		var svg = $("#gSVG");
 		svg.empty();
-		console.log(document.getElementById("gSVG").innerHTML);
 		svg.html('<defs><linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient></defs>');
 		//SVG dimensions
 		var w = parseFloat(svg.css("width"));
@@ -504,7 +562,6 @@ class DashboardPage extends Page {
 			gLeft = 0;
 			gRight = w;
 		}
-
 		//Axis lines
 		if (!isMobile) {
 			var path = document.createElementNS(nS, "path");
@@ -521,67 +578,77 @@ class DashboardPage extends Page {
 		svg.append(path);	
 
 		//X Axis Markings
-		
-		//Round to nearest granularity unit from window start
-		var granMS = minsToMs(this.gAxisGran);
-		var t = Math.floor(this.gWindowStart.getTime()/granMS)*granMS;
+		var granMS = minsToMs(this.gXAxisGran); //Round to nearest granularity unit from window start
+		var t = Math.floor(this.gXWindowStart.getTime()/granMS)*granMS;
 
 		//Find use the diff between this gran and start time to calculate starting offset
-		var offX = ((t-this.gWindowStart.getTime())/granMS)*this.gAxisSpread;
+		var offX = ((t-this.gXWindowStart.getTime())/granMS)*this.gXAxisSpread;
 		var i = 0;
 
 		//Add all graph labels by counting up till window end
-		while (t<this.gWindowEnd.getTime()) {
+		while (t<this.gXWindowEnd.getTime()) {
 			var label = this.formatTime(t);
+			var x1 = offX+(this.gXAxisSpread*i);
 
-			var x1 = gLeft+offX+(this.gAxisSpread*i);
-			path = document.createElementNS(nS, "path");
-			d = "M "+x1+" "+(gBot-(gLeft*0.1))+" L "+x1+" "+(gBot+(gLeft*0.1));
-			path.setAttribute("d", d);
-			path.setAttribute("class", 'gMarkingLine');
-			svg.append(path);
+			if (offX+(this.gXAxisSpread*i)>=0) { //Stops axis labels moving past left of graph
+				x1 += gLeft;
+				path = document.createElementNS(nS, "path");
+				d = "M "+x1+" "+(gBot-(gLeft*0.1))+" L "+x1+" "+(gBot+(gLeft*0.1));
+				if (isMobile) d = "M "+x1+" "+(gBot-(gRight*0.01))+" L "+x1+" "+(gBot+(gRight*0.01));
+				path.setAttribute("d", d);
+				path.setAttribute("class", 'gMarkingLine');
+				svg.append(path);
 
-			//Text
-			var text = document.createElementNS(nS, "text");
-			text.setAttribute("class", 'gMarkingText');
-			//X value accounts for length of string
-			text.setAttribute("x", x1-((gLeft*0.1)*(label.length/2)));
-			text.setAttribute("y", (gBot*1.05));
-			text.setAttribute("font-size", (w*0.01));
-			text.textContent = label;
-			svg.append(text);
+				//Text
+				var text = document.createElementNS(nS, "text");
+				text.setAttribute("class", 'gMarkingText');
+				//X value accounts for length of string
+				text.setAttribute("x", x1-((gLeft*0.1)*(label.length/2)));
+				text.setAttribute("y", (gBot*1.05));
+				text.setAttribute("font-size", (w*0.01));
+				if (isMobile) {
+					text.setAttribute("x", x1-(label.length/0.5));
+					text.setAttribute("font-size", (w*0.025));
+				}
+				text.textContent = label;
+				svg.append(text);
+			}
 
 			t+=granMS;
 			i++;
 		}
 
 		//Y Axis Markings
-		var split = (gBot-gTop)/this.gYMarkings.length;
-		for (i=0; i<this.gYMarkings.length; i++) {
-			var h1 = (split*i)+gTop;
+		var split = (gBot-gTop)/(this.gYTopVal/this.gYAxisGran);
+		var i = 0;
+		while (i<(this.gYTopVal/this.gYAxisGran)) {
+			var y1 = (split*i)+gTop;
+
 			//Line
 			path = document.createElementNS(nS, "path");
-			d = "M "+(gLeft*0.9)+" "+h1+" L "+(gLeft*1.1)+" "+h1;
+			d = "M "+(gLeft*0.9)+" "+y1+" L "+(gLeft*1.1)+" "+y1;
 			path.setAttribute("d", d);
 			path.setAttribute("class", 'gMarkingLine');
 			svg.append(path);
 			
 			//Text
-			var t = String(this.gYMarkings[(this.gYMarkings.length-1)-i]);
+			var t = String(this.gYTopVal-i*this.gYAxisGran);
 			var text = document.createElementNS(nS, "text");
 			text.setAttribute("class", 'gMarkingText');
 			//X value accounts for length of string
 			text.setAttribute("x", (gLeft*0.8)-((gLeft*0.1)*t.length));
-			text.setAttribute("y", h1+(h*0.01));
+			text.setAttribute("y", y1+(h*0.01));
 			text.setAttribute("font-size", (w*0.01));
 
 			if (isMobile) {
 				text.setAttribute("x", (gLeft*0.5)-((gLeft*0.22)*t.length));
 				text.setAttribute("font-size", (w*0.025));
-				if (i==0) continue; //Dont show '100' marking
+				//if (this.gYTopVal-i*this.gYAxisGran==100) break; //Dont show '100' marking
 			}
 			text.textContent = t;
 			svg.append(text);
+
+			i++;
 		}
 
 		//Thin lines
@@ -697,7 +764,9 @@ class DashboardPage extends Page {
 
 	animateGraph() {
 		var self = this;
-		if (this.gVisualData.length==0) {
+		this.formatVisualData(); //Format visual data to the same as current gData structure
+
+		if (this.gData.length==0) {
 			//Build graph once so you can see axis
 			let promise = new Promise(function (resolve, reject) {
 				self.buildGraph();
@@ -722,10 +791,10 @@ class DashboardPage extends Page {
 				}
 				else {
 					for (i=0; i<self.gVisualData.length; i++) {
-						//Add 1 untill within 1 then jump to full (avoids inaccurate point values)
+						//Add 1 until within 1 then jump to full (avoids inaccurate point values)
 						if (self.gVisualData[i][1]<self.gData[i][1]) {
 							if (self.gVisualData[i][1]>=self.gData[i][1]-1) self.gVisualData[i][1] = self.gData[i][1];
-							else self.gVisualData[i][1]++
+							else self.gVisualData[i][1]++;
 						}
 					}
 					self.buildGraph();
@@ -857,6 +926,7 @@ class DashboardPage extends Page {
 	}
 
 	animateCircleGraphs() {
+		return;
 		this.resetCircleGraphs();
 		this.updateCircleGraph(0);
 		setTimeout(() => {this.updateCircleGraph(1)}, 200);
@@ -880,14 +950,10 @@ class DashboardPage extends Page {
 
 	formatTime(time) {
 		var mode = 1;
-		if (this.gAxisGran<=this.granModes[5]) mode = 4;
-		if (this.gAxisGran<=this.granModes[4]) mode = 3;
-		if (this.gAxisGran<=this.granModes[3]) mode = 2;
-		if (this.gAxisGran<=this.granModes[2]) mode = 1;
-
-		console.log(this.gAxisGran+", "+mode);
-
-		//this.granModes = [1, 5, 10, 60, 360, 1440];
+		if (this.gXAxisGran<=this.gXAxisGranModes[5]) mode = 4;
+		if (this.gXAxisGran<=this.gXAxisGranModes[4]) mode = 3;
+		if (this.gXAxisGran<=this.gXAxisGranModes[3]) mode = 2;
+		if (this.gXAxisGran<=this.gXAxisGranModes[2]) mode = 1;
 
 		var date = new Date(time);
 		var h = date.getHours();
